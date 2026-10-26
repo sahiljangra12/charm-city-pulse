@@ -9,10 +9,10 @@ const CINEMA = (() => {
   function setImg(img) {
     const k = img.dataset.img; if (!k || img.dataset.set) return; img.dataset.set = 1;
     img.decoding = "async"; img.sizes = "100vw";
-    img.srcset = `img/${k}-m.jpg 1100w, img/${k}.jpg 2400w`; img.src = `img/${k}.jpg`;
+    img.srcset = `img/${k}-m.jpg 1100w, img/${k}.jpg 2000w`; img.src = `img/${k}.jpg`;
     img.addEventListener("load", () => img.classList.add("ok"), { once: true });
     img.addEventListener("error", async () => { await ready; const c = CREDITS.find(x => x.key === k); if (!c || img.dataset.fb) return; img.dataset.fb = 1;
-      img.removeAttribute("srcset"); img.src = commons(c.title, innerWidth > 1100 ? 2400 : 1100); });
+      img.removeAttribute("srcset"); img.src = commons(c.title, innerWidth > 1100 ? 2000 : 1100); });
   }
   const loadImgs = (root = document) => U.$$("img[data-img]", root).forEach(setImg);
 

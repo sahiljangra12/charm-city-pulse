@@ -211,3 +211,15 @@ footer a{font:600 .72rem var(--display);letter-spacing:.18em;text-transform:uppe
 footer a:hover{color:#fff}
 @media (prefers-reduced-motion:reduce){.hero-bg img{animation:none}[data-rv]>*{opacity:1;transform:none}}
 .actions[hidden]{display:none}
+/* phones: temperature sits in the flow above the headline; buttons stay on one line */
+@media (max-width:760px){
+  .hero-in{padding-top:calc(var(--header-h) + 24px)}
+  .hero .temp{position:static;order:0;text-align:left;display:flex;align-items:baseline;gap:12px;font-size:3.4rem;margin-bottom:14px}
+  .hero .temp small{margin-top:0}
+  .xbtn{letter-spacing:.14em;font-size:.74rem;padding:0 18px;white-space:nowrap}
+}
+/* planner headline card on black */
+.best{background:linear-gradient(135deg,#171b20,#0c0e11 70%)!important;color:#fff!important;border:1px solid var(--line-2)}
+.best .when{font-family:var(--display);text-transform:uppercase;font-weight:700;letter-spacing:.01em}
+.best .tags span{background:rgba(255,255,255,.08);color:#fff;border-color:var(--line-2)}
+.best .btn.alt{color:#fff}

@@ -1,5 +1,5 @@
 """Download the site's background photos from Wikimedia Commons (freely licensed, credited on the Sources page).
-Saves site/img/<key>.jpg (2400px wide) and <key>-m.jpg (1100px) once; later runs skip files that already exist."""
+Saves site/img/<key>.jpg (2000px wide) and <key>-m.jpg (1100px) once; later runs skip files that already exist."""
 import json, os, sys, urllib.parse, urllib.request
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 IMG = os.path.join(ROOT, "site", "img")
@@ -14,7 +14,7 @@ def thumb(title, width):
 def main():
     ok = True
     for c in json.load(open(os.path.join(IMG, "credits.json"))):
-        for suffix, width in (("", 2400), ("-m", 1100)):
+        for suffix, width in (("", 2000), ("-m", 1100)):
             out = os.path.join(IMG, f"{c['key']}{suffix}.jpg")
             if os.path.exists(out) and os.path.getsize(out) > 20000:
                 continue
