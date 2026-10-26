@@ -26,12 +26,12 @@ const FX = (() => {
     const W = 600, H = 320, r = (a, b) => a + Math.random() * (b - a);
     let s = `<svg class="scene" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">`;
     if (isDay && (kind === "clear" || kind === "cloudy")) {
-      s += `<g transform="translate(58 46) scale(.55)"><g class="sun-rays">${Array.from({ length: 12 }, (_, i) => `<rect x="-3" y="-86" width="6" height="26" rx="3" fill="rgba(255,236,170,.55)" transform="rotate(${i * 30})"/>`).join("")}</g>
+      s += `<g transform="translate(330 44) scale(.5)"><g class="sun-rays">${Array.from({ length: 12 }, (_, i) => `<rect x="-3" y="-86" width="6" height="26" rx="3" fill="rgba(255,236,170,.55)" transform="rotate(${i * 30})"/>`).join("")}</g>
         <circle r="46" fill="#ffd66b"/><circle r="62" fill="rgba(255,214,107,.18)"/></g>`;
     }
     if (!isDay) {
       s += Array.from({ length: 40 }, () => `<circle class="twinkle" cx="${r(0, W)}" cy="${r(0, H * .6)}" r="${r(.6, 1.8)}" fill="#fff" style="animation-delay:${r(0, 3)}s"/>`).join("");
-      if (kind === "clear" || kind === "cloudy") s += `<g transform="translate(52 40) scale(.5)"><circle r="34" fill="#f4f1de"/><circle cx="14" cy="-8" r="30" fill="currentColor" style="color:#0f1f3a"/></g>`;
+      if (kind === "clear" || kind === "cloudy") s += `<g transform="translate(330 40) scale(.5)"><circle r="34" fill="#f4f1de"/><circle cx="14" cy="-8" r="30" fill="currentColor" style="color:#0f1f3a"/></g>`;
     }
     const nC = kind === "clear" ? 2 : kind === "cloudy" || kind === "fog" ? 6 : 7;
     for (let i = 0; i < nC; i++) {
