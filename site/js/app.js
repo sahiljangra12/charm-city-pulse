@@ -171,8 +171,14 @@ const APP = (() => {
     buildNav(); CINEMA.init();
     U.$$("[data-unit]").forEach(b => b.onclick = () => setUnit(b.dataset.unit)); setUnit(U.unit());
     U.$("#themeBtn").onclick = () => setTheme(isDark() ? "light" : "dark");
-    try { await load(); }
-    catch (e) { U.$("main").innerHTML = `<div class="card alert"><h3>Could not load data</h3><p>${U.esc(e.message)}. If you opened the file directly, serve the folder with a local web server (for example <code>python3 -m http.server</code>).</p></div>`; return; }
+    for (let tries = 0; ; tries++) {
+      try { await load(); break; }
+      catch (e) {
+        if (location.protocol === "file:") { U.$("main").innerHTML = `<div class="card alert" style="margin-top:120px"><h3>Open this through a web server</h3><p>Serve the folder with a local web server, for example <code>python3 -m http.server</code>.</p></div>`; return; }
+        U.toast(tries ? "Still reconnecting to the neighborhood data" : "Reconnecting to the neighborhood data");
+        await new Promise(r => setTimeout(r, Math.min(30000, 3000 * (tries + 1))));
+      }
+    }
     U.$("#buildStamp").textContent = "Data build " + new Date(A.data.meta.built).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" });
     Object.assign(VIEWS, RES.views, PLAN.views, RSC.views, REFS.views);
     ALERTS.init(); segThumbs(); parallax();

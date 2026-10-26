@@ -42,6 +42,7 @@ const RES = (() => {
 
   // ======================= TODAY =======================
   function drawHome() {
+    if (!U.$("#hWhen")) return;
     const W = F("weather").value, AQ = F("air").value, AL = F("alerts").value || [];
     U.$("#hWhen").innerHTML = `<span class="livedot"></span> Baltimore, ${new Date().toLocaleString("en-US", { weekday: "long", hour: "numeric", minute: "2-digit" })}`;
     if (!W && !AQ) { if (F("weather").err) { U.$("#hAnswer").textContent = "Reconnecting to the weather service"; U.$("#hWhy").textContent = "This page tries again on its own."; } return; }
