@@ -10,11 +10,5 @@
 [refresh] Census Reporter ACS 2024 5-year ['B28002', 'C16002'] 199 tracts
 [refresh] PLACES newest release in catalog: (2025, 'cwsq-ngmh', 'PLACES: Local Data for Better Health, Census Tract Data, 2025 release')
 [refresh] PLACES 2025 cwsq-ngmh 198 tracts
-[refresh] OSM fountains 28
-[refresh] OSM transit 38
-[refresh] OSM bike 2378
-[refresh] OSM ev 57
-[refresh] OSM gardens 86
-[refresh] OSM recycling 7
-[refresh] OSM markets 19
+[refresh] OSM: keeping this morning's snapshot (code-only run)
 [refresh] done: 199 tracts, 55 CSAs; sources: {'acs': 'live via Census Reporter', 'places': 'live', 'heat': 'research release', 'svi': 'research release', 'holc': 'historical', 'trees': 'research release', 'census2020': 'fixed', 'cooling': 'live', 'winter': 'verified 2026-10-26', 'parks': 'live', 'osm': 'live'}
