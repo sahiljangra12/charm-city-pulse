@@ -55,7 +55,9 @@ const PRIO = (() => {
       if (uvMax >= 6 && h12.some(h => h.day && h.uv >= 6)) add({ s: uvMax >= 8 ? 44 : 26, icon: "sun", title: `${uvMax >= 8 ? "Very strong" : "Strong"} sun, UV ${Math.round(uvMax)}`, text: "Sunscreen, a hat and shade between 10 AM and 4 PM." });
       // 7. Best time to be outside
       try {
-        const a = PLAN.ACTS.walk, hs = PLAN.scoreHours(W, F("air").value, a), b = PLAN.bestWindow(hs, 1);
+        const a = PLAN.ACTS.walk, all = PLAN.scoreHours(W, F("air").value, a), today = new Date().toDateString();
+        const tod = all.filter(h => h.t.toDateString() === today), bt = tod.length ? PLAN.bestWindow(tod, 1) : null;
+        const useToday = bt && bt.avg >= 65, hs = useToday ? tod : all, b = useToday ? bt : PLAN.bestWindow(all, 1);
         if (b) { const st = hs[b.i].t, e = new Date(st.getTime() + 3600e3);
           add({ s: 24, icon: "walk", title: `Best time for a walk: ${PLAN.dayName(st).toLowerCase() === "today" ? "" : PLAN.dayName(st) + ", "}${hm(st)} to ${hm(e)}`.replace(": ,", ":"), text: "Picked from the forecast for heat, rain, air and daylight.", act: ["Plan another activity", "#plan"] }); }
       } catch {}
