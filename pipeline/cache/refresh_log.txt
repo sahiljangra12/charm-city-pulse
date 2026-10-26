@@ -2,8 +2,12 @@
 [refresh] ACS 2024 not usable: non-JSON from https://api.census.gov/data/2024/acs/acs5?get=group(B01001)&for=tract:*&in=state:24&in=cou: b'<html style="font-size: 14px;">\n\n<head>\n    <title>Missing Key</title>\n    <link rel="icon" type="image/x-ic
 [refresh] ACS 2023 not usable: non-JSON from https://api.census.gov/data/2023/acs/acs5?get=group(B01001)&for=tract:*&in=state:24&in=cou: b'<html style="font-size: 14px;">\n\n<head>\n    <title>Missing Key</title>\n    <link rel="icon" type="image/x-ic
 [refresh] ACS 2022 not usable: non-JSON from https://api.census.gov/data/2022/acs/acs5?get=group(B01001)&for=tract:*&in=state:24&in=cou: b'<html style="font-size: 14px;">\n\n<head>\n    <title>Missing Key</title>\n    <link rel="icon" type="image/x-ic
-[refresh] ACS download failed: no ACS 5-year vintage reachable
-[refresh] using Heat Atlas ACS 2020–2024 values
+[refresh] Census Bureau API: no ACS 5-year vintage reachable
+[refresh] Census Reporter ACS 2024 5-year ['B01001', 'B01003', 'B03002', 'B11007'] 199 tracts
+[refresh] Census Reporter ACS 2024 5-year ['B15003', 'B17001', 'B18101', 'B19001'] 199 tracts
+[refresh] Census Reporter ACS 2024 5-year ['B19013', 'B23025', 'B25003', 'B25014'] 199 tracts
+[refresh] Census Reporter ACS 2024 5-year ['B25034', 'B25044', 'B25070', 'B27010'] 199 tracts
+[refresh] Census Reporter ACS 2024 5-year ['B28002', 'C16002'] 199 tracts
 [refresh] PLACES newest release in catalog: (2025, 'cwsq-ngmh', 'PLACES: Local Data for Better Health, Census Tract Data, 2025 release')
 [refresh] PLACES 2025 cwsq-ngmh 198 tracts
-[refresh] done: 199 tracts, 55 CSAs; sources: {'acs': 'frozen (Heat Atlas)', 'places': 'live', 'heat': 'research release', 'svi': 'research release', 'holc': 'historical', 'trees': 'research release', 'census2020': 'fixed', 'cooling': 'live', 'winter': 'verified 2026-10-26', 'parks': 'live'}
+[refresh] done: 199 tracts, 55 CSAs; sources: {'acs': 'live via Census Reporter', 'places': 'live', 'heat': 'research release', 'svi': 'research release', 'holc': 'historical', 'trees': 'research release', 'census2020': 'fixed', 'cooling': 'live', 'winter': 'verified 2026-10-26', 'parks': 'live'}
