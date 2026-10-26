@@ -570,3 +570,49 @@ tbody tr:hover td{background:var(--surface-2)}
 @media (max-width:440px){.brand b{font-size:1.25rem}.sky{padding:24px;min-height:380px}.card{padding:18px}.action{padding:18px}.fact{padding:18px}}
 .actions .action.primary{border-color:var(--line)}
 .place-list > .note:first-child{border-top:0;border-bottom:1px solid var(--line)}
+
+/* ---------- hero stat strip ---------- */
+.sky .stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.sky .stat{display:inline-flex;align-items:center;gap:7px;padding:7px 12px 7px 10px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-size:.88rem;line-height:1.1;white-space:nowrap}
+.sky .stat>span{opacity:.82}
+.sky .stat b{font-weight:700}
+
+/* ---------- what matters right now ---------- */
+.prio-h{align-items:flex-end}
+.prio-h .sub{margin:4px 0 0;color:var(--ink-2);font-size:.98rem}
+.livetag{display:inline-flex;align-items:center;gap:7px;font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);padding:6px 11px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+.prios{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.prio{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 16px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px 18px 22px;box-shadow:var(--shadow-1);overflow:hidden;transition:transform .35s var(--pop),box-shadow .3s}
+.prio::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--c)}
+.prio:hover{transform:translateY(-2px);box-shadow:var(--shadow-2)}
+.prio .tile{background:color-mix(in srgb,var(--c) 13%,transparent);color:var(--c);align-self:start}
+.prio .body{min-width:0}
+.prio .badge{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--c);margin-bottom:3px}
+.prio h3{margin:0;font-family:var(--display);font-size:1.12rem;letter-spacing:-.02em;line-height:1.22}
+.prio p{margin:4px 0 0;color:var(--ink-2);font-size:.93rem;line-height:1.42}
+.prio details{margin-top:6px;font-size:.92rem}
+.prio details summary{cursor:pointer;font-weight:700;color:var(--link)}
+.prio .go{white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.prio.first{grid-column:1/-1;padding:22px 24px 22px 26px;background:linear-gradient(120deg,color-mix(in srgb,var(--c) 9%,var(--surface)),var(--surface) 60%);border-color:color-mix(in srgb,var(--c) 30%,var(--line))}
+.prio.first.fyi{background:var(--surface);border-color:var(--line)}
+.prio.first .tile{width:52px;height:52px;border-radius:16px}
+.prio.first h3{font-size:clamp(1.3rem,2.6vw,1.6rem)}
+.prio.first p{font-size:1rem}
+.prio.now .tile{animation:prioPulse 2.4s ease-in-out infinite}
+@keyframes prioPulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--c) 35%,transparent)}50%{box-shadow:0 0 0 8px color-mix(in srgb,var(--c) 0%,transparent)}}
+@media (max-width:760px){
+  .prios{grid-template-columns:1fr}
+  .prio{grid-template-columns:auto minmax(0,1fr);padding:16px 16px 16px 20px}
+  .prio .go{grid-column:2;justify-self:start;margin-top:8px}
+  .sky .stats{gap:6px}.sky .stat{font-size:.82rem;padding:6px 10px 6px 9px}
+}
+@media (prefers-reduced-motion:reduce){.prio.now .tile{animation:none}}
+
+/* four quick links */
+.actions{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:900px){.actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.action{min-height:118px}
+/* smaller priority cards: text gets the full width, the action sits underneath */
+.prio:not(.first){grid-template-columns:auto minmax(0,1fr)}
+.prio:not(.first) .go{grid-column:2;justify-self:start;margin-top:10px}
+.prio{box-shadow:none}.prio:hover{box-shadow:none}

@@ -117,5 +117,5 @@ const PLAN = (() => {
     if (!wired) { wired = true; LIVE.feeds.weather.on(() => APP.view === "plan" && render()); LIVE.feeds.air.on(() => APP.view === "plan" && render()); }
     render();
   }
-  return { views: { plan: { show, unit: render } } };
+  return { views: { plan: { show, unit: render } }, ACTS, scoreHours, bestWindow, dayName };
 })();

@@ -211,7 +211,7 @@ const LIVE = (() => {
     }
     if (T <= 50) {
       const wc = U.windChill(T, V);
-      const c = wc <= 13 ? { t: "Code Blue cold (wind chill 13°F or below)", c: "#1d4f7c", lvl: 3 } : wc <= 32 ? { t: "Freezing — winter shelters open", c: "#3d7fb2", lvl: 2 } : wc <= 40 ? { t: "Cold", c: "#79aed1", lvl: 1 } : { t: "Cool", c: "#1e9e5a", lvl: 0 };
+      const c = wc <= 13 ? { t: "Code Blue cold (wind chill 13°F or below)", c: "#1d4f7c", lvl: 3 } : wc <= 32 ? { t: "Freezing. Winter shelters open", c: "#3d7fb2", lvl: 2 } : wc <= 40 ? { t: "Cold", c: "#79aed1", lvl: 1 } : { t: "Cool", c: "#1e9e5a", lvl: 0 };
       return { ...c, kind: "cold", index: wc, label: "Wind chill" };
     }
     return { t: "Comfortable", c: "#1e9e5a", lvl: 0, kind: "mild", index: T, label: "Feels like" };

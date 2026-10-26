@@ -67,13 +67,11 @@ const RES = (() => {
       const sky = U.$("#hSky"); if (sky.className !== cls) { sky.className = cls; U.$("#hScene").innerHTML = FX.scene(kind, day, hot); }
       U.$("#hTemp").innerHTML = `<span class="tnum">${U.tF(c.temperature_2m)}</span><small>Feels like ${U.tF(fw.fc ? fw.fc.index : c.apparent_temperature)}</small>`;
     }
-    U.$("#hAlert").innerHTML = AL.length ? `<div class="alertbar" role="alert">${I("alert", 24)}<div><b>${U.esc(AL[0].event)}</b><br>${U.esc(AL[0].headline || "")}${AL[0].instruction ? `<details><summary>What to do</summary><p>${U.esc(AL[0].instruction)}</p></details>` : ""}${AL.length > 1 ? `<br><small>${AL.length - 1} more alert${AL.length > 2 ? "s" : ""} in effect</small>` : ""}</div></div>` : "";
-    const airTip = ac.lvl === 0 ? "Clean air. Fine for everyone." : ac.lvl === 1 ? "Fine for most people. Very sensitive people may want to take it easy." : ac.lvl === 2 ? "People with asthma, heart or lung problems, kids and older adults should limit hard activity." : "Everyone should cut back on hard activity outside.";
-    const rainTip = !W ? "" : rainMax < 20 ? "No rain expected in the next 12 hours." : rainAt >= 0 ? `Likely around ${hourLabel(W.hourly.time[i0 + rainAt])}. Bring an umbrella.` : `A small chance (${rainMax}%) in the next 12 hours.`;
-    U.$("#hFacts").innerHTML = `
-      <div class="fact">${tile("wind", ac.c)}<b>Air: ${now.aqi == null ? "loading" : ac.t}</b><span>${airTip}${now.aqi != null ? ` <span class="tnum">(AQI ${Math.round(now.aqi)})</span>` : ""}</span></div>
-      <div class="fact">${tile("thermo", fw.fc ? fw.fc.c : "var(--ink-3)")}<b>${c ? `${U.tF(c.temperature_2m)} now` : "Temperature"}</b><span>${c ? `Today ${U.tF(W.daily.temperature_2m_min[0])} to ${U.tF(W.daily.temperature_2m_max[0])}. ${fw.tip}` : ""}</span></div>
-      <div class="fact">${tile(rainMax >= 50 ? "umbrella" : "droplet", "var(--link)")}<b>${rainMax >= 50 ? "Rain likely" : rainMax >= 20 ? "Maybe some rain" : "Staying dry"}</b><span>${rainTip}</span></div>`;
+    const stat = (ic, t, v) => `<span class="stat">${I(ic, 16)}<span>${t}</span><b>${v}</b></span>`;
+    U.$("#hStats").innerHTML = [now.aqi != null ? stat("wind", "Air", `${ac.t.replace("Unhealthy for sensitive groups", "Unhealthy for some")}`) : "",
+      c ? stat("thermo", "Today", `${U.tF(W.daily.temperature_2m_min[0])} to ${U.tF(W.daily.temperature_2m_max[0])}`) : "",
+      W ? stat(rainMax >= 50 ? "umbrella" : "droplet", "Rain", rainMax >= 50 && rainAt >= 0 ? `Around ${hourLabel(W.hourly.time[i0 + rainAt])}` : rainMax >= 20 ? `${rainMax}% chance` : "None expected") : ""].join("");
+    PRIO.render();
     if (W) {
       const H = W.hourly;
       U.$("#hHours").innerHTML = Array.from({ length: Math.min(12, H.time.length - i0) }, (_, k) => i0 + k).map((k, j) =>
@@ -89,25 +87,24 @@ const RES = (() => {
     const p = D().byId[id].properties;
     const tags = p.nonres ? [] : ["heat", "trees"].map(k => { const l = level(p["t_" + k]); return l < 0 ? "" : `<span class="pill"><span class="dot" style="background:${LEVEL_C[l]}"></span>${THEMES[k].words[l]}</span>`; });
     box.innerHTML = `<div class="myarea"><div><span class="muted" style="font-size:.9rem">Your block, ${U.esc((userLoc.label || "").split(",")[0])}</span><br><b style="font-size:1.25rem;font-family:var(--display);letter-spacing:-.02em">${U.esc(p.csa)}</b><div class="tags">${tags.join("")}<span class="pill" id="myFlood">Checking flood risk</span></div></div><a class="btn alt" href="#place/${id}">Open report</a></div>`;
-    LIVE.floodAt(userLoc.lat, userLoc.lon).then(r => { const el = U.$("#myFlood"); if (el) el.innerHTML = `<span class="dot" style="background:${["var(--s0)", "var(--s2)", "var(--s4)", "var(--s5)"][r.level]}"></span>${floodWords(r).short}`; }).catch(() => U.$("#myFlood")?.remove());
+    LIVE.floodAt(userLoc.lat, userLoc.lon).then(r => { U.store.set("floodLvl", r.level); PRIO.render(); const el = U.$("#myFlood"); if (el) el.innerHTML = `<span class="dot" style="background:${["var(--s0)", "var(--s2)", "var(--s4)", "var(--s5)"][r.level]}"></span>${floodWords(r).short}`; }).catch(() => U.$("#myFlood")?.remove());
   }
   function drawActions() {
     const s = LIVE.season();
     const place = s === "winter" ? ["flame", "var(--s3)", "Find a warm place", "Warming centers and shelters near you"] : s === "summer" ? ["snow", "var(--link)", "Find a cool place", "Cooling centers near you on hot days"] : ["home", "var(--s3)", "Warm or cool places", "Warming centers open from November 15"];
     const A = [
       ["#place", "pin", "var(--accent)", "Check my block", "Heat, flood risk and help nearby", "primary"],
-      ["#plan", "calendar", "var(--s0)", "Plan my day", "Best time for a walk, run or bike ride"],
-      ["#help", ...place],
-      ["#map", "map", "var(--link)", "Find places on a map", "Parks, pools, fountains, bike lanes, markets"],
-      ["#help", "phone", "#30c45a", "Call for help", "311, 211, shelter and energy-bill lines"],
-      ["https://www.treebaltimore.org", "tree", "var(--s0)", "Get a free street tree", "TreeBaltimore plants and waters it"],
+      ["#plan", "calendar", "var(--s0)", "Plan my day", "Best time for a walk, run or ride"],
+      ["#map", "map", "var(--link)", "Find places", "Parks, pools, fountains, markets"],
+      ["#help", "phone", "#30c45a", "Get help", "Hotlines, " + (s === "summer" ? "cooling" : "warming") + " centers, programs"],
     ];
     const el = U.$("#hActions"); el.classList.add("stagger");
     el.innerHTML = A.map(([h, ic, col, t, d, cls]) => `<a class="action ${cls || ""}" href="${h}"${h.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>${cls ? `<span class="tile">${I(ic)}</span>` : tile(ic, col)}<b>${t}</b><span>${d}</span></a>`).join("");
   }
   let homeWired = false;
-  function homeShow() {
+  function homeShow(args = []) {
     drawActions(); drawMyArea();
+    if (args[0] === "details") setTimeout(() => { const d = U.$("#detailsBox"); d.open = true; d.dispatchEvent(new Event("toggle")); d.scrollIntoView({ behavior: "smooth", block: "start" }); }, 120);
     if (homeWired) { drawHome(); DETAILS.redraw(); return; } homeWired = true;
     DETAILS.init();
     F("weather").on(drawHome); F("air").on(drawHome); F("airnow").on(drawHome); F("alerts").on(drawHome);
