@@ -11,7 +11,7 @@ const RES = (() => {
   }
   const curHour = h => { const now = Date.now(); let i = h.time.findIndex(t => new Date(t).getTime() > now); return Math.max(0, (i < 0 ? h.time.length : i) - 1); };
   const hourLabel = t => new Date(t).toLocaleTimeString("en-US", { hour: "numeric" });
-  const tile = (icon, color, size = 22) => `<span class="tile" style="background:color-mix(in srgb,${color} 14%,transparent);color:${color}">${I(icon, size)}</span>`;
+  const tile = (icon, color, size = 22) => `<span class="tile" style="--tc:${color}">${I(icon, size)}</span>`;
   const dirBtn = (lat, lon, name) => `<a class="round dir" href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}" target="_blank" rel="noopener" aria-label="Directions to ${U.esc(name)}" title="Directions">${I("nav", 18)}</a>`;
   const LEVEL_C = ["var(--s0)", "var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)"];
 
