@@ -164,7 +164,7 @@ const RSC = (() => {
       const src = D().meta.sources;
       U.$("#releaseTable").innerHTML = `<thead><tr><th>Dataset</th><th>Publisher</th><th>Vintage</th><th>Status</th><th>Pulled</th></tr></thead><tbody>` + Object.values(src).map(s => {
         const cls = /live/.test(s.status) ? "live" : /cached|frozen/.test(s.status) ? "cached" : "";
-        return `<tr><td><a href="${s.url}" target="_blank" rel="noopener">${U.esc(s.name)}</a></td><td>${U.esc(s.by)}</td><td>${U.esc(s.vintage)}</td><td><span class="status ${cls}">${U.esc(s.status)}</span></td><td>${new Date(s.retrieved).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}</td></tr>`; }).join("") + "</tbody>";
+        return `<tr><td><a href="${s.url}" target="_blank" rel="noopener">${U.esc(s.name)}</a></td><td>${U.esc(s.by)}</td><td>${U.esc(s.vintage)}</td><td><span class="status ${cls}">${U.esc(s.status)}</span></td><td>${new Date(s.retrieved).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" })}</td></tr>`; }).join("") + "</tbody>";
     };
     draw();
     if (liveWired) return; liveWired = true;

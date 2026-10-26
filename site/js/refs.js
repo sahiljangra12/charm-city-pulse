@@ -26,7 +26,7 @@ const REFS = (() => {
   const li = (html, url) => `<li>${html} <a href="${url}" target="_blank" rel="noopener">${U.esc(url.replace(/^https?:\/\//, "").slice(0, 70))}</a><button class="copy" data-copy>Copy</button></li>`;
   function show() {
     const m = APP.data.meta, built = new Date(m.built);
-    const acc = `Retrieved ${built.toLocaleDateString([], { year: "numeric", month: "long", day: "numeric" })}`;
+    const acc = `Retrieved ${built.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}`;
     U.$("#refData").innerHTML = Object.values(m.sources).map(s => li(`${U.esc(s.by)}. <i>${U.esc(s.name)}</i> (${U.esc(s.vintage)}). <span class="status ${/live/.test(s.status) ? "live" : /cached|frozen/.test(s.status) ? "cached" : ""}">${U.esc(s.status)}</span> ${acc}.`, s.url)).join("");
     U.$("#refLive").innerHTML = LIVE.SOURCES.filter(s => s.id !== "meta").map(s => li(`${U.esc(s.by)}. <i>${U.esc(s.name)}</i>. Live API, ${s.every ? "refreshed every " + s.every + " minutes in your browser" : "queried on request"}.`, s.url)).join("");
     U.$("#refLit").innerHTML = LIT.map(([h, u]) => li(h, u)).join("");

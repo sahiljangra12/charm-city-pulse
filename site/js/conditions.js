@@ -28,7 +28,7 @@ const COND = (() => {
   }
   function drawSky() {
     const W = F("weather").value, AQ = F("air").value, AL = F("alerts").value;
-    U.$("#nowTime").textContent = new Date().toLocaleString([], { weekday: "long", hour: "numeric", minute: "2-digit" });
+    U.$("#nowTime").textContent = new Date().toLocaleString("en-US", { weekday: "long", hour: "numeric", minute: "2-digit" });
     const card = U.$("#skyCard");
     if (!W && !AQ) { if (F("weather").err) { U.$("#verdict").textContent = "Live conditions are reconnecting"; U.$("#verdictText").textContent = "The weather service didn't answer. This page retries automatically every few minutes."; } return; }
     const v = verdictOf(W, AQ, AL);
@@ -55,14 +55,14 @@ const COND = (() => {
     if (!AL.length) { el.className = "card ok"; el.innerHTML = `<div class="kicker">Weather alerts ${FX.refreshBadge("alerts")}</div><h3>No active alerts</h3><p class="muted" style="margin:0">No watches, warnings or advisories for Baltimore right now.</p>`; return; }
     el.className = "card alert pulse";
     el.innerHTML = `<div class="kicker">Weather alerts · NWS ${FX.refreshBadge("alerts")}</div>` + AL.slice(0, 3).map(x => `<h3>${U.esc(x.event)}</h3><p>${U.esc(x.headline || "")}</p>
-      <details><summary>Details${x.ends || x.expires ? " · until " + new Date(x.ends || x.expires).toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" }) : ""}</summary><p>${U.esc(x.description || "").replace(/\n/g, "<br>")}</p>${x.instruction ? `<p><b>What to do:</b> ${U.esc(x.instruction)}</p>` : ""}</details>`).join("<hr style='border:0;border-top:1px solid var(--line)'>");
+      <details><summary>Details${x.ends || x.expires ? " · until " + new Date(x.ends || x.expires).toLocaleString("en-US", { weekday: "short", hour: "numeric", minute: "2-digit" }) : ""}</summary><p>${U.esc(x.description || "").replace(/\n/g, "<br>")}</p>${x.instruction ? `<p><b>What to do:</b> ${U.esc(x.instruction)}</p>` : ""}</details>`).join("<hr style='border:0;border-top:1px solid var(--line)'>");
   }
   function drawSeason() {
     const s = LIVE.season(), W = D().centers.winter, el = U.$("#seasonCard");
     const start = new Date(W.season.start + "T00:00"), days = Math.ceil((start - new Date()) / 864e5);
     if (s === "winter") el.innerHTML = `<div class="kicker">Winter shelter season</div><h3>Warming centers open on cold days</h3><p class="muted" style="font-size:.9rem">${U.esc(W.activation)}</p><a class="btn alt" href="#help">Nearest warming centers →</a>`;
     else if (s === "summer") el.innerHTML = `<div class="kicker">Summer heat season</div><h3>Cooling centers open on Code Red days</h3><p class="muted" style="font-size:.9rem">Baltimore opens cooling centers when the Health Department declares a Code Red Extreme Heat alert. Call 311 to confirm hours.</p><a class="btn alt" href="#help">Nearest cooling centers →</a>`;
-    else el.innerHTML = `<div class="kicker">Between seasons</div><h3>${days > 0 ? `Winter shelter season starts in <span class="countup" id="seasonDays">${days}</span> days` : "Heat season is winding down"}</h3><p class="muted" style="font-size:.9rem">${days > 0 ? `From ${start.toLocaleDateString([], { month: "long", day: "numeric" })} warming centers open whenever wind chill reaches 32°F or below.` : ""} Cold now? Call 311 or the Shelter Hotline 443-984-9540.</p><a class="btn alt" href="#help">Help &amp; centers →</a>`;
+    else el.innerHTML = `<div class="kicker">Between seasons</div><h3>${days > 0 ? `Winter shelter season starts in <span class="countup" id="seasonDays">${days}</span> days` : "Heat season is winding down"}</h3><p class="muted" style="font-size:.9rem">${days > 0 ? `From ${start.toLocaleDateString("en-US", { month: "long", day: "numeric" })} warming centers open whenever wind chill reaches 32°F or below.` : ""} Cold now? Call 311 or the Shelter Hotline 443-984-9540.</p><a class="btn alt" href="#help">Help &amp; centers →</a>`;
     const sd = U.$("#seasonDays"); if (sd) FX.countUp(sd, days);
   }
   const AQI_SEGS = [[50, "#2e9a5e"], [100, "#d9a80f"], [150, "#e07b2a"], [200, "#c9402f"], [300, "#8f3f97"]];
@@ -97,7 +97,7 @@ const COND = (() => {
     const W = F("weather").value, el = U.$("#uvCard"); if (!W) return;
     const i = curHour(W.hourly), uvNow = W.hourly.uv_index[i], uvMax = W.daily.uv_index_max[0], uc = LIVE.uvCat(uvMax);
     const kwh = W.daily.shortwave_radiation_sum[0] / 3.6, rise = new Date(W.daily.sunrise[0]), set = new Date(W.daily.sunset[0]);
-    const t = d => d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    const t = d => d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
     el.innerHTML = `<div class="kicker">Sun, UV &amp; solar ${FX.refreshBadge("weather")}</div><div class="gwrap"></div>
       <p style="text-align:center;margin:0 0 4px"><span class="pill"><span class="dot" style="background:${uc.c}"></span>Peak UV ${uc.t}</span> <small class="muted">now ${Math.round(uvNow ?? 0)}</small></p>
       ${FX.sunPath(rise, set)}<div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--ink-2)"><span>☀ ${t(rise)}</span><span>${t(set)} ☾</span></div>
@@ -114,7 +114,7 @@ const COND = (() => {
     U.$("#hours").innerHTML = idx.map((k, j) => {
       const ai = AH ? AH.time.indexOf(H.time[k]) : -1, av = ai >= 0 ? AH.us_aqi[ai] : null, f = vals[j], fc = LIVE.feelsCat(H.temperature_2m[k], H.relative_humidity_2m[k], H.wind_speed_10m[k]);
       const h = 10 + 34 * (hi > lo ? (f - lo) / (hi - lo) : .5);
-      return `<div class="dhour" title="${LIVE.WMO[H.weather_code[k]] || ""}"><span>${j === 0 ? "Now" : new Date(H.time[k]).toLocaleTimeString([], { hour: "numeric" })}</span>
+      return `<div class="dhour" title="${LIVE.WMO[H.weather_code[k]] || ""}"><span>${j === 0 ? "Now" : new Date(H.time[k]).toLocaleTimeString("en-US", { hour: "numeric" })}</span>
         <div>${FX.icon(H.weather_code[k], H.is_day[k])}</div><b style="color:${fc.lvl ? fc.c : "inherit"}">${U.tF(f)}</b>
         <div class="bar"><i style="background:${fc.lvl ? fc.c : "var(--sky)"}" data-h="${h}"></i></div>
         <span>💧${H.precipitation_probability[k] ?? 0}%</span><br>${av != null ? `<span class="dot" style="background:${LIVE.aqiCat(av).c}" title="AQI ${Math.round(av)}"></span> ${Math.round(av)}` : ""}</div>`;
@@ -125,7 +125,7 @@ const COND = (() => {
     const W = F("weather").value; if (!W) return; const d = W.daily, lo = Math.min(...d.temperature_2m_min), hi = Math.max(...d.temperature_2m_max);
     U.$("#days").innerHTML = d.time.map((t, k) => {
       const a = (d.temperature_2m_min[k] - lo) / (hi - lo || 1) * 100, b = (d.temperature_2m_max[k] - lo) / (hi - lo || 1) * 100;
-      return `<div class="day rv"><b>${k === 0 ? "Today" : new Date(t + "T12:00").toLocaleDateString([], { weekday: "short" })}</b>${FX.icon(d.weather_code[k], 1, 26)}
+      return `<div class="day rv"><b>${k === 0 ? "Today" : new Date(t + "T12:00").toLocaleDateString("en-US", { weekday: "short" })}</b>${FX.icon(d.weather_code[k], 1, 26)}
         <span class="muted" style="text-align:right">${U.tF(d.temperature_2m_min[k])}</span><div class="range"><i style="left:${a}%;width:${b - a}%"></i></div><span>${U.tF(d.temperature_2m_max[k])}</span><span class="muted" style="font-size:.8rem">💧${d.precipitation_probability_max[k] ?? 0}%</span></div>`;
     }).join("");
     FX.reveal(U.$("#days"));
@@ -153,7 +153,7 @@ const COND = (() => {
     F("airnow").on(() => drawAir());
     F("alerts").on(al => { drawAlerts(al); drawSky(); });
     F("water").on(s => drawWater(s));
-    setInterval(() => { if (APP.view === "conditions") U.$("#nowTime").textContent = new Date().toLocaleString([], { weekday: "long", hour: "numeric", minute: "2-digit" }); }, 30000);
+    setInterval(() => { if (APP.view === "conditions") U.$("#nowTime").textContent = new Date().toLocaleString("en-US", { weekday: "long", hour: "numeric", minute: "2-digit" }); }, 30000);
   }
   function redrawToday() { drawSky(); drawFeel(); drawUV(); drawHours(); drawDays(); drawAir(); drawAlerts(F("alerts").value); drawWater(F("water").value); }
 

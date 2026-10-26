@@ -46,8 +46,8 @@ const PLAN = (() => {
     }
     return best;
   }
-  const dayName = d => { const t = new Date(); t.setHours(0, 0, 0, 0); const x = new Date(d); x.setHours(0, 0, 0, 0); const n = Math.round((x - t) / 864e5); return n === 0 ? "Today" : n === 1 ? "Tomorrow" : d.toLocaleDateString([], { weekday: "long" }); };
-  const hm = d => d.toLocaleTimeString([], { hour: "numeric", minute: d.getMinutes() ? "2-digit" : undefined });
+  const dayName = d => { const t = new Date(); t.setHours(0, 0, 0, 0); const x = new Date(d); x.setHours(0, 0, 0, 0); const n = Math.round((x - t) / 864e5); return n === 0 ? "Today" : n === 1 ? "Tomorrow" : d.toLocaleDateString("en-US", { weekday: "long" }); };
+  const hm = d => d.toLocaleTimeString("en-US", d.getMinutes() ? { hour: "numeric", minute: "2-digit" } : { hour: "numeric" });
   const color = s => s >= 75 ? "#34c759" : s >= 55 ? "#f2b705" : s >= 35 ? "#ff9500" : "#ff3b30";
   const word = s => s >= 80 ? "Great time" : s >= 65 ? "Good time" : s >= 50 ? "OK time" : "Best you'll get";
 
@@ -100,7 +100,7 @@ const PLAN = (() => {
     const tl = U.$("#planTL");
     tl.innerHTML = hs.map((h, j) => `<div class="slot${j >= b.i && j < b.i + a.hrs ? " best-slot" : ""}" style="background:${color(h.s)}" data-h="${Math.max(6, h.s)}" title="${dayName(h.t)} ${hm(h.t)}: ${h.s >= 75 ? "great" : h.s >= 55 ? "OK" : h.s >= 35 ? "not ideal" : "avoid"}${h.why.length ? " – " + h.why.join(", ") : ""}"></div>`).join("");
     requestAnimationFrame(() => requestAnimationFrame(() => U.$$("#planTL .slot").forEach((el, j) => setTimeout(() => el.style.height = el.dataset.h + "%", FX.reduce ? 0 : j * 12))));
-    const lab = j => j < hs.length ? (j === 0 ? "Now" : `${dayName(hs[j].t) === "Today" ? "Today" : hs[j].t.toLocaleDateString([], { weekday: "short" })} ${hm(hs[j].t)}`) : "";
+    const lab = j => j < hs.length ? (j === 0 ? "Now" : `${dayName(hs[j].t) === "Today" ? "Today" : hs[j].t.toLocaleDateString("en-US", { weekday: "short" })} ${hm(hs[j].t)}`) : "";
     U.$("#planAxis").innerHTML = [0, 12, 24, 36, 47].map(j => `<span>${lab(j)}</span>`).join("");
     U.$("#planRange").textContent = "Next 48 hours";
     // avoid windows (daylight hours with low scores)

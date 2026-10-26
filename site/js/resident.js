@@ -12,7 +12,7 @@ const RES = (() => {
     return m ? { aqi: m.aqi, site: m.name, km: m.km, time: m.time, mon: m } : { aqi: AQ?.current.us_aqi ?? null, site: null };
   }
   const curHour = h => { const now = Date.now(); let i = h.time.findIndex(t => new Date(t).getTime() > now); return Math.max(0, (i < 0 ? h.time.length : i) - 1); };
-  const hourLabel = t => new Date(t).toLocaleTimeString([], { hour: "numeric" });
+  const hourLabel = t => new Date(t).toLocaleTimeString("en-US", { hour: "numeric" });
 
   // ---------- plain-language wording ----------
   const THEMES = {
@@ -44,7 +44,7 @@ const RES = (() => {
   // ======================= TODAY =======================
   function drawHome() {
     const W = F("weather").value, AQ = F("air").value, AL = F("alerts").value || [];
-    U.$("#hWhen").innerHTML = `<span class="livedot"></span> Baltimore, ${new Date().toLocaleString([], { weekday: "long", hour: "numeric", minute: "2-digit" })}`;
+    U.$("#hWhen").innerHTML = `<span class="livedot"></span> Baltimore, ${new Date().toLocaleString("en-US", { weekday: "long", hour: "numeric", minute: "2-digit" })}`;
     if (!W && !AQ) { if (F("weather").err) { U.$("#hAnswer").textContent = "Reconnecting to the weather service…"; U.$("#hWhy").textContent = "This page tries again automatically."; } return; }
     const c = W?.current, now = aqiNow(), ac = LIVE.aqiCat(now.aqi);
     const fw = c ? feelsWord(c.temperature_2m, c.relative_humidity_2m, c.wind_speed_10m) : { fc: null };
@@ -85,7 +85,7 @@ const RES = (() => {
         `<div class="hour"><span>${j === 0 ? "Now" : hourLabel(H.time[k])}</span><div>${FX.icon(H.weather_code[k], H.is_day[k], 30)}</div><b>${U.tF(H.temperature_2m[k])}</b><div class="rain">${(H.precipitation_probability[k] ?? 0) >= 20 ? "💧" + H.precipitation_probability[k] + "%" : ""}</div></div>`).join("");
       const d = W.daily, lo = Math.min(...d.temperature_2m_min), hi = Math.max(...d.temperature_2m_max);
       U.$("#hWeek").innerHTML = d.time.map((t, k) => { const a = (d.temperature_2m_min[k] - lo) / (hi - lo || 1) * 100, b = (d.temperature_2m_max[k] - lo) / (hi - lo || 1) * 100;
-        return `<div class="day"><b>${k === 0 ? "Today" : new Date(t + "T12:00").toLocaleDateString([], { weekday: "short" })}</b>${FX.icon(d.weather_code[k], 1, 26)}<span class="muted" style="text-align:right">${U.tF(d.temperature_2m_min[k])}</span><div class="range"><i style="left:${a}%;width:${Math.max(4, b - a)}%"></i></div><span>${U.tF(d.temperature_2m_max[k])}</span>${(d.precipitation_probability_max[k] ?? 0) >= 30 ? `<span class="rain">💧 ${d.precipitation_probability_max[k]}% chance of rain</span>` : ""}</div>`; }).join("");
+        return `<div class="day"><b>${k === 0 ? "Today" : new Date(t + "T12:00").toLocaleDateString("en-US", { weekday: "short" })}</b>${FX.icon(d.weather_code[k], 1, 26)}<span class="muted" style="text-align:right">${U.tF(d.temperature_2m_min[k])}</span><div class="range"><i style="left:${a}%;width:${Math.max(4, b - a)}%"></i></div><span>${U.tF(d.temperature_2m_max[k])}</span>${(d.precipitation_probability_max[k] ?? 0) >= 30 ? `<span class="rain">💧 ${d.precipitation_probability_max[k]}% chance of rain</span>` : ""}</div>`; }).join("");
     }
   }
   function drawMyArea() {

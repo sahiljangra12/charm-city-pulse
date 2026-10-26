@@ -189,7 +189,7 @@ const APP = (() => {
     U.$("#themeBtn").onclick = () => setTheme(isDark() ? "light" : "dark");
     try { await load(); }
     catch (e) { U.$("main").innerHTML = `<div class="card alert"><h3>Could not load data</h3><p>${U.esc(e.message)}. If you opened the file directly, serve the folder with a local web server (for example <code>python3 -m http.server</code>).</p></div>`; return; }
-    U.$("#buildStamp").textContent = "Data build " + new Date(A.data.meta.built).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+    U.$("#buildStamp").textContent = "Data build " + new Date(A.data.meta.built).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" });
     Object.assign(VIEWS, RES.views, PLAN.views, COND.views, RSC.views, REFS.views);
     ALERTS.init(); segThumbs(); parallax();
     setMode(A.mode, false); route.first = true;
