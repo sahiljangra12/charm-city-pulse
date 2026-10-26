@@ -1,19 +1,21 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Charm City Pulse</title>
 <meta name="description" content="Is it safe outside in Baltimore today? Live air, heat, cold and alerts, the best time for your plans, your block's flood and heat risk, and where to find help.">
-<meta name="theme-color" content="#f7f7f5" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#000000">
 <meta name="build" content="__BUILD__">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/leaflet.css">
 <link rel="stylesheet" href="css/app.css?v=__BUILD__">
+<link rel="stylesheet" href="css/cinema.css?v=__BUILD__">
+<link rel="preload" as="image" href="img/hero_night-m.jpg" media="(max-width:760px)">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#d5dde3"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a9aa6" stroke-width="2"/></pattern></defs></svg>
@@ -22,7 +24,7 @@
   <div class="topbar">
     <a class="brand" href="#today" aria-label="Charm City Pulse, home">
       <span class="mark"><svg width="24" height="24" viewBox="0 0 64 64" aria-hidden="true"><path d="M4 36h12l6-16 9 28 7-21 4 9h18" fill="none" stroke="#e8a800" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      <b>Charm City Pulse</b>
+      <b>Charm City <span>Pulse</span></b>
     </a>
     <nav class="mainnav" id="mainnav" aria-label="Sections"></nav>
     <div class="hdr-actions">
@@ -30,6 +32,7 @@
       <button class="iconbtn" id="themeBtn" title="Light or dark" aria-label="Switch light or dark theme"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 0 0 17z" fill="currentColor"/></svg></button>
       <button class="iconbtn bell" id="alertBtn" title="Get alerts" aria-label="Get alerts by text, email or on this device"></button>
       <a class="iconbtn" id="dataBtn" href="#explore" title="Data" aria-label="Data and sources"></a>
+      <button class="menubtn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><i></i><i></i><i></i></button>
     </div>
   </div>
   <div class="flagband" aria-hidden="true"></div>
@@ -39,24 +42,30 @@
 
 <!-- ======================= TODAY ======================= -->
 <section class="view" id="v-today">
-  <div class="sky night" id="hSky">
-    <div id="hScene"></div>
-    <div class="temp" id="hTemp"></div>
-    <div class="content">
-      <div class="when" id="hWhen">Baltimore right now</div>
-      <h1 class="answer" id="hAnswer">Checking the air and weather</h1>
-      <p class="why" id="hWhy"></p>
-      <div class="stats" id="hStats"></div>
+  <div class="hero bleed" id="hSky" data-day="0">
+    <div class="hero-bg"><img data-img="hero_night" alt="" fetchpriority="high"><img data-img="hero_day" alt="" class="day"></div>
+    <canvas class="hero-fx" id="heroFx" aria-hidden="true"></canvas>
+    <div id="hScene" hidden></div>
+    <div class="hero-in">
+      <div class="temp" id="hTemp"></div>
+      <div class="content">
+        <div class="when" id="hWhen">Baltimore right now</div>
+        <h1 class="answer" id="hAnswer">Checking the air and weather</h1>
+        <p class="why" id="hWhy"></p>
+        <div class="stats" id="hStats"></div>
+        <div class="cta"><a class="xbtn solid" href="#place"><span>Check my block</span></a><a class="xbtn" href="#plan"><span>Plan my day</span></a></div>
+      </div>
     </div>
+    <a class="scrollcue" href="#prioAnchor" aria-label="Scroll to what matters right now"><span>Scroll</span><i></i></a>
   </div>
+  <div id="prioAnchor"></div>
   <div class="section-h prio-h"><div><h2>What matters right now</h2><p class="sub" id="hPrioSub">Checking the forecast, air and warnings</p></div><span class="livetag"><span class="livedot"></span>Live</span></div>
   <div class="prios" id="hPrio"><div class="prio skeleton" style="height:118px"></div><div class="prio skeleton" style="height:96px"></div><div class="prio skeleton" style="height:96px"></div></div>
   <div id="hMyArea"></div>
 
-  <div class="section-h"><h2>Quick links</h2></div>
-  <div class="actions" id="hActions"></div>
+  <div class="actions" id="hActions" hidden></div>
 
-  <div class="section-h"><h2>Next 12 hours</h2></div>
+  <div class="section-h" id="forecastAnchor"><h2>Next 12 hours</h2></div>
   <div class="hours" id="hHours"></div>
   <div class="section-h"><h2>This week</h2></div>
   <div class="card"><div class="week" id="hWeek"></div></div>
@@ -70,6 +79,7 @@
       <div class="card" id="waterCard"><div class="label">Streams and rivers</div><div class="skeleton" style="height:150px"></div></div>
     </div>
   </details>
+  <div id="hFeatures"></div>
 </section>
 
 <!-- ======================= PLAN ======================= -->
@@ -179,6 +189,7 @@
   <h2 style="margin-top:28px">Live feeds</h2><ol class="refs" id="refLive"></ol>
   <h2 style="margin-top:28px">Methods and research</h2><ol class="refs" id="refLit"></ol>
   <h2 style="margin-top:28px">Software and maps</h2><ol class="refs" id="refSoft"></ol>
+  <h2 style="margin-top:28px">Photographs</h2><ol class="refs" id="refPhotos"></ol>
 </section>
 
 <section class="view" id="v-about">
@@ -197,6 +208,7 @@
 
 <nav class="appbar" id="appbar" aria-label="App"></nav>
 
+<div class="menu" id="menu" aria-hidden="true"><nav class="menu-in" id="menuNav" aria-label="Menu"></nav></div>
 <div class="sheet-back" id="sheetBack"></div>
 <div class="sheet" id="alertSheet" role="dialog" aria-modal="true" aria-labelledby="alertTitle" aria-hidden="true">
   <div class="grab"></div>
@@ -230,6 +242,7 @@
 <script src="js/alerts.js?v=__BUILD__"></script>
 <script src="js/research.js?v=__BUILD__"></script>
 <script src="js/refs.js?v=__BUILD__"></script>
+<script src="js/cinema.js?v=__BUILD__"></script>
 <script src="js/app.js?v=__BUILD__"></script>
 </body>
 </html>

@@ -64,14 +64,14 @@ const RES = (() => {
     if (c) {
       const kind = LIVE.sky(c.weather_code), day = !!c.is_day, hot = fw.fc?.kind === "heat" && fw.fc.lvl >= 2, cold = fw.fc?.kind === "cold" && fw.fc.lvl >= 2;
       const cls = `sky ${day ? "day" : "night"} ${kind}${hot ? " hot" : ""}${cold ? " cold" : ""}`;
-      const sky = U.$("#hSky"); if (sky.className !== cls) { sky.className = cls; U.$("#hScene").innerHTML = FX.scene(kind, day, hot); }
+      const sky = U.$("#hSky"); if (sky.dataset.sky !== cls) { sky.dataset.sky = cls; CINEMA.hero(day, kind, hot, cold); }
       U.$("#hTemp").innerHTML = `<span class="tnum">${U.tF(c.temperature_2m)}</span><small>Feels like ${U.tF(fw.fc ? fw.fc.index : c.apparent_temperature)}</small>`;
     }
     const stat = (ic, t, v) => `<span class="stat">${I(ic, 16)}<span>${t}</span><b>${v}</b></span>`;
     U.$("#hStats").innerHTML = [now.aqi != null ? stat("wind", "Air", `${ac.t.replace("Unhealthy for sensitive groups", "Unhealthy for some")}`) : "",
       c ? stat("thermo", "Today", `${U.tF(W.daily.temperature_2m_min[0])} to ${U.tF(W.daily.temperature_2m_max[0])}`) : "",
       W ? stat(rainMax >= 50 ? "umbrella" : "droplet", "Rain", rainMax >= 50 && rainAt >= 0 ? `Around ${hourLabel(W.hourly.time[i0 + rainAt])}` : rainMax >= 20 ? `${rainMax}% chance` : "None expected") : ""].join("");
-    PRIO.render();
+    PRIO.render(); CINEMA.features();
     if (W) {
       const H = W.hourly;
       U.$("#hHours").innerHTML = Array.from({ length: Math.min(12, H.time.length - i0) }, (_, k) => i0 + k).map((k, j) =>
@@ -103,7 +103,7 @@ const RES = (() => {
   }
   let homeWired = false;
   function homeShow(args = []) {
-    drawActions(); drawMyArea();
+    drawActions(); drawMyArea(); CINEMA.features();
     if (args[0] === "details") setTimeout(() => { const d = U.$("#detailsBox"); d.open = true; d.dispatchEvent(new Event("toggle")); d.scrollIntoView({ behavior: "smooth", block: "start" }); }, 120);
     if (homeWired) { drawHome(); DETAILS.redraw(); return; } homeWired = true;
     DETAILS.init();

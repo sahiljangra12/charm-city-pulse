@@ -10,7 +10,7 @@ const APP = (() => {
   function isDark() { const t = document.documentElement.dataset.theme; return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; }
   const tileUrl = () => `https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/${isDark() ? "World_Dark_Gray_Base" : "World_Light_Gray_Base"}/MapServer/tile/{z}/{y}/{x}`;
   function setTheme(t) { if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme; U.store.set("theme", t || null); A.maps.forEach(m => { if (!m._ccpFallback) m._ccpTiles.setUrl(tileUrl()); }); document.dispatchEvent(new Event("themechange")); }
-  const saved = U.store.get("theme", null); if (saved) document.documentElement.dataset.theme = saved;
+  document.documentElement.dataset.theme = "dark";
 
   function makeMap(elId, opts = {}) {
     const m = L.map(elId, { zoomControl: true, scrollWheelZoom: opts.scroll !== false, attributionControl: true }).setView(LIVE.CENTER, opts.zoom || 12);
@@ -168,7 +168,7 @@ const APP = (() => {
   }
 
   async function start() {
-    buildNav();
+    buildNav(); CINEMA.init();
     U.$$("[data-unit]").forEach(b => b.onclick = () => setUnit(b.dataset.unit)); setUnit(U.unit());
     U.$("#themeBtn").onclick = () => setTheme(isDark() ? "light" : "dark");
     try { await load(); }
