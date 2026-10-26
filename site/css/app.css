@@ -187,11 +187,11 @@ label.chk{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;f
 .hour b{display:block;font-family:var(--display);font-size:1.15rem;margin:2px 0}
 .hour .rain{color:var(--harbor-2);font-size:.76rem;min-height:1em}
 .week{display:grid;gap:0}
-.day{display:grid;grid-template-columns:64px 30px 42px 1fr 42px;align-items:center;gap:12px;padding:9px 2px;border-bottom:1px solid var(--line);font-size:.95rem}
-.day:last-child{border-bottom:0}
-.day .range{height:8px;background:var(--tint);border-radius:99px;position:relative}
-.day .range i{position:absolute;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,#5aa1d6,#f2b705,#d26a1c)}
-.day .rain{grid-column:4;font-size:.76rem;color:var(--harbor-2);margin-top:-6px}
+.week .day{display:grid;grid-template-columns:64px 30px 42px 1fr 42px;align-items:center;gap:12px;padding:9px 2px;border-bottom:1px solid var(--line);font-size:.95rem}
+.week .day:last-child{border-bottom:0}
+.week .day .range{height:8px;background:var(--tint);border-radius:99px;position:relative}
+.week .day .range i{position:absolute;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,#5aa1d6,#f2b705,#d26a1c)}
+.week .day .rain{grid-column:4;font-size:.76rem;color:var(--harbor-2);margin-top:-6px}
 
 /* ======================= RESIDENT AREA REPORT ======================= */
 .area-hero{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;align-items:stretch}
