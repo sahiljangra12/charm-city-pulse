@@ -1,7 +1,7 @@
 ## open-meteo forecast: 200 CORS=* bytes=378
-    {"latitude": 39.289543, "longitude": -76.624466, "generationtime_ms": 0.07164478302001953, "utc_offset_seconds": 0, "timezone": "GMT", "timezone_abbreviation": "GMT", "elevation": 8.0, "current_units": {"time": "iso8601", "interval": "seconds", "temperature_2m": "\u00b0F", "relative_humidity_2m": "%"}, "current": {"time": "2026-10-26T10:00", "interval": 900, "temperature_2m": 42.5, "relative_humidity_2m": 94}}
+    {"latitude": 39.289543, "longitude": -76.624466, "generationtime_ms": 0.06008148193359375, "utc_offset_seconds": 0, "timezone": "GMT", "timezone_abbreviation": "GMT", "elevation": 8.0, "current_units": {"time": "iso8601", "interval": "seconds", "temperature_2m": "\u00b0F", "relative_humidity_2m": "%"}, "current": {"time": "2026-10-26T10:00", "interval": 900, "temperature_2m": 42.5, "relative_humidity_2m": 94}}
 ## open-meteo air: 200 CORS=* bytes=336
-    {"latitude": 39.300003, "longitude": -76.6, "generationtime_ms": 0.18680095672607422, "utc_offset_seconds": 0, "timezone": "GMT", "timezone_abbreviation": "GMT", "elevation": 8.0, "current_units": {"time": "iso8601", "interval": "seconds", "us_aqi": "USAQI", "pm2_5": "\u03bcg/m\u00b3"}, "current": {"time": "2026-10-26T10:00", "interval": 3600, "us_aqi": 70, "pm2_5": 24.3}}
+    {"latitude": 39.300003, "longitude": -76.6, "generationtime_ms": 0.20110607147216797, "utc_offset_seconds": 0, "timezone": "GMT", "timezone_abbreviation": "GMT", "elevation": 8.0, "current_units": {"time": "iso8601", "interval": "seconds", "us_aqi": "USAQI", "pm2_5": "\u03bcg/m\u00b3"}, "current": {"time": "2026-10-26T10:00", "interval": 3600, "us_aqi": 70, "pm2_5": 24.3}}
 ## nws alerts: 200 CORS=* bytes=229
     {"@context": {"@version": "1.1"}, "type": "FeatureCollection", "features": [], "title": "Current watches, warnings, and advisories for 39.29 N, 76.61 W", "updated": "2026-10-26T10:07:08+00:00"}
 ## usgs v1 latest: 200 CORS=* bytes=34153
@@ -26,7 +26,7 @@
     {"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"osm_type": "R", "osm_id": 8043868, "osm_key": "amenity", "osm_value": "university", "type": "house", "housenumber": "3400", "name": "Johns Hopkins University", "street": "North Charles Street", "locality": "Charles Village", "district": "Northwood", "city": "Baltimore", "state": "MD", "country": "United States", "postcode": "21218", "countrycode": "US", "extent": [-76.6260272, 39.336354, -76.6154704, 39.3209343]}, "ge
 ## nominatim: 200 CORS=* bytes=483
     [{"place_id": 347317264, "licence": "Data \u00a9 OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright", "osm_type": "node", "osm_id": 9117086433, "lat": "39.3255962", "lon": "-76.6208745", "category": "emergency", "type": "phone", "place_rank": 30, "importance": 7.552986953531727e-05, "addresstype": "emergency", "name": "", "display_name": "3400, North Charles Street, Charles Village, Baltimore, Maryland, 21218, United States", "boundingbox": ["39.3255462", "39.3256462", "-76.6209245",
-## overpass: FAILED The read operation timed out
+## overpass: FAILED HTTP Error 502: Bad Gateway
 ## carto tile: 200 CORS=* bytes=2049
     (non-JSON) b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x01\x00\x00\x00\x01\x00\x04\x03\x00\x00\x00\xae\\\xb5U\x00\x00\x000PLTE\xfa\xfa\xf8\xf9\xf9\xf7\xf6\xf6\xf4\xf1\xf2\xf0\xe7\xe9\xe8\xdc\xdd\xdd\xcf\xd2\xd2\xc3\xc6\xc8\xba\xbe\xbf\xb1\xb5\xb8\xa4\xa9\xac\x9b\xa0\xa4\x8a\x91\x96'
 ## city cooling hub: 200 CORS=* bytes=4518
