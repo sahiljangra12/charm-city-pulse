@@ -111,21 +111,50 @@ INC_BRACKETS = [(0, 10000), (10000, 15000), (15000, 20000), (20000, 25000), (250
 GROUPS = sorted({c.split("_")[0] for num_, den in ACS_SPEC.values() for c in num_ + [den]} | {"B19013", "B19001", "B01003"})
 
 
+def acs_censusreporter():
+    """No-key route used by the Heat Atlas: Census Reporter serves the latest ACS 5-year release."""
+    cells, rel = {}, None
+    tabs = sorted(GROUPS)
+    for k in range(0, len(tabs), 4):
+        j = fjson("https://api.censusreporter.org/1.0/data/show/latest?geo_ids=140%7C05000US24510&table_ids=" + ",".join(tabs[k:k + 4]), timeout=120)
+        rel = j.get("release", rel)
+        for geo, t in j["data"].items():
+            gid = geo.replace("14000US", "")
+            for tid, v in t.items():
+                for cell, val in v["estimate"].items():
+                    cells.setdefault(gid, {})[f"{cell[:-3]}_{cell[-3:]}E"] = val
+                for cell, val in v["error"].items():
+                    cells[gid][f"{cell[:-3]}_{cell[-3:]}M"] = val
+        log("Census Reporter", rel and rel.get("name"), tabs[k:k + 4], len(j["data"]), "tracts")
+    m = re.search(r"(\d{4})", (rel or {}).get("id", "") or (rel or {}).get("name", ""))
+    if len(cells) < 150 or not m: raise RuntimeError("Census Reporter returned too little")
+    return {"vintage": int(m.group(1)), "cells": cells, "via": "Census Reporter API"}
+
+
 def acs_download():
+    try:
+        return acs_censusbureau()
+    except Exception as e:
+        log("Census Bureau API:", str(e)[:160])
+    return acs_censusreporter()
+
+
+def acs_censusbureau():
+    key = os.environ.get("CENSUS_API_KEY", "")
     year0 = NOW.year - 1
     for y in range(year0, year0 - 4, -1):
         base = f"https://api.census.gov/data/{y}/acs/acs5"
         try:
             cells = {}
             for g in GROUPS:
-                rows = fjson(f"{base}?get=group({g})&for=tract:*&in=state:24&in=county:510", tries=2)
+                rows = fjson(f"{base}?get=group({g})&for=tract:*&in=state:24&in=county:510" + (f"&key={key}" if key else ""), tries=2)
                 head = rows[0]
                 for r in rows[1:]:
                     d = dict(zip(head, r)); gid = d["GEO_ID"][-11:]
                     cells.setdefault(gid, {}).update({k: d[k] for k in head if re.match(r"^[BC]\d+_\d{3}[EM]$", k)})
             log("ACS", y, "ok:", len(cells), "tracts,", len(GROUPS), "tables")
             if len(cells) < 150: raise RuntimeError("too few tracts")
-            return {"vintage": y, "cells": cells}
+            return {"vintage": y, "cells": cells, "via": "Census Bureau API"}
         except Exception as e:
             log("ACS", y, "not usable:", str(e)[:220])
     raise RuntimeError("no ACS 5-year vintage reachable")
@@ -145,7 +174,8 @@ acs = None
 try:
     acs = acs_download(); cache_put("acs.json", acs)
     src("acs", name="American Community Survey 5-year estimates", by="U.S. Census Bureau",
-        vintage=f"{acs['vintage'] - 4}–{acs['vintage']}", url="https://api.census.gov/data.html", status="live")
+        vintage=f"{acs['vintage'] - 4}–{acs['vintage']}", url="https://api.census.gov/data.html" if acs.get("via") == "Census Bureau API" else "https://censusreporter.org/",
+        status="live" + (" via Census Reporter" if acs.get("via") == "Census Reporter API" else ""))
 except Exception as e:
     log("ACS download failed:", e); acs = cache_get("acs.json")
     if acs: src("acs", name="American Community Survey 5-year estimates", by="U.S. Census Bureau",

@@ -26,6 +26,8 @@ jobs:
         continue-on-error: true
         run: python pipeline/probe.py 2>&1 | tee pipeline/cache/probe.txt
       - name: Rebuild data from the newest public releases
+        env:
+          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
         run: |
           set -o pipefail
           python pipeline/refresh.py 2>&1 | tee pipeline/cache/refresh_log.txt
