@@ -466,11 +466,11 @@ def norm_addr(a):
     for k, v in {"street": "st", "avenue": "ave", "road": "rd", "north": "n", "south": "s", "east": "e", "west": "w"}.items():
         a = re.sub(r"\b%s\b" % k, v, a)
     return re.sub(r"[^a-z0-9 ]", "", a).split()
-KNOWN = {" ".join(norm_addr(c["address"])[:2]): c for c in cool}
+KNOWN = {" ".join(norm_addr(c["address"])[:3]): c for c in cool}
 
 
 def tidy(c):
-    k = KNOWN.get(" ".join(norm_addr(c["address"])[:2]))
+    k = KNOWN.get(" ".join(norm_addr(c["address"])[:3]))
     if k:
         c["name"], c["type"] = k["name"], k["type"]
         if not c.get("hours") or "varies" in c.get("hours", ""): c["hours"] = k["hours"]
