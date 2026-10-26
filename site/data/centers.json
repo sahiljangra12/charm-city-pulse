@@ -1,265 +1,236 @@
 {
  "cooling": [
   {
-   "name": "Oliver Senior Center",
-   "address": "1700 N. Gay Street",
-   "type": "Senior Center",
-   "hours": "Weekdays 9:00 AM to 7:00 PM",
-   "lat": 39.30975,
-   "lon": -76.58755,
-   "seasonal": false
+   "name": "Southeast Anchor",
+   "address": "3601 Eastern Ave",
+   "type": "Cooling center",
+   "hours": "Normal business hours varies by site",
+   "lat": 39.2864555214765,
+   "lon": -76.5666779648141
   },
   {
-   "name": "Hatton Senior Center",
-   "address": "2825 Fait Avenue",
-   "type": "Senior Center",
+   "name": "Cherry Hill",
+   "address": "606 Cherry Hill Rd",
+   "type": "Cooling center",
+   "hours": "Normal business hours varies by site",
+   "lat": 39.250641040946,
+   "lon": -76.6224707241563
+  },
+  {
+   "name": "Oliver Senior Center",
+   "address": "1700 N Gay St",
+   "type": "Cooling center",
    "hours": "Weekdays 9:00 AM to 7:00 PM",
-   "lat": 39.28307,
-   "lon": -76.57585,
-   "seasonal": false
+   "lat": 39.3097517827903,
+   "lon": -76.5875408962403
   },
   {
    "name": "Sandtown Winchester Senior Center",
-   "address": "1601 Baker Street",
-   "type": "Senior Center",
+   "address": "1601 Baker St",
+   "type": "Cooling center",
    "hours": "Weekdays 9:00 AM to 7:00 PM",
-   "lat": 39.30659,
-   "lon": -76.64384,
-   "seasonal": false
+   "lat": 39.3065910696326,
+   "lon": -76.643839937534
   },
   {
-   "name": "My Sister's Place Women's Center",
-   "address": "17 W. Franklin Street",
-   "type": "MOHS Cooling Center",
-   "hours": "Monday - Sunday 9:00 AM - 5:00 PM",
-   "lat": 39.2949,
-   "lon": -76.61644,
-   "seasonal": false
-  },
-  {
-   "name": "Zeta Center for Health and Active Aging",
-   "address": "4501 Reisterstown Road",
-   "type": "Senior Center",
+   "name": "Hatton Senior Center",
+   "address": "2825 Fait Ave",
+   "type": "Cooling center",
    "hours": "Weekdays 9:00 AM to 7:00 PM",
-   "lat": 39.34023,
-   "lon": -76.67005,
-   "seasonal": false
+   "lat": 39.2830653143591,
+   "lon": -76.5758512597309
   },
   {
-   "name": "Manna House",
-   "address": "435 E. 25th Street",
-   "type": "MOHS Cooling Center",
-   "hours": "Monday - Friday 10:00 AM - 2:00 PM",
-   "lat": 39.31788,
-   "lon": -76.60996,
-   "seasonal": false
-  },
-  {
-   "name": "Harford Senior Center",
-   "address": "4920 Harford Road",
-   "type": "Senior Center",
+   "name": "Zeta Center for Health/Active Aging",
+   "address": "4501 Reisterstown Rd",
+   "type": "Cooling center",
    "hours": "Weekdays 9:00 AM to 7:00 PM",
-   "lat": 39.34684,
-   "lon": -76.56645,
-   "seasonal": false
-  },
-  {
-   "name": "Weinberg Housing Resource Center",
-   "address": "620 Fallsway",
-   "type": "MOHS Cooling Center",
-   "hours": "Monday - Sunday 9:00 AM \u2013 5:00 PM",
-   "lat": 39.29729,
-   "lon": -76.61059,
-   "seasonal": false
-  },
-  {
-   "name": "Cherry Hill Homes",
-   "address": "2700 Spelman Road",
-   "type": "Housing Authority site",
-   "hours": "Monday-Friday 8:00 AM to 4:00 PM",
-   "lat": 39.24823,
-   "lon": -76.62954,
-   "seasonal": false
+   "lat": 39.3399703834801,
+   "lon": -76.6693679749272
   },
   {
    "name": "Beans & Bread",
-   "address": "402 S. Bond Street",
-   "type": "MOHS Cooling Center",
-   "hours": "Monday - Friday 10:00 AM - 4:00 PM",
-   "lat": 39.28635,
-   "lon": -76.59559,
-   "seasonal": false
-  },
-  {
-   "name": "Franciscan Center",
-   "address": "101 W. 23rd Street",
-   "type": "MOHS Cooling Center",
-   "hours": "Monday-Friday 10:00 AM to 2:00 PM",
-   "lat": 39.31505,
-   "lon": -76.61873,
-   "seasonal": false
+   "address": "400 S Bond St",
+   "type": "Cooling center",
+   "hours": "10:00am-4:00pm Monday-Friday (Closed 7/4/26)",
+   "lat": 39.2863480446854,
+   "lon": -76.5955868759628
   },
   {
    "name": "Brooklyn Homes",
-   "address": "4140 10th Street",
-   "type": "Housing Authority site",
+   "address": "4140 10th St",
+   "type": "Cooling center",
    "hours": "Monday-Friday 8:00 AM to 4:00 PM",
-   "lat": 39.22852,
-   "lon": -76.59914,
-   "seasonal": false
+   "lat": 39.2285097669061,
+   "lon": -76.5991296355351
   },
   {
-   "name": "ShopRite of Howard Park",
-   "address": "4601 Liberty Heights Avenue",
-   "type": "Community Cooling Center",
-   "hours": "Monday-Sunday 6:00 AM to 10:00 PM",
-   "lat": 39.33013,
-   "lon": -76.69567,
-   "seasonal": false
+   "name": "Canton",
+   "address": "1030 S Ellwood Ave",
+   "type": "Cooling center",
+   "hours": "Normal business hours varies by site",
+   "lat": 39.2802929998914,
+   "lon": -76.5728046354914
   },
   {
-   "name": "Enoch Pratt Central Library",
-   "address": "400 Cathedral Street",
-   "type": "Library",
-   "hours": "Regular library hours (vary by branch)",
-   "lat": 39.29451,
-   "lon": -76.6171,
-   "seasonal": false
+   "name": "Central Library",
+   "address": "400 Cathedral St",
+   "type": "Cooling center",
+   "hours": "Normal business hours varies by site",
+   "lat": 39.2945088486025,
+   "lon": -76.6170990005586
   },
   {
-   "name": "Zion Lutheran Church",
-   "address": "400 E. Lexington Street",
-   "type": "Community Cooling Center",
-   "hours": "Tuesday-Thursday, 11:00 am to 5:00 pm. May 15th - Sept 15th.",
-   "lat": 39.29163,
-   "lon": -76.60972,
-   "seasonal": true
+   "name": "Cherry Hill Homes",
+   "address": "2700 Spelman Rd",
+   "type": "Cooling center",
+   "hours": "Monday-Friday 8:00 AM to 4:00 PM",
+   "lat": 39.2482370772092,
+   "lon": -76.6295370003206
+  },
+  {
+   "name": "Edmondson Avenue",
+   "address": "4330 Edmondson Ave",
+   "type": "Cooling center",
+   "hours": "Normal business hours varies by site",
+   "lat": 39.2937999249164,
+   "lon": -76.6892565000472
+  },
+  {
+   "name": "Franciscan Center",
+   "address": "101 W 23rd St",
+   "type": "Cooling center",
+   "hours": "10:00am-2:00pm Monday-Friday (Closed 7/4/26)",
+   "lat": 39.3150509996273,
+   "lon": -76.6187280001048
+  },
+  {
+   "name": "Hampden",
+   "address": "3641 Falls Rd",
+   "type": "Cooling center",
+   "hours": "Normal business hours varies by site",
+   "lat": 39.3322949994965,
+   "lon": -76.6350945005892
   },
   {
    "name": "Harbel (Resiliency Hub)",
-   "address": "5807 Harford Road",
-   "type": "Community Cooling Center",
+   "address": "5807 Harford Rd",
+   "type": "Cooling center",
    "hours": "Monday-Friday 9:00AM - 6:30 PM",
-   "lat": 39.35551,
-   "lon": -76.55818,
-   "seasonal": false
+   "lat": 39.3555070366696,
+   "lon": -76.5581778176156
   },
   {
-   "name": "Enoch Pratt Free Library \u2013 Brooklyn Branch",
-   "address": "300 E. Patapsco Avenue",
-   "type": "Library",
-   "hours": "Regular library hours (vary by branch)",
-   "lat": 39.23789,
-   "lon": -76.60676,
-   "seasonal": false
+   "name": "Harford Senior Center",
+   "address": "4920 Harford Rd",
+   "type": "Cooling center",
+   "hours": "Weekdays 9:00 AM to 7:00 PM",
+   "lat": 39.3468307027827,
+   "lon": -76.5664470000885
   },
   {
-   "name": "Enoch Pratt Free Library \u2013 Edmondson Avenue Branch",
-   "address": "4330 Edmondson Avenue",
-   "type": "Library",
-   "hours": "Regular library hours (vary by branch)",
-   "lat": 39.2938,
-   "lon": -76.68926,
-   "seasonal": false
+   "name": "Light Street",
+   "address": "1251 Light St",
+   "type": "Cooling center",
+   "hours": "Normal business hours varies by site",
+   "lat": 39.2749485569501,
+   "lon": -76.6118146591832
   },
   {
-   "name": "Enoch Pratt Free Library \u2013 Canton Branch",
-   "address": "1030 S. Ellwood Avenue",
-   "type": "Library",
-   "hours": "Regular library hours (vary by branch)",
-   "lat": 39.28029,
-   "lon": -76.57281,
-   "seasonal": false
+   "name": "Manna House",
+   "address": "435 E 25th St",
+   "type": "Cooling center",
+   "hours": "10:00am-2:00pm Monday-Friday (Closed 7/4/26)",
+   "lat": 39.3179348123599,
+   "lon": -76.6100051824659
   },
   {
-   "name": "Enoch Pratt Free Library \u2013 Hampden Branch",
-   "address": "3641 Falls Road",
-   "type": "Library",
-   "hours": "Regular library hours (vary by branch)",
-   "lat": 39.3323,
-   "lon": -76.63509,
-   "seasonal": false
+   "name": "My Sister's Place Women's Center",
+   "address": "17 W Franklin St",
+   "type": "Cooling center",
+   "hours": "10:00am-5:00pm Monday - Sunday",
+   "lat": 39.2949089993306,
+   "lon": -76.616437500048
   },
   {
-   "name": "Enoch Pratt Free Library \u2013 Orleans Street Branch",
-   "address": "1303 Orleans Street",
-   "type": "Library",
-   "hours": "Regular library hours (vary by branch)",
-   "lat": 39.29469,
-   "lon": -76.59934,
-   "seasonal": false
+   "name": "Orleans Street",
+   "address": "1303 Orleans St",
+   "type": "Cooling center",
+   "hours": "Normal business hours varies by site",
+   "lat": 39.2944410002879,
+   "lon": -76.5993338641783
   },
   {
-   "name": "Enoch Pratt Free Library \u2013 Light Street Branch",
-   "address": "1251 Light Street",
-   "type": "Library",
-   "hours": "Regular library hours (vary by branch)",
-   "lat": 39.27495,
-   "lon": -76.61181,
-   "seasonal": false
+   "name": "Patterson Park",
+   "address": "158 N Linwood Ave",
+   "type": "Cooling center",
+   "hours": "Normal business hours varies by site",
+   "lat": 39.2948439235532,
+   "lon": -76.5766061822234
   },
   {
-   "name": "Enoch Pratt Free Library \u2013 Cherry Hill Branch",
-   "address": "606 Cherry Hill Road",
-   "type": "Library",
-   "hours": "Regular library hours (vary by branch)",
-   "lat": 39.25064,
-   "lon": -76.62247,
-   "seasonal": false
+   "name": "Pennsylvania Avenue",
+   "address": "1531 W North Ave",
+   "type": "Cooling center",
+   "hours": "Normal business hours varies by site",
+   "lat": 39.3098649252213,
+   "lon": -76.6418976356953
   },
   {
-   "name": "Enoch Pratt Free Library \u2013 Patterson Park Branch",
-   "address": "158 N. Linwood Avenue",
-   "type": "Library",
-   "hours": "Regular library hours (vary by branch)",
-   "lat": 39.29484,
-   "lon": -76.5766,
-   "seasonal": false
+   "name": "Roland Park",
+   "address": "5108 Roland Ave",
+   "type": "Cooling center",
+   "hours": "Normal business hours varies by site",
+   "lat": 39.3559649995288,
+   "lon": -76.6350494994853
   },
   {
-   "name": "Enoch Pratt Free Library \u2013 Pennsylvania Avenue Branch",
-   "address": "1531 W. North Avenue",
-   "type": "Library",
-   "hours": "Regular library hours (vary by branch)",
-   "lat": 39.30986,
-   "lon": -76.6419,
-   "seasonal": false
+   "name": "ShopRite of Howard Park",
+   "address": "4601 Liberty Heights",
+   "type": "Cooling center",
+   "hours": "Monday-Sunday 6:00 AM to 10:00 PM",
+   "lat": 39.3301280748611,
+   "lon": -76.695673500295
   },
   {
-   "name": "Enoch Pratt Free Library \u2013 Roland Park Branch",
-   "address": "5108 Roland Avenue",
-   "type": "Library",
-   "hours": "Regular library hours (vary by branch)",
-   "lat": 39.35597,
-   "lon": -76.63505,
-   "seasonal": false
+   "name": "Walbrook",
+   "address": "3203 W North Ave",
+   "type": "Cooling center",
+   "hours": "Normal business hours varies by site",
+   "lat": 39.3086969999588,
+   "lon": -76.6716750002931
   },
   {
-   "name": "Enoch Pratt Free Library \u2013 Southeast Anchor Branch",
-   "address": "3601 Eastern Avenue",
-   "type": "Library",
-   "hours": "Regular library hours (vary by branch)",
-   "lat": 39.28645,
-   "lon": -76.56668,
-   "seasonal": false
+   "name": "Waverly",
+   "address": "400 E 33rd St",
+   "type": "Cooling center",
+   "hours": "Normal business hours varies by site",
+   "lat": 39.3286091501308,
+   "lon": -76.610614500002
   },
   {
-   "name": "Enoch Pratt Free Library \u2013 Walbrook Branch",
-   "address": "3203 W. North Avenue",
-   "type": "Library",
-   "hours": "Regular library hours (vary by branch)",
-   "lat": 39.3087,
-   "lon": -76.67167,
-   "seasonal": false
+   "name": "Weinberg Housing & Resource Center",
+   "address": "620 Fallsway",
+   "type": "Cooling center",
+   "hours": "10:00am-5:00pm Monday - Sunday",
+   "lat": 39.2972940001232,
+   "lon": -76.6105874993399
   },
   {
-   "name": "Enoch Pratt Free Library \u2013 Waverly Branch",
-   "address": "400 E. 33rd Street",
-   "type": "Library",
-   "hours": "Regular library hours (vary by branch)",
-   "lat": 39.3286,
-   "lon": -76.61062,
-   "seasonal": false
+   "name": "Zion Lutheran Church",
+   "address": "400 E Lexington St",
+   "type": "Cooling center",
+   "hours": "Tues-Thurs, 11:00am-5:00pm May 15-Sept 15",
+   "lat": 39.291491075168,
+   "lon": -76.6100204998
+  },
+  {
+   "name": "Brooklyn",
+   "address": "300 E Patapsco Ave",
+   "type": "Cooling center",
+   "hours": "Normal business hours varies by site",
+   "lat": 39.2378884166704,
+   "lon": -76.6067606612156
   }
  ],
  "winter": {
@@ -296,8 +267,8 @@
     "type": "Warming center",
     "hours": "Mon\u2013Fri 9 am\u20134 pm",
     "serves": "All",
-    "lat": null,
-    "lon": null
+    "lat": 39.28645108454,
+    "lon": -76.595509050945
    },
    {
     "name": "Franciscan Center",
@@ -305,8 +276,8 @@
     "type": "Warming center",
     "hours": "Mon\u2013Fri 10 am\u20132 pm",
     "serves": "All",
-    "lat": null,
-    "lon": null
+    "lat": 39.315141355197,
+    "lon": -76.618267435213
    },
    {
     "name": "Manna House",
@@ -314,8 +285,8 @@
     "type": "Warming center",
     "hours": "Mon\u2013Fri 10 am\u20132 pm",
     "serves": "All",
-    "lat": null,
-    "lon": null
+    "lat": 39.318052859471,
+    "lon": -76.610233866295
    },
    {
     "name": "My Sister's Place Women's Center",
@@ -323,8 +294,8 @@
     "type": "Warming center",
     "hours": "Daily 9 am\u20135 pm",
     "serves": "Women and children",
-    "lat": null,
-    "lon": null
+    "lat": 39.295026162953,
+    "lon": -76.615821784396
    },
    {
     "name": "Weinberg Housing & Resource Center",
@@ -332,8 +303,8 @@
     "type": "Warming center",
     "hours": "Daily 9 am\u20134 pm",
     "serves": "All",
-    "lat": 39.29729,
-    "lon": -76.61059
+    "lat": 39.296554765362,
+    "lon": -76.610038726089
    },
    {
     "name": "Springboard Community Services",
@@ -341,8 +312,8 @@
     "type": "Warming center",
     "hours": "Mon\u2013Thu 9 am\u20135 pm; Fri\u2013Sun 9 am\u20134 pm",
     "serves": "Youth and young adults 14\u201324",
-    "lat": null,
-    "lon": null
+    "lat": 39.344854868208,
+    "lon": -76.640667933268
    },
    {
     "name": "Fairfield Inn (overnight shelter)",
@@ -350,8 +321,8 @@
     "type": "Overnight shelter",
     "hours": "4 pm\u20139 am; call the Shelter Hotline first",
     "serves": "Youth 18\u201324, families",
-    "lat": null,
-    "lon": null
+    "lat": 39.288292884501,
+    "lon": -76.60464249275
    },
    {
     "name": "MCVET (overnight shelter)",
@@ -359,8 +330,8 @@
     "type": "Overnight shelter",
     "hours": "4 pm\u20139 am; call the Shelter Hotline first",
     "serves": "Single men",
-    "lat": null,
-    "lon": null
+    "lat": 39.293332971438,
+    "lon": -76.606234639253
    },
    {
     "name": "Weinberg Housing & Resource Center (overnight)",
@@ -368,8 +339,8 @@
     "type": "Overnight shelter",
     "hours": "4 pm\u20139 am; call the Shelter Hotline first",
     "serves": "Single women",
-    "lat": 39.29729,
-    "lon": -76.61059
+    "lat": 39.296554765362,
+    "lon": -76.610038726089
    },
    {
     "name": "Sleep Inn & Suites (overnight shelter)",
@@ -377,8 +348,8 @@
     "type": "Overnight shelter",
     "hours": "4 pm\u20139 am; call the Shelter Hotline first",
     "serves": "Families, single women",
-    "lat": null,
-    "lon": null
+    "lat": 39.292269610151,
+    "lon": -76.607512540884
    },
    {
     "name": "Samuel F.B. Morse Recreation Center (overflow)",
@@ -386,8 +357,8 @@
     "type": "Overnight shelter",
     "hours": "4 pm\u20139 am; call the Shelter Hotline first",
     "serves": "Overflow: single adults",
-    "lat": null,
-    "lon": null
+    "lat": 39.281744428733,
+    "lon": -76.649525824496
    },
    {
     "name": "Lois T. Murray (overflow)",
@@ -395,8 +366,8 @@
     "type": "Overnight shelter",
     "hours": "4 pm\u20139 am; call the Shelter Hotline first",
     "serves": "Overflow: families",
-    "lat": null,
-    "lon": null
+    "lat": 39.346649593207,
+    "lon": -76.589838057896
    },
    {
     "name": "311 W. Saratoga St. (overflow)",
@@ -404,8 +375,8 @@
     "type": "Overnight shelter",
     "hours": "4 pm\u20139 am; call the Shelter Hotline first",
     "serves": "Overflow: single adults",
-    "lat": null,
-    "lon": null
+    "lat": 39.292849682063,
+    "lon": -76.619841039956
    }
   ]
  }
