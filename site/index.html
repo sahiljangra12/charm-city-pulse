@@ -4,34 +4,29 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Charm City Pulse</title>
-<meta name="description" content="Live environmental conditions and neighborhood sustainability data for Baltimore: heat, cold, air, water, flooding, trees, health, housing and energy.">
-<meta name="theme-color" content="#123247">
+<meta name="description" content="Is it safe outside in Baltimore today? Live air, heat, cold and alerts, your block's flood and heat risk, and the nearest places to cool off or warm up.">
+<meta name="theme-color" content="#0e2a3b">
 <meta name="build" content="__BUILD__">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/leaflet.css">
 <link rel="stylesheet" href="css/app.css?v=__BUILD__">
 </head>
-<body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#cfc8bb"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a7f70" stroke-width="2"/></pattern></defs></svg>
+<body class="resident">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#d5dde3"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a9aa6" stroke-width="2"/></pattern></defs></svg>
 <a class="sr" href="#main">Skip to content</a>
 <header class="top">
   <div class="topbar">
     <a class="brand" href="#today" aria-label="Charm City Pulse home">
-      <svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#123247"/><path class="beat" d="M6 38h12l5-14 8 26 7-20 4 8h16" fill="none" stroke="#e8a91b" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <div><b>Charm City Pulse</b><span>Baltimore environment &amp; sustainability, live</span></div>
+      <svg width="36" height="36" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#0e2a3b"/><path class="beat" d="M6 38h12l5-14 8 26 7-20 4 8h16" fill="none" stroke="#f2b705" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><b><span class="long">Charm City </span>Pulse</b><span>Baltimore's environment, live</span></div>
     </a>
-    <div class="seg" role="group" aria-label="Mode">
-      <button data-mode="resident" aria-pressed="true">Resident</button>
-      <button data-mode="research" aria-pressed="false">Researcher</button>
-    </div>
-    <div class="seg" role="group" aria-label="Temperature unit">
-      <button data-unit="F" aria-pressed="true">°F</button><button data-unit="C" aria-pressed="false">°C</button>
-    </div>
-    <button class="iconbtn" id="themeBtn" title="Light or dark" aria-label="Toggle light or dark theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg></button>
+    <div class="seg unit" role="group" aria-label="Temperature unit"><button data-unit="F" aria-pressed="true">°F</button><button data-unit="C" aria-pressed="false">°C</button></div>
+    <button class="iconbtn" id="themeBtn" title="Light or dark" aria-label="Switch light or dark theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg></button>
+    <button class="modelink" id="modeBtn" aria-pressed="false">Researcher mode</button>
   </div>
   <nav class="tabs" id="tabs" aria-label="Sections"></nav>
   <div class="ticker" id="ticker" aria-label="Live conditions"><div class="track" id="tickerTrack"><span class="item"><span class="livedot"></span>Connecting to live feeds…</span></div></div>
@@ -39,77 +34,109 @@
 
 <main class="wrap" id="main">
 
-<!-- ================= RESIDENT ================= -->
+<!-- ======================= RESIDENT ======================= -->
 <section class="view" id="v-today">
+  <div class="sky night" id="hSky">
+    <div id="hScene"></div>
+    <div class="temp" id="hTemp"></div>
+    <div class="content">
+      <div class="when" id="hWhen">Baltimore right now</div>
+      <h1 class="answer" id="hAnswer">Checking the air and weather…</h1>
+      <p class="why" id="hWhy"></p>
+    </div>
+  </div>
+  <div id="hAlert"></div>
+  <div class="facts" id="hFacts">
+    <div class="fact"><div class="ico" style="background:var(--tint)">💨</div><b>Air</b><span class="skeleton" style="height:1em"></span></div>
+    <div class="fact"><div class="ico" style="background:var(--tint)">🌡️</div><b>Temperature</b><span class="skeleton" style="height:1em"></span></div>
+    <div class="fact"><div class="ico" style="background:var(--tint)">☔</div><b>Rain</b><span class="skeleton" style="height:1em"></span></div>
+  </div>
+  <div id="hMyArea"></div>
+
+  <div class="section-h"><h2>What do you need?</h2></div>
+  <div class="actions" id="hActions"></div>
+
+  <div class="section-h"><h2>Next 12 hours</h2></div>
+  <div class="hours" id="hHours"></div>
+  <div class="section-h"><h2>This week</h2></div>
+  <div class="card"><div class="week" id="hWeek"></div></div>
+</section>
+
+<section class="view" id="v-place">
+  <h1 style="margin-bottom:6px">Check your block</h1>
+  <p class="muted">Type an address, use your location, or tap the map. You'll see how hot it gets, the flood risk, and the nearest help.</p>
+  <form class="search" data-geo autocomplete="off" style="margin:14px 0 6px"></form>
+  <p class="note" id="pMsg"></p>
+  <div id="pBody"></div>
+  <div class="mapbox short" id="pMap" style="margin-top:18px"></div>
+</section>
+
+<section class="view" id="v-map">
+  <h1 style="margin-bottom:6px">Map</h1>
+  <p class="muted">Tap a button to show it on the map. Tap anywhere on the map to see that spot.</p>
+  <div class="chips" id="mapChips"></div>
+  <div class="controls"><label for="mapColor" class="muted" style="font-weight:600">Shade neighborhoods by</label><select id="mapColor"></select></div>
+  <div class="mapbox" id="mainMap"></div>
+  <p class="note" id="mapMsg"></p>
+</section>
+
+<section class="view" id="v-help">
+  <h1 style="margin-bottom:6px">Get help</h1>
+  <p class="muted" id="helpIntro"></p>
+  <div class="callgrid" id="helpCalls" style="margin:14px 0 8px"></div>
+  <div class="section-h"><h2 id="helpPlacesTitle">Places near you</h2><a href="#" data-near>Use my location</a></div>
+  <div class="place-list" id="helpPlaces"></div>
+  <div class="section-h"><h2>Programs that can help</h2></div>
+  <div class="place-list" id="helpPrograms"></div>
+</section>
+
+<!-- ======================= RESEARCHER ======================= -->
+<section class="view" id="v-conditions">
   <div class="hero">
-    <div class="card sky night" id="skyCard">
+    <div class="dsky night" id="skyCard">
       <div id="skyScene"></div>
       <div class="content">
-        <div class="kicker">Baltimore right now · <span id="nowTime"></span> <span class="refresh-host"></span></div>
+        <div class="label" style="color:rgba(255,255,255,.85)">Baltimore now, <span id="nowTime"></span> <span class="refresh-host"></span></div>
         <div class="verdict" id="verdict">Checking conditions…</div>
         <p id="verdictText"></p>
         <div class="stat-row" id="nowStats"></div>
       </div>
     </div>
     <div class="grid" style="gap:16px">
-      <div class="card" id="alertsCard"><div class="kicker">Weather alerts</div><div class="skeleton" style="height:70px"></div></div>
+      <div class="card" id="alertsCard"><div class="label">Weather alerts</div><div class="skeleton" style="height:70px"></div></div>
       <div class="card" id="seasonCard"></div>
     </div>
   </div>
   <div class="grid g3" style="margin-bottom:16px">
-    <div class="card rv lift" id="airCard"><div class="kicker">Air quality</div><div class="skeleton" style="height:150px"></div></div>
-    <div class="card rv lift" id="feelCard"><div class="kicker">Heat &amp; cold</div><div class="skeleton" style="height:150px"></div></div>
-    <div class="card rv lift" id="uvCard"><div class="kicker">Sun, UV &amp; solar</div><div class="skeleton" style="height:150px"></div></div>
+    <div class="card" id="airCard"><div class="label">Air quality</div><div class="skeleton" style="height:150px"></div></div>
+    <div class="card" id="feelCard"><div class="label">Heat and cold</div><div class="skeleton" style="height:150px"></div></div>
+    <div class="card" id="uvCard"><div class="label">Sun, UV and solar</div><div class="skeleton" style="height:150px"></div></div>
   </div>
-  <div class="card rv" style="margin-bottom:16px"><div class="kicker">Next 24 hours · feels-like temperature, rain chance &amp; air quality <span class="refresh-host" data-f="weather"></span></div><div class="hours" id="hours"></div></div>
-  <div class="grid g2" style="margin-bottom:16px">
-    <div class="card rv"><div class="kicker">7-day outlook</div><div class="days" id="days"></div></div>
-    <div class="card rv" id="waterCard"><div class="kicker">Streams &amp; rivers</div><div class="skeleton" style="height:150px"></div></div>
-  </div>
-  <div class="card rv">
-    <h2>How does your block compare?</h2>
-    <p class="muted">Type a Baltimore address to see its heat, trees, flood zone, health, housing and energy picture, the nearest places to cool off or warm up, and what you can do about it.</p>
-    <form class="search" data-geo autocomplete="off"></form>
-  </div>
-</section>
-
-<section class="view" id="v-place">
-  <div class="card" style="margin-bottom:16px;z-index:5">
-    <form class="search" data-geo autocomplete="off"></form>
-    <p class="note" id="placeMsg">Or click anywhere on the map below.</p>
-  </div>
-  <div id="placeBody"></div>
-  <div class="mapbox short rv" id="placeMap" style="margin-top:16px"></div>
-</section>
-
-<section class="view" id="v-map">
-  <div class="maplayout">
-    <div class="side">
-      <div class="card">
-        <div class="kicker">Color neighborhoods by</div>
-        <select id="mapTheme" style="width:100%"></select>
-        <div class="kicker" style="margin-top:16px">Show on map</div>
-        <div id="layerList"></div>
-        <p class="note" id="layerMsg">Click anywhere on the map for that spot's flood zone and neighborhood scores.</p>
-      </div>
-    </div>
-    <div class="mapbox" id="mainMap"></div>
-  </div>
-</section>
-
-<section class="view" id="v-help">
-  <h1>Find help &amp; take action</h1>
-  <p class="muted" style="max-width:740px" id="helpIntro"></p>
+  <div class="card" style="margin-bottom:16px"><div class="label">Next 24 hours: feels-like, rain chance, AQI <span class="refresh-host" data-f="weather"></span></div><div class="dhours" id="hours"></div></div>
   <div class="grid g2">
-    <div class="card rv" id="centersCard"></div>
-    <div class="grid" style="gap:16px">
-      <div class="card rv" id="hotlinesCard"></div>
-      <div class="card rv"><h3>Programs &amp; contacts</h3><ul class="list" id="programs"></ul></div>
-    </div>
+    <div class="card"><div class="label">7-day outlook</div><div class="week" id="days"></div></div>
+    <div class="card" id="waterCard"><div class="label">Streams and rivers</div><div class="skeleton" style="height:150px"></div></div>
   </div>
 </section>
 
-<!-- ================= RESEARCHER ================= -->
+<section class="view" id="v-report">
+  <div class="controls"><form class="search" data-geo autocomplete="off" style="flex:1"></form></div>
+  <p class="note" id="placeMsg"></p>
+  <div id="placeBody"></div>
+  <div class="mapbox short" id="placeMap" style="margin-top:16px"></div>
+</section>
+
+<section class="view" id="v-layers">
+  <div class="maplayout">
+    <div class="side"><div class="card">
+      <div class="label">Color tracts by</div><select id="mapTheme" style="width:100%"></select>
+      <div class="label" style="margin-top:16px">Layers</div><div id="layerList"></div>
+      <p class="note" id="layerMsg">Click anywhere for that point's flood zone and scores.</p>
+    </div></div>
+    <div class="mapbox" id="layersMap"></div>
+  </div>
+</section>
+
 <section class="view" id="v-explore">
   <div class="controls">
     <select id="exInd" aria-label="Indicator"></select>
@@ -119,8 +146,8 @@
   <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))">
     <div class="mapbox" id="exMap"></div>
     <div class="grid">
-      <div class="card"><div class="kicker" id="exSrc"></div><h3 id="exTitle"></h3><div class="grid g4" id="exStats" style="gap:10px"></div><p class="note" id="exMoe"></p></div>
-      <div class="card"><div class="kicker">Distribution</div><div class="chartbox"><canvas id="exHist"></canvas></div></div>
+      <div class="card"><div class="label" id="exSrc"></div><h3 id="exTitle"></h3><div class="grid g4" id="exStats" style="gap:10px"></div><p class="note" id="exMoe"></p></div>
+      <div class="card"><div class="label">Distribution</div><div class="chartbox"><canvas id="exHist"></canvas></div></div>
     </div>
   </div>
   <div class="card" style="margin-top:16px"><div class="controls" style="margin:0 0 10px"><h3 style="margin:0;margin-right:auto">All areas</h3><input type="search" id="exFilter" placeholder="Filter by name" aria-label="Filter areas" style="padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface)"></div><div class="tablewrap" style="max-height:440px"><table id="exTable"></table></div></div>
@@ -129,7 +156,7 @@
 <section class="view" id="v-compare">
   <h1>Compare two places</h1>
   <div class="controls"><select id="cmpA" aria-label="First place"></select><span class="muted">vs</span><select id="cmpB" aria-label="Second place"></select></div>
-  <div class="grid g2" style="margin-bottom:16px"><div class="card"><div class="kicker">Report-card scores (higher = more burdened)</div><div class="chartbox"><canvas id="cmpRadar"></canvas></div></div><div class="card" id="cmpNotes"></div></div>
+  <div class="grid g2" style="margin-bottom:16px"><div class="card"><div class="label">Report-card scores (higher = more burdened)</div><div class="chartbox"><canvas id="cmpRadar"></canvas></div></div><div class="card" id="cmpNotes"></div></div>
   <div class="tablewrap"><table id="cmpTable"></table></div>
 </section>
 
@@ -138,13 +165,13 @@
   <div class="controls"><label>X <select id="cx"></select></label><label>Y <select id="cy"></select></label><label class="chk"><input type="checkbox" id="cHolc"> Color by 1937 redlining grade</label></div>
   <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))">
     <div class="card" style="grid-column:span 2;min-width:0"><div class="chartbox tall"><canvas id="cChart"></canvas></div></div>
-    <div class="card"><div class="kicker">Association</div><div id="cStats"></div><p class="note">Spearman's ρ is rank-based and robust to outliers. These are tract-level (ecological) associations: they describe places, not individuals, and are not causal. Non-residential tracts are excluded.</p></div>
+    <div class="card"><div class="label">Association</div><div id="cStats"></div><p class="note">Spearman's ρ is rank-based and robust to outliers. These are tract-level (ecological) associations: they describe places, not individuals, and are not causal. Non-residential tracts are excluded.</p></div>
   </div>
 </section>
 
 <section class="view" id="v-live">
   <h1>Live data feeds</h1>
-  <p class="muted" style="max-width:760px">Live readings refresh on their own while this page is open: weather every 5 minutes, alerts every 3, air and water every 10–15. Neighborhood datasets are rebuilt every morning from the newest Census, CDC and city releases. The page picks up a new build without reloading.</p>
+  <p class="muted">Weather refreshes every 5 minutes, alerts every 3, air and water every 10–15, while the page is open. Neighborhood datasets and map layers are rebuilt every morning; open pages pick up a new build without reloading.</p>
   <div class="tablewrap"><table id="liveTable"></table></div>
   <h2 style="margin-top:28px">Data releases in this build</h2>
   <div class="tablewrap"><table id="releaseTable"></table></div>
@@ -157,41 +184,44 @@
 <section class="view" id="v-download">
   <h1>Download the data</h1>
   <div class="grid g3">
-    <div class="card lift rv"><h3>Census tracts (CSV)</h3><p class="muted">All tracts × 54 indicators with margins of error, city percentiles, report-card scores and reliability flags.</p><button class="btn" data-dl="tracts">Download CSV</button></div>
-    <div class="card lift rv"><h3>Neighborhoods (CSV)</h3><p class="muted">55 Community Statistical Areas, aggregated correctly from tract counts.</p><button class="btn" data-dl="csa">Download CSV</button></div>
-    <div class="card lift rv"><h3>Boundaries + data (GeoJSON)</h3><p class="muted">For QGIS, R (sf) or Python (geopandas).</p><a class="btn" href="data/tracts.geojson" download>Download GeoJSON</a></div>
-    <div class="card lift rv"><h3>Indicator dictionary</h3><p class="muted">Labels, units, direction, source and vintage for every field.</p><a class="btn" href="data/catalog.json" download>Download JSON</a></div>
-    <div class="card lift rv"><h3>Build metadata</h3><p class="muted">When each source was last pulled and from where.</p><a class="btn" href="data/meta.json" download>Download JSON</a></div>
+    <div class="card"><h3>Census tracts (CSV)</h3><p class="muted">All tracts × 54 indicators with margins of error, city percentiles, report-card scores and reliability flags.</p><button class="btn" data-dl="tracts">Download CSV</button></div>
+    <div class="card"><h3>Neighborhoods (CSV)</h3><p class="muted">55 Community Statistical Areas, aggregated from pooled tract counts.</p><button class="btn" data-dl="csa">Download CSV</button></div>
+    <div class="card"><h3>Boundaries + data (GeoJSON)</h3><p class="muted">For QGIS, R (sf) or Python (geopandas).</p><a class="btn" href="data/tracts.geojson" download>Download GeoJSON</a></div>
+    <div class="card"><h3>Indicator dictionary</h3><p class="muted">Label, unit, direction, source and vintage for every field.</p><a class="btn" href="data/catalog.json" download>Download JSON</a></div>
+    <div class="card"><h3>Build metadata</h3><p class="muted">When each source was last pulled and from where.</p><a class="btn" href="data/meta.json" download>Download JSON</a></div>
   </div>
-  <div class="card rv" style="margin-top:16px"><h3>Cite this app</h3><p class="mono" id="cite"></p></div>
+  <div class="card" style="margin-top:16px"><h3>Cite this app</h3><p class="mono" id="cite"></p></div>
 </section>
 
-<!-- ================= SHARED ================= -->
+<!-- ======================= SHARED ======================= -->
 <section class="view" id="v-refs">
   <h1>References</h1>
-  <p class="muted" style="max-width:760px">Every number in this app traces back to one of these sources. The data sources and vintages below are written automatically by each day's data build, so they always match what you see.</p>
-  <h2>Data sources in this build</h2>
-  <ol class="refs" id="refData"></ol>
-  <h2 style="margin-top:26px">Live feeds</h2>
-  <ol class="refs" id="refLive"></ol>
-  <h2 style="margin-top:26px">Methods &amp; scientific literature</h2>
-  <ol class="refs" id="refLit"></ol>
-  <h2 style="margin-top:26px">Software &amp; maps</h2>
-  <ol class="refs" id="refSoft"></ol>
+  <p class="muted">Every number in this app comes from one of these sources. The data sources and their years are written automatically by each day's data build.</p>
+  <h2>Data sources in this build</h2><ol class="refs" id="refData"></ol>
+  <h2 style="margin-top:26px">Live feeds</h2><ol class="refs" id="refLive"></ol>
+  <h2 style="margin-top:26px">Methods and scientific literature</h2><ol class="refs" id="refLit"></ol>
+  <h2 style="margin-top:26px">Software and maps</h2><ol class="refs" id="refSoft"></ol>
 </section>
 
 <section class="view" id="v-about">
-  <h1>About &amp; methods</h1>
+  <h1>About</h1>
   <div class="grid g2">
-    <div class="card rv"><h3>What this is</h3><p>Charm City Pulse brings Baltimore's live environmental conditions and neighborhood sustainability data into one place. <b>Resident mode</b> answers "is it safe outside today, and how does my block compare?" <b>Researcher mode</b> opens every indicator for mapping, comparison, correlation and download.</p><p>Built by Sahil (MSE Data Science, Johns Hopkins University) on two of his research projects: the <i>Baltimore Heat Atlas</i> and the <i>Baltimore Street Trees Cooling</i> study.</p><div id="aboutFindings"></div></div>
-    <div class="card rv"><h3>Report-card scores</h3><p>Each theme score is the average city percentile of its inputs across Baltimore's residential census tracts, oriented so <b>100 = most burdened</b>. A score of 80 means the tract is more burdened than about 80% of tracts.</p><ul id="themeDefs"></ul><p class="note">A ⚠ appears when an input's estimate is unreliable (coefficient of variation above 30%). Health measures are CDC <b>model-based estimates</b>, not counts of diagnosed people. Neighborhood (CSA) shares are recomputed from pooled tract counts, and neighborhood median income is interpolated from pooled income brackets.</p></div>
-    <div class="card rv"><h3>How it stays current</h3><ul><li><b>Live (in your browser):</b> weather, heat index and wind chill, air quality (EPA monitors + model), NWS alerts, USGS stream gauges, FEMA flood zones, OpenStreetMap amenities.</li><li><b>Daily build:</b> a scheduled job pulls the newest ACS 5-year release, the newest CDC PLACES release, the city's cooling-center, park, pool and rec-center layers, and geocodes shelter addresses. If a source is down, the last good copy is kept.</li><li><b>Research layers:</b> summer surface temperature, land cover and the heat vulnerability index come from the Heat Atlas and are updated when the study is re-run.</li></ul></div>
-    <div class="card rv"><h3>Limitations</h3><ul><li>Satellite surface temperature is not the air temperature people feel, though the two track closely in summer.</li><li>Weather and modeled air quality are for central Baltimore; conditions vary block to block. Official monitor readings are shown when available.</li><li>FEMA flood zones are regulatory maps and miss much street and basement (rain-driven) flooding.</li><li>Cooling and warming centers open only when the city activates them; call 311 to confirm.</li><li>OpenStreetMap features are community-mapped and may be incomplete.</li><li>Not a substitute for official alerts. In an emergency call 911.</li></ul></div>
+    <div class="card"><h3>What this is</h3><p>Charm City Pulse answers two everyday questions for Baltimore: <b>is it safe to be outside right now</b>, and <b>how does my block compare</b>, along with where to go for help. Researcher mode opens every underlying number for mapping, comparison and download.</p><p>Built by Sahil (MSE Data Science, Johns Hopkins University) on two of his studies: the <i>Baltimore Heat Atlas</i> and <i>Do new street trees cool Baltimore?</i></p><div id="aboutFindings"></div></div>
+    <div class="card"><h3>How the comparisons work</h3><p>Each area is compared with Baltimore's other residential census tracts. "Higher than most" means the area ranks in the top fifth of the city on that topic; "about average" means the middle fifth.</p><ul id="themeDefs"></ul><p class="note">Health figures are CDC model-based estimates, not counts of diagnosed people. Census figures are survey estimates and carry a margin of error, shown in researcher mode.</p></div>
+    <div class="card"><h3>How it stays current</h3><ul><li><b>Live, in your browser:</b> weather, heat index and wind chill, air quality (EPA monitors and a forecast model), NWS alerts, stream gauges and FEMA flood zones.</li><li><b>Every morning:</b> the newest Census and CDC releases, city cooling centers, parks, pools and rec centers, and OpenStreetMap places such as fountains, bike lanes and markets.</li><li><b>From the research:</b> summer heat, tree cover and the heat vulnerability index.</li></ul></div>
+    <div class="card"><h3>Limits</h3><ul><li>Weather and modeled air quality are for central Baltimore; conditions vary block to block.</li><li>FEMA flood zones miss much street and basement flooding from heavy rain.</li><li>Cooling and warming centers open only when the city activates them; call 311 to confirm.</li><li>Not a substitute for official alerts. In an emergency, call 911.</li></ul></div>
   </div>
 </section>
 
 </main>
-<footer><div class="wrap">Charm City Pulse · Data: U.S. Census Bureau, CDC, EPA AirNow, NOAA/NWS, USGS, FEMA, Open-Meteo, OpenStreetMap contributors, Baltimore City · <a href="#refs">References</a> · <a href="#about">Methods</a> · <a href="privacy.html">Privacy</a> · <span id="buildStamp"></span></div></footer>
+<footer><div class="wrap">Charm City Pulse uses public data from the U.S. Census Bureau, CDC, EPA, NOAA's National Weather Service, USGS, FEMA, Open-Meteo, OpenStreetMap and Baltimore City. <a href="#refs">References</a> · <a href="#about">About</a> · <a href="privacy.html">Privacy</a> · <span id="buildStamp"></span></div></footer>
+
+<nav class="appbar" id="appbar" aria-label="App">
+  <a href="#today" data-tab="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Today</a>
+  <a href="#place" data-tab="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>My block</a>
+  <a href="#map" data-tab="map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>Map</a>
+  <a href="#help" data-tab="help"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>Help</a>
+</nav>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://unpkg.com/esri-leaflet@3.0.12/dist/esri-leaflet.js"></script>
@@ -199,7 +229,9 @@
 <script src="js/util.js?v=__BUILD__"></script>
 <script src="js/live.js?v=__BUILD__"></script>
 <script src="js/fx.js?v=__BUILD__"></script>
+<script src="js/layers.js?v=__BUILD__"></script>
 <script src="js/resident.js?v=__BUILD__"></script>
+<script src="js/conditions.js?v=__BUILD__"></script>
 <script src="js/research.js?v=__BUILD__"></script>
 <script src="js/refs.js?v=__BUILD__"></script>
 <script src="js/app.js?v=__BUILD__"></script>

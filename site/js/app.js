@@ -1,8 +1,8 @@
 /* Core: data, routing, modes, units, theme, maps, ticker, address search, live data-release watcher */
 const APP = (() => {
   const TABS = {
-    resident: [["today", "Today"], ["place", "My neighborhood"], ["map", "Map"], ["help", "Find help"], ["refs", "References"], ["about", "About"]],
-    research: [["explore", "Indicator explorer"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["download", "Download"], ["refs", "References"], ["about", "Methods"]],
+    resident: [["today", "Today"], ["place", "My block"], ["map", "Map"], ["help", "Get help"]],
+    research: [["conditions", "Live conditions"], ["explore", "Indicator explorer"], ["layers", "Map layers"], ["report", "Area report"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["download", "Download"], ["refs", "References"], ["about", "Methods"]],
   };
   const SHARED = ["refs", "about"];
   const VIEWS = {}; const inited = {};
@@ -26,7 +26,7 @@ const APP = (() => {
     c.onAdd = () => { const d = L.DomUtil.create("div", "legend"); d.innerHTML = `<b>${U.esc(title)}</b><br>` + items.map(([col, t]) => `<i style="background:${col}"></i>${U.esc(t)}`).join("<br>"); return d; };
     c.addTo(map); map._ccpLegend = c;
   }
-  const NONRES_STYLE = { color: "#8a7f70", weight: .6, fillOpacity: .7, fillColor: "url(#hatch)" };
+  const NONRES_STYLE = { color: "#8a9aa6", weight: .6, fillOpacity: .6, fillColor: "url(#hatch)" };
 
   // ---------- data ----------
   async function load(bust = "") {
@@ -81,7 +81,7 @@ const APP = (() => {
   function searchForm(form, onPick) {
     form.innerHTML = `<div class="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input type="search" placeholder="Start typing a Baltimore address…" aria-label="Address" role="combobox" aria-expanded="false" aria-autocomplete="list" required>
-      <ul class="suggest" role="listbox"></ul></div><button class="btn">Look up</button><button type="button" class="btn alt" data-locate>📍 My location</button>`;
+      <ul class="suggest" role="listbox"></ul></div><button class="btn">Check</button><button type="button" class="btn alt" data-locate>📍 Use my location</button>`;
     const input = form.querySelector("input"), list = form.querySelector(".suggest"), btn = form.querySelector(".btn");
     let items = [], sel = -1, seq = 0;
     const close = () => { list.classList.remove("on"); input.setAttribute("aria-expanded", "false"); sel = -1; };
@@ -93,7 +93,7 @@ const APP = (() => {
       close(); btn.disabled = true; btn.textContent = "Finding…";
       try { const r = await LIVE.geocode(item || input.value.trim()); if (!r) throw new Error("nf"); input.value = r.label || input.value; onPick(r.lat, r.lon, r.label); }
       catch (e) { onPick(null, null, null, e.message === "nf" ? "We couldn't find that address in Baltimore City. Try the house number and street, e.g. 3400 N Charles St." : "Address search is unavailable right now. Click the map instead."); }
-      finally { btn.disabled = false; btn.textContent = "Look up"; }
+      finally { btn.disabled = false; btn.textContent = "Check"; }
     };
     input.addEventListener("input", U.debounce(async () => {
       const my = ++seq, t = input.value.trim(); if (t.length < 3) { items = []; render(); return; }
@@ -113,16 +113,16 @@ const APP = (() => {
       const b = ev.currentTarget;
       if (!navigator.geolocation) return onPick(null, null, null, "Your browser doesn't share location. Search an address instead.");
       b.textContent = "Locating…";
-      navigator.geolocation.getCurrentPosition(p => { b.textContent = "📍 My location"; onPick(p.coords.latitude, p.coords.longitude, "Your location"); },
-        () => { b.textContent = "📍 My location"; onPick(null, null, null, "Location permission was denied. Search an address instead."); }, { timeout: 12000, enableHighAccuracy: true });
+      navigator.geolocation.getCurrentPosition(p => { b.textContent = "📍 Use my location"; onPick(p.coords.latitude, p.coords.longitude, "Your location"); },
+        () => { b.textContent = "📍 Use my location"; onPick(null, null, null, "Location permission was denied. Search an address instead."); }, { timeout: 12000, enableHighAccuracy: true });
     };
   }
 
   // ---------- routing ----------
   function route() {
-    const [name, ...rest] = (location.hash.slice(1) || (A.mode === "research" ? "explore" : "today")).split("/");
-    const owner = SHARED.includes(name) ? A.mode : TABS.resident.some(t => t[0] === name) ? "resident" : TABS.research.some(t => t[0] === name) ? "research" : null;
-    if (!owner) { location.hash = A.mode === "research" ? "explore" : "today"; return; }
+    const [name, ...rest] = (location.hash.slice(1) || (A.mode === "research" ? "conditions" : "today")).split("/");
+    const owner = SHARED.includes(name) ? (TABS[A.mode].some(t => t[0] === name) ? A.mode : A.mode) : TABS.resident.some(t => t[0] === name) ? "resident" : TABS.research.some(t => t[0] === name) ? "research" : null;
+    if (!owner) { location.hash = A.mode === "research" ? "conditions" : "today"; return; }
     if (owner !== A.mode) setMode(owner, false);
     renderTabs(name); A.view = name;
     U.$$("section.view").forEach(s => s.classList.toggle("on", s.id === "v-" + name));
@@ -132,11 +132,15 @@ const APP = (() => {
     setTimeout(() => A.maps.forEach(m => m.invalidateSize()), 80);
     if (!route.first) window.scrollTo(0, 0); route.first = false;
   }
-  function renderTabs(active) { U.$("#tabs").innerHTML = TABS[A.mode].map(([k, t]) => `<a href="#${k}" class="${k === active ? "on" : ""}">${t}</a>`).join(""); }
+  function renderTabs(active) {
+    U.$("#tabs").innerHTML = TABS[A.mode].map(([k, t]) => `<a href="#${k}" class="${k === active ? "on" : ""}">${t}</a>`).join("");
+    U.$$("#appbar a").forEach(a => a.classList.toggle("on", a.dataset.tab === active));
+  }
   function setMode(m, nav = true) {
     A.mode = m; U.store.set("mode", m);
-    U.$$("[data-mode]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === m)));
-    if (nav) location.hash = m === "research" ? "explore" : "today";
+    document.body.classList.toggle("research", m === "research"); document.body.classList.toggle("resident", m !== "research");
+    const b = U.$("#modeBtn"); b.setAttribute("aria-pressed", String(m === "research")); b.textContent = m === "research" ? (innerWidth < 480 ? "Simple" : "Simple view") : (innerWidth < 480 ? "Research" : "Researcher mode");
+    if (nav) location.hash = m === "research" ? "conditions" : "today";
   }
   function setUnit(u) {
     U.store.set("unit", u); U.$$("[data-unit]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.unit === u)));
@@ -160,13 +164,13 @@ const APP = (() => {
   };
 
   async function start() {
-    U.$$("[data-mode]").forEach(b => b.onclick = () => setMode(b.dataset.mode));
+    U.$("#modeBtn").onclick = () => setMode(A.mode === "research" ? "resident" : "research");
     U.$$("[data-unit]").forEach(b => b.onclick = () => setUnit(b.dataset.unit)); setUnit(U.unit());
     U.$("#themeBtn").onclick = () => setTheme(isDark() ? "light" : "dark");
     try { await load(); }
     catch (e) { U.$("main").innerHTML = `<div class="card alert"><h3>Could not load data</h3><p>${U.esc(e.message)}. If you opened the file directly, serve the folder with a local web server (for example <code>python3 -m http.server</code>).</p></div>`; return; }
     U.$("#buildStamp").textContent = "Data build " + new Date(A.data.meta.built).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
-    Object.assign(VIEWS, RES.views, RSC.views, REFS.views);
+    Object.assign(VIEWS, RES.views, COND.views, RSC.views, REFS.views);
     setMode(A.mode, false); route.first = true;
     addEventListener("hashchange", route); route();
     ticker(); watchReleases();
