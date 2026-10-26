@@ -1,0 +1,28 @@
+{
+ "season": {"start": "2026-11-15", "end": "2027-03-15"},
+ "source": "Baltimore City Mayor's Office of Homeless Services, FY 2027 Winter Shelter & Code Purple Plan",
+ "source_url": "https://www.baltimorecity.gov/homeless/winter-shelter",
+ "verified": "2026-10-26",
+ "activation": "Open only when Winter Shelter / Code Blue is activated (wind chill 32°F or below). Activation is announced by 2 pm on MOHS social media; call 311.",
+ "hotlines": [
+  {"name": "Baltimore City Shelter Hotline", "phone": "443-984-9540"},
+  {"name": "Winter Shelter Hotline (9 pm–midnight)", "phone": "443-695-7378"},
+  {"name": "311 (warming centers, shelters)", "phone": "311"},
+  {"name": "Heating-bill help, Community Action Partnership", "phone": "410-396-5555"}
+ ],
+ "sites": [
+  {"name": "Beans & Bread", "address": "400 S. Bond St., Baltimore, MD 21231", "type": "Warming center", "hours": "Mon–Fri 9 am–4 pm", "serves": "All"},
+  {"name": "Franciscan Center", "address": "101 W. 23rd St., Baltimore, MD 21218", "type": "Warming center", "hours": "Mon–Fri 10 am–2 pm", "serves": "All"},
+  {"name": "Manna House", "address": "435 E. 25th St., Baltimore, MD 21218", "type": "Warming center", "hours": "Mon–Fri 10 am–2 pm", "serves": "All"},
+  {"name": "My Sister's Place Women's Center", "address": "17 W. Franklin St., Baltimore, MD 21201", "type": "Warming center", "hours": "Daily 9 am–5 pm", "serves": "Women and children"},
+  {"name": "Weinberg Housing & Resource Center", "address": "620 Fallsway, Baltimore, MD 21202", "type": "Warming center", "hours": "Daily 9 am–4 pm", "serves": "All"},
+  {"name": "Springboard Community Services", "address": "4623 Falls Rd., Baltimore, MD 21209", "type": "Warming center", "hours": "Mon–Thu 9 am–5 pm; Fri–Sun 9 am–4 pm", "serves": "Youth and young adults 14–24"},
+  {"name": "Fairfield Inn (overnight shelter)", "address": "101 S. President St., Baltimore, MD 21202", "type": "Overnight shelter", "hours": "4 pm–9 am; call the Shelter Hotline first", "serves": "Youth 18–24, families"},
+  {"name": "MCVET (overnight shelter)", "address": "301 N. High St., Baltimore, MD 21202", "type": "Overnight shelter", "hours": "4 pm–9 am; call the Shelter Hotline first", "serves": "Single men"},
+  {"name": "Weinberg Housing & Resource Center (overnight)", "address": "620 Fallsway, Baltimore, MD 21202", "type": "Overnight shelter", "hours": "4 pm–9 am; call the Shelter Hotline first", "serves": "Single women"},
+  {"name": "Sleep Inn & Suites (overnight shelter)", "address": "301 Fallsway, Baltimore, MD 21202", "type": "Overnight shelter", "hours": "4 pm–9 am; call the Shelter Hotline first", "serves": "Families, single women"},
+  {"name": "Samuel F.B. Morse Recreation Center (overflow)", "address": "424 S. Pulaski St., Baltimore, MD 21223", "type": "Overnight shelter", "hours": "4 pm–9 am; call the Shelter Hotline first", "serves": "Overflow: single adults"},
+  {"name": "Lois T. Murray (overflow)", "address": "1600 E. Arlington Ave., Baltimore, MD 21239", "type": "Overnight shelter", "hours": "4 pm–9 am; call the Shelter Hotline first", "serves": "Overflow: families"},
+  {"name": "311 W. Saratoga St. (overflow)", "address": "311 W. Saratoga St., Baltimore, MD 21201", "type": "Overnight shelter", "hours": "4 pm–9 am; call the Shelter Hotline first", "serves": "Overflow: single adults"}
+ ]
+}

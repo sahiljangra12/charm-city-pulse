@@ -1,0 +1,1 @@
+{"name":"Charm City Pulse","short_name":"CC Pulse","description":"Live Baltimore environment and sustainability data","start_url":"./#today","scope":"./","display":"standalone","background_color":"#f6f1e8","theme_color":"#123247","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}

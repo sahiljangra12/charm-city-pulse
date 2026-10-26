@@ -1,0 +1,60 @@
+name: Refresh data and deploy
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 9 * * *"      # daily, 5:17 am Baltimore (EDT)
+  workflow_dispatch:
+    inputs:
+      probe:
+        description: "Also run the endpoint probe"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Probe live endpoints
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.probe }}
+        run: python pipeline/probe.py
+      - name: Rebuild data from the newest public releases
+        run: python pipeline/refresh.py
+      - name: Stamp build id
+        run: sed -i "s/__BUILD__/$(date -u +%Y%m%d%H%M)/" site/sw.js site/index.html
+      - name: Commit refreshed data
+        run: |
+          git config user.name "charm-city-pulse-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add site/data pipeline/cache
+          if ! git diff --cached --quiet; then
+            git commit -m "Data refresh $(date -u +%Y-%m-%d) [skip ci]"
+            git push
+          fi
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
