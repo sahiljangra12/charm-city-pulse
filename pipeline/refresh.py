@@ -521,6 +521,52 @@ if layers_ok:
     src("parks", name="Parks, pools and recreation centers (BCRP)", by="Baltimore City Department of Recreation & Parks", vintage="current city layer",
         url="https://geodata.baltimorecity.gov/egis/rest/services/CityView/BCRPServices/FeatureServer", status="live", counts=layers_ok)
 
+# --------------------------------------------------------------------------- OpenStreetMap layers (daily snapshot)
+BB = "(39.197,-76.712,39.372,-76.529)"
+OSMQ = {
+    "fountains": f'node["amenity"="drinking_water"]{BB};',
+    "transit": f'node["railway"~"^(station|halt|tram_stop)$"]{BB};node["public_transport"="station"]{BB};',
+    "bike": f'way["highway"="cycleway"]{BB};way["cycleway"~"lane|track"]{BB};way["cycleway:right"~"lane|track"]{BB};way["cycleway:left"~"lane|track"]{BB};way["cycleway:both"~"lane|track"]{BB};',
+    "ev": f'nwr["amenity"="charging_station"]{BB};',
+    "gardens": f'nwr["garden:type"="community"]{BB};nwr["landuse"="allotments"]{BB};',
+    "recycling": f'nwr["amenity"="recycling"]["recycling_type"!="container"]{BB};',
+    "markets": f'nwr["amenity"="marketplace"]{BB};',
+}
+OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://overpass.private.coffee/api/interpreter"]
+
+
+def overpass(q, geom):
+    body = urllib.parse.urlencode({"data": f"[out:json][timeout:90];({q});out {'geom' if geom else 'center'};"}).encode()
+    err = None
+    for u in OVERPASS:
+        try:
+            return json.loads(fetch(u, data=body, tries=2, timeout=120)).get("elements", [])
+        except Exception as e:
+            err = e
+    raise RuntimeError(err)
+
+
+osm_ok = {}
+for key, q in OSMQ.items():
+    try:
+        els = overpass(q, key == "bike"); feats = []
+        for e in els:
+            t = e.get("tags", {}); props = {k: t.get(k) for k in ("name", "operator", "opening_hours", "network", "socket:type2", "capacity") if t.get(k)}
+            if key == "bike" and e.get("geometry"):
+                feats.append({"type": "Feature", "properties": props, "geometry": {"type": "LineString", "coordinates": [[round(p["lon"], 5), round(p["lat"], 5)] for p in e["geometry"]]}})
+            else:
+                lat = e.get("lat", (e.get("center") or {}).get("lat")); lon = e.get("lon", (e.get("center") or {}).get("lon"))
+                if lat is not None: feats.append({"type": "Feature", "properties": props, "geometry": {"type": "Point", "coordinates": [round(lon, 5), round(lat, 5)]}})
+        if not feats: raise RuntimeError("empty")
+        json.dump({"type": "FeatureCollection", "features": feats}, open(os.path.join(OUT, f"osm_{key}.geojson"), "w"), separators=(",", ":"))
+        osm_ok[key] = len(feats); log("OSM", key, len(feats))
+    except Exception as e:
+        log("OSM", key, "failed:", e)
+        if os.path.exists(os.path.join(OUT, f"osm_{key}.geojson")): osm_ok[key] = "kept previous"
+if osm_ok:
+    src("osm", name="Drinking fountains, transit stations, bike lanes, EV chargers, gardens, recycling and markets", by="OpenStreetMap contributors (Overpass API)",
+        vintage="daily snapshot", url="https://www.openstreetmap.org/copyright", status="live", counts=osm_ok)
+
 # --------------------------------------------------------------------------- write
 def rnd(v, d):
     return None if v is None else round(v, d)
