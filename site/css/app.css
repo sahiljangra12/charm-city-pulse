@@ -35,7 +35,7 @@ header.top{position:sticky;top:0;z-index:1000;background:color-mix(in srgb,var(-
 .brand .beat{stroke-dasharray:90;stroke-dashoffset:90;animation:beat 3.2s var(--ease) infinite}
 @keyframes beat{0%{stroke-dashoffset:90}45%,70%{stroke-dashoffset:0}100%{stroke-dashoffset:-90}}
 .brand b{font-family:var(--display);font-size:1.25rem;font-weight:800;letter-spacing:-.03em;white-space:nowrap}
-.brand span{display:block;font-size:.78rem;color:var(--ink-2)}
+.brand div > span{display:block;font-size:.78rem;color:var(--ink-2)}
 .seg{display:inline-flex;background:var(--tint);border-radius:999px;padding:3px;border:1px solid var(--line)}
 .seg button{border:0;background:transparent;padding:6px 12px;border-radius:999px;cursor:pointer;font-size:.86rem;font-weight:600;color:var(--ink-2)}
 .seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(14,42,59,.15)}
@@ -51,7 +51,7 @@ nav.tabs a:hover{color:var(--ink)}
 /* bottom app bar (resident, phones) */
 .appbar{display:none}
 @media (max-width:700px){
-  .topbar{gap:8px}.brand span{display:none}.brand b{font-size:1.1rem}
+  .topbar{gap:8px}.brand div > span{display:none}.brand b{font-size:1.1rem}
   body.resident nav.tabs{display:none}
   body.resident .appbar{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:1100;background:var(--surface);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
   .appbar a{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:var(--ink-2);font-size:.74rem;font-weight:600;padding:4px 0;border-radius:10px}
