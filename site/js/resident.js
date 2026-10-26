@@ -2,14 +2,19 @@
 const RES = (() => {
   const D = () => APP.data;
   let userLoc = U.store.get("loc", null);
-  const short = n => String(n || "").replace(/\s+(AT|NEAR|NR|@|ABV|BLW|BELOW|ABOVE)\s+.*$/i, "").replace(/,?\s*(BALTIMORE,?\s*)?MD\.?$/i, "").toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase());
+  const short = n => String(n || "").replace(/,?\s*MD\.?$/i, "").replace(/\s+AT BALTIMORE$/i, "").toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase()).replace(/\b(At|Near|Nr|Of|To)\b/g, w => w.toLowerCase()).replace(/\bBlvd\b/, "Blvd.").replace(/\bAve\b/, "Ave.");
   const F = id => LIVE.feeds[id];
   const hostRefresh = (root, id) => { const h = U.$(".refresh-host", root); if (h) h.innerHTML = FX.refreshBadge(id); };
 
+  // Official EPA monitor within 25 km wins; the CAMS model is the fallback
+  function aqiNow() {
+    const m = (F("airnow").value || []).find(x => x.km < 25), AQ = F("air").value;
+    return m ? { aqi: m.aqi, site: m.name, km: m.km, time: m.time, mon: m } : { aqi: AQ?.current.us_aqi ?? null, site: null };
+  }
   // ======================= TODAY =======================
   function verdictOf(W, AQ, AL) {
     const c = W?.current; const fc = c ? LIVE.feelsCat(c.temperature_2m, c.relative_humidity_2m, c.wind_speed_10m) : null;
-    const aqi = AQ?.current.us_aqi, ac = LIVE.aqiCat(aqi);
+    const aqi = aqiNow().aqi, ac = LIVE.aqiCat(aqi);
     const severe = (AL || []).some(x => /Extreme|Severe/.test(x.severity));
     const lvl = Math.max(fc?.lvl || 0, Math.min(4, ac.lvl), severe ? 3 : (AL && AL.length ? 1 : 0));
     const V = ["Good conditions to be outside", "Mostly fine — take simple precautions", "Take it easy outside", "Limit time outdoors", "Dangerous conditions — stay safe"][Math.min(lvl, 4)];
@@ -33,7 +38,7 @@ const RES = (() => {
       const cls = `card sky ${day ? "day" : "night"} ${kind === "fog" ? "cloudy" : kind}${hot ? " hot" : ""}`;
       if (card.className !== cls) { card.className = cls; U.$("#skyScene").innerHTML = FX.scene(kind, day, hot); }
       const stats = [[c.temperature_2m, "t", LIVE.WMO[c.weather_code] || "Now"], [v.fc ? v.fc.index : c.apparent_temperature, "t", v.fc ? v.fc.label : "Feels like"],
-        [c.relative_humidity_2m, "%", "Humidity"], [c.wind_speed_10m, "w", `Wind${c.wind_gusts_10m ? ", gusts " + Math.round(c.wind_gusts_10m) : ""}`], [v.aqi, "n", "Air quality index"]];
+        [c.relative_humidity_2m, "%", "Humidity"], [c.wind_speed_10m, "w", `Wind${c.wind_gusts_10m ? ", gusts " + Math.round(c.wind_gusts_10m) : ""}`], [v.aqi == null ? null : Math.round(v.aqi), "n", aqiNow().site ? "Air quality (EPA monitor)" : "Air quality index"]];
       const box = U.$("#nowStats");
       if (!box.children.length) box.innerHTML = stats.map((_, i) => `<div><b class="countup" data-i="${i}">—</b><span></span></div>`).join("");
       stats.forEach(([val, kindv, lab], i) => {
@@ -64,13 +69,14 @@ const RES = (() => {
   function drawAir() {
     const AQ = F("air").value, mons = F("airnow").value, el = U.$("#airCard");
     if (!AQ && !mons) { if (F("air").err) el.innerHTML = `<div class="kicker">Air quality ${FX.refreshBadge("air")}</div><p class="muted">Air-quality feeds are reconnecting.</p>`; return; }
-    const near = mons && mons.length ? mons[0] : null;
-    const aqi = near && near.km < 25 ? near.aqi : AQ?.current.us_aqi, ac = LIVE.aqiCat(aqi);
+    const now = aqiNow(), near = now.mon || null;
+    const aqi = now.aqi, ac = LIVE.aqiCat(aqi);
     el.innerHTML = `<div class="kicker">Air quality ${FX.refreshBadge(near ? "airnow" : "air")}</div><div class="gwrap"></div>
       <p style="text-align:center;margin:0 0 6px"><span class="pill"><span class="dot" style="background:${ac.c}"></span>${ac.t}</span></p>
       <p class="muted" style="font-size:.9rem">${ac.tip || ""}</p>
-      ${AQ ? `<div style="font-size:.82rem">${[["PM2.5", AQ.current.us_aqi_pm2_5], ["Ozone", AQ.current.us_aqi_ozone], ["NO₂", AQ.current.us_aqi_nitrogen_dioxide]].map(([n, v]) => v == null ? "" : `<div style="display:flex;align-items:center;gap:8px;margin:3px 0"><span style="width:46px">${n}</span><div class="meter" style="flex:1;margin:0"><i style="background:${LIVE.aqiCat(v).c}" data-w="${Math.min(100, v / 2)}"></i></div><span style="width:28px;text-align:right">${Math.round(v)}</span></div>`).join("")}</div>` : ""}
-      <p class="note">${near ? `Official EPA monitor <b>${U.esc(near.name)}</b> (${U.dist(near.km)} away${near.time ? ", " + U.timeAgo(near.time) : ""}) · ` : ""}Model: Copernicus CAMS via Open-Meteo. <a href="https://www.airnow.gov/?city=Baltimore&state=MD&country=USA" target="_blank" rel="noopener">AirNow</a></p>`;
+      ${near ? `<div style="font-size:.82rem;margin-bottom:6px">Monitor readings: ${Object.entries(near.readings).map(([p, r]) => `${U.esc(p)} <b>${Math.round(r.aqi)}</b>`).join(" · ")}</div>` : ""}
+      ${AQ ? `<div class="kicker" style="margin:8px 0 2px">Model forecast by pollutant (AQI)</div><div style="font-size:.82rem">${[["PM2.5", AQ.current.us_aqi_pm2_5], ["Ozone", AQ.current.us_aqi_ozone], ["NO₂", AQ.current.us_aqi_nitrogen_dioxide]].map(([n, v]) => v == null ? "" : `<div style="display:flex;align-items:center;gap:8px;margin:3px 0"><span style="width:46px">${n}</span><div class="meter" style="flex:1;margin:0"><i style="background:${LIVE.aqiCat(v).c}" data-w="${Math.min(100, v / 2)}"></i></div><span style="width:28px;text-align:right">${Math.round(v)}</span></div>`).join("")}</div>` : ""}
+      <p class="note">${near ? `Gauge shows the official EPA monitor <b>${U.esc(near.name)}</b> (${U.dist(near.km)} away${near.time ? ", reading " + U.timeAgo(near.time) : ""}). ` : "Gauge shows the model estimate (no EPA monitor reporting nearby). "}Model: Copernicus CAMS via Open-Meteo. <a href="https://www.airnow.gov/?city=Baltimore&state=MD&country=USA" target="_blank" rel="noopener">AirNow</a></p>`;
     const g = FX.gauge({ min: 0, max: 300, segs: AQI_SEGS, label: "US AQI" }); el.querySelector(".gwrap").appendChild(g);
     FX.onReveal(el, () => { g.set(aqi); U.$$(".meter i", el).forEach(i => requestAnimationFrame(() => requestAnimationFrame(() => i.style.width = i.dataset.w + "%"))); });
   }
@@ -185,7 +191,9 @@ const RES = (() => {
     let list = [];
     if (s !== "winter") list = list.concat(C.cooling.map(x => ({ ...x, kind: "cool" })));
     if (s !== "summer") list = list.concat(C.winter.sites.filter(x => x.lat != null && x.type === "Warming center").map(x => ({ ...x, kind: "warm" })));
-    return list.map(x => ({ ...x, d: U.km(here, [x.lon, x.lat]) })).sort((a, b) => a.d - b.d).slice(0, n);
+    list = list.map(x => ({ ...x, d: U.km(here, [x.lon, x.lat]) })).sort((a, b) => a.d - b.d);
+    if (s === "shoulder") return [...list.filter(x => x.kind === "warm").slice(0, 2), ...list.filter(x => x.kind === "cool").slice(0, 2)];
+    return list.slice(0, n);
   }
   const centerLi = x => `<li><span class="dot" style="background:${x.kind === "warm" ? "#d0672b" : "#2f7fb5"};margin-top:6px"></span><div><b>${U.esc(x.name)}</b><br><small class="muted">${U.esc(x.address)}${x.hours ? " · " + U.esc(x.hours) : ""}${x.serves && x.serves !== "All" ? " · " + U.esc(x.serves) : ""}</small><br><span class="chip">${x.kind === "warm" ? "Warming center (Nov 15–Mar 15, when activated)" : "Cooling center (Code Red days)"}</span></div><span class="meta">${U.dist(x.d)}<br><a href="https://www.google.com/maps/dir/?api=1&destination=${x.lat},${x.lon}" target="_blank" rel="noopener">Directions</a></span></li>`;
   async function placeShow([id]) {
@@ -359,5 +367,5 @@ const RES = (() => {
     place: { init: placeInit, show: placeShow },
     map: { init: mapInit, unit: () => paint(U.$("#mapTheme").value), reload() { choro.clearLayers(); choro.addData(D().tracts); paint(U.$("#mapTheme").value); } },
     help: { show: helpShow },
-  }, short };
+  }, short, aqiNow };
 })();

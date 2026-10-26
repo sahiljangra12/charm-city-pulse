@@ -19,7 +19,8 @@ const REFS = (() => {
     ["Agafonkin, V., et al. <i>Leaflet</i> (v1.9.4) [JavaScript library].", "https://leafletjs.com/"],
     ["Esri. <i>Esri Leaflet</i> (v3.0.12) [JavaScript library].", "https://developers.arcgis.com/esri-leaflet/"],
     ["Chart.js contributors. <i>Chart.js</i> (v4.4.1) [JavaScript library].", "https://www.chartjs.org/"],
-    ["OpenStreetMap contributors. <i>OpenStreetMap</i>, data under the Open Database License; basemap tiles © CARTO.", "https://www.openstreetmap.org/copyright"],
+    ["OpenStreetMap contributors. <i>OpenStreetMap</i>, data under the Open Database License.", "https://www.openstreetmap.org/copyright"],
+    ["Esri. <i>World Light Gray and Dark Gray Canvas</i> basemaps (Esri, HERE, Garmin, OpenStreetMap contributors).", "https://www.arcgis.com/home/item.html?id=291da5eab3a0412593b66d384379f89f"],
     ["GitHub. <i>GitHub Actions and GitHub Pages</i> (daily data build and hosting).", "https://docs.github.com/actions"],
   ];
   const li = (html, url) => `<li>${html} <a href="${url}" target="_blank" rel="noopener">${U.esc(url.replace(/^https?:\/\//, "").slice(0, 70))}</a><button class="copy" data-copy>Copy</button></li>`;

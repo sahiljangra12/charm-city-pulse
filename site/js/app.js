@@ -10,13 +10,14 @@ const APP = (() => {
 
   // ---------- theme ----------
   function isDark() { const t = document.documentElement.dataset.theme; return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; }
-  const tileUrl = () => `https://{s}.basemaps.cartocdn.com/${isDark() ? "dark_all" : "light_all"}/{z}/{x}/{y}{r}.png`;
-  function setTheme(t) { if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme; U.store.set("theme", t || null); A.maps.forEach(m => m._ccpTiles.setUrl(tileUrl())); document.dispatchEvent(new Event("themechange")); }
+  const tileUrl = () => `https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/${isDark() ? "World_Dark_Gray_Base" : "World_Light_Gray_Base"}/MapServer/tile/{z}/{y}/{x}`;
+  function setTheme(t) { if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme; U.store.set("theme", t || null); A.maps.forEach(m => { if (!m._ccpFallback) m._ccpTiles.setUrl(tileUrl()); }); document.dispatchEvent(new Event("themechange")); }
   const saved = U.store.get("theme", null); if (saved) document.documentElement.dataset.theme = saved;
 
   function makeMap(elId, opts = {}) {
     const m = L.map(elId, { zoomControl: true, scrollWheelZoom: opts.scroll !== false, attributionControl: true }).setView(LIVE.CENTER, opts.zoom || 12);
-    m._ccpTiles = L.tileLayer(tileUrl(), { maxZoom: 19, subdomains: "abcd", attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>' }).addTo(m);
+    m._ccpTiles = L.tileLayer(tileUrl(), { maxZoom: 16, maxNativeZoom: 16, attribution: 'Basemap &copy; Esri, HERE, Garmin, &copy; OpenStreetMap contributors' }).addTo(m);
+    m._ccpTiles.on("tileerror", () => { if (m._ccpFallback) return; m._ccpFallback = true; m._ccpTiles.setUrl("https://tile.openstreetmap.org/{z}/{x}/{y}.png"); m._ccpTiles.options.attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'; });
     A.maps.push(m); return m;
   }
   function legend(map, title, items) {
@@ -70,9 +71,10 @@ const APP = (() => {
     LIVE.feeds.weather.on(w => { if (!w) return; const c = w.current, fc = LIVE.feelsCat(c.temperature_2m, c.relative_humidity_2m, c.wind_speed_10m);
       parts.w = `<b>${U.tF(c.temperature_2m)}</b> ${LIVE.WMO[c.weather_code] || ""}`; parts.f = fc && fc.kind !== "mild" ? `${fc.label} <b>${U.tF(fc.index)}</b> · ${fc.t}` : null;
       parts.u = `UV peak <b>${Math.round(w.daily.uv_index_max[0])}</b>`; parts.r = `Rain chance today <b>${w.daily.precipitation_probability_max[0] ?? 0}%</b>`; draw(); });
-    LIVE.feeds.air.on(a => { if (!a) return; parts.a = `Air quality <b>${a.current.us_aqi}</b> · ${LIVE.aqiCat(a.current.us_aqi).t}`; draw(); });
+    const airTick = () => { const v = RES.aqiNow(); if (v.aqi == null) return; parts.a = `Air quality <b>${Math.round(v.aqi)}</b> · ${LIVE.aqiCat(v.aqi).t}${v.site ? " (" + U.esc(v.site) + " monitor)" : ""}`; draw(); };
+    LIVE.feeds.air.on(airTick); LIVE.feeds.airnow.on(airTick);
     LIVE.feeds.alerts.on(al => { parts.al = al && al.length ? `⚠ <b>${al.map(x => U.esc(x.event)).join(" · ")}</b>` : "No weather alerts"; draw(); });
-    LIVE.feeds.water.on(s => { if (!s) return; const f = s.filter(x => x.readings["00060"]); parts.h = `<b>${s.length}</b> USGS stream gauges reporting${f[0] ? ` · ${U.esc(RES.short(f[0].name))} ${Math.round(f[0].readings["00060"].value)} ft³/s` : ""}`; draw(); });
+    LIVE.feeds.water.on(s => { if (!s) return; const f = s.filter(x => x.readings["00060"]).sort((a, b) => b.readings["00060"].value - a.readings["00060"].value); parts.h = `<b>${s.length}</b> USGS stream gauges reporting${f[0] ? ` · ${U.esc(RES.short(f[0].name))} ${Math.round(f[0].readings["00060"].value)} ft³/s` : ""}`; draw(); });
   }
 
   // ---------- address search with autocomplete (shared) ----------
