@@ -256,3 +256,5 @@ footer{border-top:1px solid var(--line);padding:24px 0;font-size:.85rem;color:va
   .rv{opacity:1;transform:none}
   .ticker .track{animation:none;padding-left:16px}
 }
+
+@media (max-width:620px){.sky .refresh .ago{display:none}.sky .kicker{flex-wrap:wrap;padding-right:70px}}
