@@ -6,55 +6,46 @@ on:
   schedule:
     - cron: "17 9 * * *"      # daily, 5:17 am Baltimore (EDT)
   workflow_dispatch:
-    inputs:
-      probe:
-        description: "Also run the endpoint probe"
-        type: boolean
-        default: false
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: refresh-deploy
   cancel-in-progress: false
 
 jobs:
-  build:
+  build-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Probe live endpoints
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.probe }}
-        run: python pipeline/probe.py
+      - name: Probe live endpoints (diagnostic)
+        continue-on-error: true
+        run: python pipeline/probe.py 2>&1 | tee pipeline/cache/probe.txt
       - name: Rebuild data from the newest public releases
-        run: python pipeline/refresh.py
-      - name: Stamp build id
-        run: sed -i "s/__BUILD__/$(date -u +%Y%m%d%H%M)/" site/sw.js site/index.html
-      - name: Commit refreshed data
+        run: |
+          set -o pipefail
+          python pipeline/refresh.py 2>&1 | tee pipeline/cache/refresh_log.txt
+      - name: Commit refreshed data to main
         run: |
           git config user.name "charm-city-pulse-bot"
           git config user.email "actions@users.noreply.github.com"
           git add site/data pipeline/cache
           if ! git diff --cached --quiet; then
             git commit -m "Data refresh $(date -u +%Y-%m-%d) [skip ci]"
-            git push
+            git pull --rebase origin main && git push origin HEAD:main
           fi
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Publish site to gh-pages (GitHub Pages)
+        run: |
+          BUILD=$(date -u +%Y%m%d%H%M)
+          rm -rf /tmp/pub && cp -r site /tmp/pub
+          sed -i "s/__BUILD__/$BUILD/g" /tmp/pub/sw.js /tmp/pub/index.html
+          cd /tmp/pub
+          git init -q -b gh-pages
+          git config user.name "charm-city-pulse-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A && git commit -qm "Deploy $BUILD"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
