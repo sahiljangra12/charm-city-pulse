@@ -1,6 +1,8 @@
 /* Resident mode — plain language, quick actions, no jargon.
    Today · My block · Map · Help. Everything technical lives in researcher mode (conditions.js / research.js). */
 const RES = (() => {
+  const ICON_PHONE = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>', ICON_DIR = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.7 11.3 12.7 2.3a1 1 0 0 0-1.4 0l-9 9a1 1 0 0 0 0 1.4l9 9a1 1 0 0 0 1.4 0l9-9a1 1 0 0 0 0-1.4zM14 14.5V12h-4v3H8v-4a1 1 0 0 1 1-1h5V7.5l3.5 3.5z"/></svg>', ICON_LINK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
+  const dirBtn = (lat, lon, name) => `<a class="round dir" href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}" target="_blank" rel="noopener" aria-label="Directions to ${U.esc(name)}" title="Directions">${ICON_DIR}</a>`;
   const D = () => APP.data;
   const F = id => LIVE.feeds[id];
   let userLoc = U.store.get("loc", null);
@@ -105,7 +107,7 @@ const RES = (() => {
       ["#help", "📞", "Call for help", "311, 211, shelter and energy-bill lines"],
       ["https://www.treebaltimore.org", "🌳", "Get a free street tree", "TreeBaltimore plants and waters it"],
     ];
-    U.$("#hActions").innerHTML = A.map(([h, i, t, d, cls]) => `<a class="action ${cls || ""}" href="${h}"${h.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}><span class="ai">${i}</span><b>${t}</b><span>${d}</span></a>`).join("");
+    U.$("#hActions").classList.add("stagger"); U.$("#hActions").innerHTML = A.map(([h, i, t, d, cls]) => `<a class="action ${cls || ""}" href="${h}"${h.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}><span class="ai">${i}</span><b>${t}</b><span>${d}</span></a>`).join("");
   }
   let homeWired = false;
   function homeShow() {
@@ -138,7 +140,7 @@ const RES = (() => {
   }
   const placeCard = x => `<div class="place"><span class="pi" style="background:${x.kind === "warm" ? "color-mix(in srgb,var(--poor) 18%,transparent)" : "color-mix(in srgb,var(--harbor-2) 16%,transparent)"}">${x.kind === "warm" ? "🔥" : "🧊"}</span>
     <div><b>${U.esc(x.name)}</b><small class="muted">${U.esc(x.address.replace(/, Baltimore, MD \d+/, ""))}${x.hours ? " · " + U.esc(x.hours) : ""}</small><small class="muted">${x.kind === "warm" ? "Warming center, open on cold days Nov 15 – Mar 15" : "Cooling center, open on Code Red heat days"}${x.serves && x.serves !== "All" ? " · " + U.esc(x.serves) : ""}</small></div>
-    <div class="go"><span class="muted">${U.dist(x.d)}</span><a href="https://www.google.com/maps/dir/?api=1&destination=${x.lat},${x.lon}" target="_blank" rel="noopener">Directions</a></div></div>`;
+    <div class="go"><span class="muted">${U.dist(x.d)}</span>${dirBtn(x.lat, x.lon, x.name)}</div></div>`;
   let pMap, pLayer, pMarker;
   function placeInit() {
     APP.searchForm(U.$("#v-place form[data-geo]"), pick);
@@ -250,9 +252,9 @@ const RES = (() => {
     const s = LIVE.season(), C = D().centers, W = C.winter;
     U.$("#helpIntro").textContent = s === "winter" ? "It's winter shelter season. Warming centers and shelters open whenever the wind chill reaches 32°F or below." :
       s === "summer" ? "It's heat season. Cooling centers open on Code Red heat days." : "Warming centers open for the winter from November 15. Cooling centers open on Code Red heat days.";
-    const calls = [["🚨", "Emergency", "911", "911", true], ["📞", "City services and center hours", "311", "311"], ["🤝", "Food, rent, utilities (24/7)", "211", "2-1-1"],
-      ["🛏️", "Shelter Hotline", "4439849540", "443-984-9540"], ["🌙", "Winter Shelter Hotline, 9 pm–midnight", "4436957378", "443-695-7378"], ["💡", "Help with heating bills", "4103965555", "410-396-5555"]];
-    U.$("#helpCalls").innerHTML = calls.map(([i, t, tel, show, urgent]) => `<a class="call${urgent ? " urgent" : ""}" href="tel:${tel}"><span style="font-size:1.3rem">${i}</span><span>${t}</span><span class="num">${show}</span></a>`).join("");
+    const calls = [["🚨", "Emergency", "Heat stroke, hypothermia, any emergency", "911", "911", true], ["🏛️", "Baltimore 311", "City services, center hours, report problems", "311", "311"], ["🤝", "211 Maryland", "Food, rent and utility help, 24/7, any language", "211", "2-1-1"],
+      ["🛏️", "Shelter Hotline", "Shelter beds and warming centers", "4439849540", "443-984-9540"], ["🌙", "Winter Shelter Hotline", "9 pm to midnight in winter", "4436957378", "443-695-7378"], ["💡", "Heating bill help", "Community Action Partnership", "4103965555", "410-396-5555"]];
+    U.$("#helpCalls").innerHTML = calls.map(([i, t, d, tel, show, urgent]) => `<div class="callrow${urgent ? " urgent" : ""}"><span class="ci">${i}</span><div><b>${t}</b><small>${d}</small><span class="num">${show}</span></div><a class="round call${urgent ? " urgent" : ""}" href="tel:${tel}" aria-label="Call ${t} at ${show}" title="Call ${show}">${ICON_PHONE}</a></div>`).join("");
     const here = userLoc ? [userLoc.lon, userLoc.lat] : [LIVE.CENTER[1], LIVE.CENTER[0]];
     U.$("#helpPlacesTitle").textContent = userLoc ? "Places near " + (userLoc.label || "you").split(",")[0] : "Places near downtown";
     const cool = C.cooling.map(x => ({ ...x, kind: "cool" })), warm = W.sites.filter(x => x.lat != null).map(x => ({ ...x, kind: "warm" }));
@@ -268,7 +270,7 @@ const RES = (() => {
       ["🌊", "FEMA flood maps", "The official flood map for any address.", "https://msc.fema.gov/portal/home"],
       ["🚌", "Maryland Transit", "Buses, Light RailLink, Metro and MARC trip planner.", "https://www.mta.maryland.gov"],
       ["📝", "Report a problem (311)", "Street flooding, empty tree pits, dumping, no heat.", "https://311.baltimorecity.gov"]];
-    U.$("#helpPrograms").innerHTML = P.map(([i, t, d, u]) => `<a class="place" href="${u}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><span class="pi" style="background:var(--tint)">${i}</span><div><b>${t}</b><small class="muted">${d}</small></div><span class="go muted">Open</span></a>`).join("");
+    U.$("#helpPrograms").innerHTML = P.map(([i, t, d, u]) => `<div class="place"><span class="pi" style="background:var(--tint)">${i}</span><div><b>${t}</b><small class="muted">${d}</small></div><div class="go"><a class="round link" href="${u}" target="_blank" rel="noopener" aria-label="Open ${t} website" title="Open website">${ICON_LINK}</a></div></div>`).join("");
   }
 
   return { views: {

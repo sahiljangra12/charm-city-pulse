@@ -1,7 +1,7 @@
 /* Core: data, routing, modes, units, theme, maps, ticker, address search, live data-release watcher */
 const APP = (() => {
   const TABS = {
-    resident: [["today", "Today"], ["place", "My block"], ["map", "Map"], ["help", "Get help"]],
+    resident: [["today", "Today"], ["plan", "Plan"], ["place", "My block"], ["map", "Map"], ["help", "Get help"]],
     research: [["conditions", "Live conditions"], ["explore", "Indicator explorer"], ["layers", "Map layers"], ["report", "Area report"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["download", "Download"], ["refs", "References"], ["about", "Methods"]],
   };
   const SHARED = ["refs", "about"];
@@ -129,12 +129,14 @@ const APP = (() => {
     const v = VIEWS[name];
     if (v) { if (!inited[name] && v.init) { v.init(); inited[name] = true; } v.show && v.show(rest.map(decodeURIComponent)); }
     FX.reveal(U.$("#v-" + name));
+    U.$$("#v-" + name + " .place-list, #v-" + name + " .facts, #v-" + name + " .todo, #v-" + name + " .meters, #v-" + name + " .grid.g3, #v-" + name + " .grid.g2").forEach(el => { el.classList.remove("stagger"); void el.offsetWidth; el.classList.add("stagger"); });
     setTimeout(() => A.maps.forEach(m => m.invalidateSize()), 80);
     if (!route.first) window.scrollTo(0, 0); route.first = false;
   }
   function renderTabs(active) {
     U.$("#tabs").innerHTML = TABS[A.mode].map(([k, t]) => `<a href="#${k}" class="${k === active ? "on" : ""}">${t}</a>`).join("");
     U.$$("#appbar a").forEach(a => a.classList.toggle("on", a.dataset.tab === active));
+    if (navigator.vibrate && route.touched) navigator.vibrate(6);
   }
   function setMode(m, nav = true) {
     A.mode = m; U.store.set("mode", m);
@@ -163,6 +165,24 @@ const APP = (() => {
     reload() { this.show(); },
   };
 
+  // iOS-style sliding thumb under segmented controls
+  function segThumbs() {
+    const place = seg => {
+      const on = seg.querySelector('button[aria-pressed="true"]'); let th = seg.querySelector(".thumb");
+      if (!th) { th = document.createElement("span"); th.className = "thumb"; seg.prepend(th); seg.classList.add("has-thumb"); }
+      if (!on) return; th.style.width = on.offsetWidth + "px"; th.style.transform = `translateX(${on.offsetLeft}px)`;
+    };
+    const all = () => U.$$(".seg").forEach(place);
+    new MutationObserver(all).observe(document.body, { subtree: true, attributes: true, attributeFilter: ["aria-pressed"] });
+    addEventListener("resize", all); setTimeout(all, 300); document.fonts?.ready.then(all);
+  }
+  // gentle parallax on the sky scene
+  function parallax() {
+    if (FX.reduce) return; let tk = false;
+    addEventListener("scroll", () => { if (tk) return; tk = true; requestAnimationFrame(() => { const y = Math.min(scrollY, 400);
+      const sc = U.$("#hScene"), ct = U.$("#hSky .content"); if (sc) sc.style.transform = `translateY(${y * .25}px)`; if (ct) ct.style.transform = `translateY(${y * .1}px)`; tk = false; }); }, { passive: true });
+  }
+
   async function start() {
     U.$("#modeBtn").onclick = () => setMode(A.mode === "research" ? "resident" : "research");
     U.$$("[data-unit]").forEach(b => b.onclick = () => setUnit(b.dataset.unit)); setUnit(U.unit());
@@ -170,9 +190,12 @@ const APP = (() => {
     try { await load(); }
     catch (e) { U.$("main").innerHTML = `<div class="card alert"><h3>Could not load data</h3><p>${U.esc(e.message)}. If you opened the file directly, serve the folder with a local web server (for example <code>python3 -m http.server</code>).</p></div>`; return; }
     U.$("#buildStamp").textContent = "Data build " + new Date(A.data.meta.built).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
-    Object.assign(VIEWS, RES.views, COND.views, RSC.views, REFS.views);
+    Object.assign(VIEWS, RES.views, PLAN.views, COND.views, RSC.views, REFS.views);
+    ALERTS.init(); segThumbs(); parallax();
     setMode(A.mode, false); route.first = true;
-    addEventListener("hashchange", route); route();
+    addEventListener("hashchange", () => {
+      if (document.startViewTransition && !FX.reduce) { const vt = document.startViewTransition(() => route()); vt.ready.catch(() => {}); vt.finished.catch(() => {}); vt.updateCallbackDone.catch(() => {}); } else route();
+    }); route();
     ticker(); watchReleases();
     document.addEventListener("unitchange", () => { if (A.view && VIEWS[A.view]?.unit) VIEWS[A.view].unit(); else if (A.view && VIEWS[A.view]?.show) VIEWS[A.view].show(location.hash.slice(1).split("/").slice(1).map(decodeURIComponent)); });
     if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
