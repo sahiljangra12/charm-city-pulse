@@ -15,6 +15,6 @@
 [refresh] OSM bike 2378
 [refresh] OSM ev 57
 [refresh] OSM gardens 86
-[refresh] OSM recycling failed: https://overpass.private.coffee/api/interpreter: HTTP Error 504: Gateway Timeout
+[refresh] OSM recycling 7
 [refresh] OSM markets 19
 [refresh] done: 199 tracts, 55 CSAs; sources: {'acs': 'live via Census Reporter', 'places': 'live', 'heat': 'research release', 'svi': 'research release', 'holc': 'historical', 'trees': 'research release', 'census2020': 'fixed', 'cooling': 'live', 'winter': 'verified 2026-10-26', 'parks': 'live', 'osm': 'live'}
