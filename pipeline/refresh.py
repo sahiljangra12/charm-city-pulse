@@ -535,19 +535,25 @@ OSMQ = {
 OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://overpass.private.coffee/api/interpreter"]
 
 
+OSM_DEADLINE = time.time() + 240   # never spend more than 4 minutes on OpenStreetMap
 def overpass(q, geom):
-    body = urllib.parse.urlencode({"data": f"[out:json][timeout:90];({q});out {'geom' if geom else 'center'};"}).encode()
+    body = urllib.parse.urlencode({"data": f"[out:json][timeout:50];({q});out {'geom' if geom else 'center'};"}).encode()
     err = None
     for u in OVERPASS:
+        if time.time() > OSM_DEADLINE: raise RuntimeError("time budget used")
         try:
-            return json.loads(fetch(u, data=body, tries=2, timeout=120)).get("elements", [])
+            return json.loads(fetch(u, data=body, tries=1, timeout=60)).get("elements", [])
         except Exception as e:
             err = e
     raise RuntimeError(err)
 
 
 osm_ok = {}
-for key, q in OSMQ.items():
+OSM_REFRESH = os.environ.get("GITHUB_EVENT_NAME", "schedule") in ("schedule", "workflow_dispatch") or not all(os.path.exists(os.path.join(OUT, f"osm_{k}.geojson")) for k in OSMQ)
+if not OSM_REFRESH:
+    log("OSM: keeping this morning's snapshot (code-only run)")
+    osm_ok = {k: "kept" for k in OSMQ}
+for key, q in (OSMQ.items() if OSM_REFRESH else []):
     try:
         els = overpass(q, key == "bike"); feats = []
         for e in els:
