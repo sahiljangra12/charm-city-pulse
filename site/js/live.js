@@ -194,35 +194,35 @@ const LIVE = (() => {
   // ---------- categories ----------
   function aqiCat(a) {
     if (a == null) return { t: "No data", c: "#999", lvl: 0 };
-    if (a <= 50) return { t: "Good", c: "#2e9a5e", lvl: 0, tip: "Air is clean. A great time to be outside." };
-    if (a <= 100) return { t: "Moderate", c: "#d9a80f", lvl: 1, tip: "Unusually sensitive people should consider shorter, lighter outdoor activity." };
-    if (a <= 150) return { t: "Unhealthy for sensitive groups", c: "#e07b2a", lvl: 2, tip: "People with asthma or heart or lung disease, children, older adults and outdoor workers should limit long or heavy exertion outside." };
-    if (a <= 200) return { t: "Unhealthy", c: "#c9402f", lvl: 3, tip: "Everyone should cut back on long or heavy exertion outdoors." };
-    if (a <= 300) return { t: "Very unhealthy", c: "#8f3f97", lvl: 4, tip: "Avoid long or heavy exertion outdoors; sensitive groups should stay inside." };
-    return { t: "Hazardous", c: "#7e0023", lvl: 5, tip: "Everyone should avoid outdoor activity." };
+    if (a <= 50) return { t: "Good", c: "#1e9e5a", lvl: 0, tip: "Air is clean. A great time to be outside." };
+    if (a <= 100) return { t: "Moderate", c: "#e3a900", lvl: 1, tip: "Unusually sensitive people should consider shorter, lighter outdoor activity." };
+    if (a <= 150) return { t: "Unhealthy for sensitive groups", c: "#ef7d16", lvl: 2, tip: "People with asthma or heart or lung disease, children, older adults and outdoor workers should limit long or heavy exertion outside." };
+    if (a <= 200) return { t: "Unhealthy", c: "#d6283b", lvl: 3, tip: "Everyone should cut back on long or heavy exertion outdoors." };
+    if (a <= 300) return { t: "Very unhealthy", c: "#8f1d4a", lvl: 4, tip: "Avoid long or heavy exertion outdoors; sensitive groups should stay inside." };
+    return { t: "Hazardous", c: "#5a0d2e", lvl: 5, tip: "Everyone should avoid outdoor activity." };
   }
   // NWS heat-index categories; cold uses NWS wind chill and Baltimore Code Blue (13°F)
   function feelsCat(T, RH, V) {
     if (T == null) return null;
     if (T >= 80) {
       const hi = U.heatIndex(T, RH);
-      const c = hi >= 125 ? { t: "Extreme danger", c: "#7a2140", lvl: 4 } : hi >= 103 ? { t: "Danger", c: "#b4472f", lvl: 3 } : hi >= 90 ? { t: "Extreme caution", c: "#d0672b", lvl: 2 } : hi >= 80 ? { t: "Caution", c: "#c99a12", lvl: 1 } : { t: "Comfortable", c: "#2e7a58", lvl: 0 };
+      const c = hi >= 125 ? { t: "Extreme danger", c: "#8f1d4a", lvl: 4 } : hi >= 103 ? { t: "Danger", c: "#d6283b", lvl: 3 } : hi >= 90 ? { t: "Extreme caution", c: "#ef7d16", lvl: 2 } : hi >= 80 ? { t: "Caution", c: "#e3a900", lvl: 1 } : { t: "Comfortable", c: "#1e9e5a", lvl: 0 };
       return { ...c, kind: "heat", index: hi, label: "Heat index" };
     }
     if (T <= 50) {
       const wc = U.windChill(T, V);
-      const c = wc <= 13 ? { t: "Code Blue cold (wind chill 13°F or below)", c: "#1d4f7c", lvl: 3 } : wc <= 32 ? { t: "Freezing — winter shelters open", c: "#3d7fb2", lvl: 2 } : wc <= 40 ? { t: "Cold", c: "#79aed1", lvl: 1 } : { t: "Cool", c: "#2e7a58", lvl: 0 };
+      const c = wc <= 13 ? { t: "Code Blue cold (wind chill 13°F or below)", c: "#1d4f7c", lvl: 3 } : wc <= 32 ? { t: "Freezing — winter shelters open", c: "#3d7fb2", lvl: 2 } : wc <= 40 ? { t: "Cold", c: "#79aed1", lvl: 1 } : { t: "Cool", c: "#1e9e5a", lvl: 0 };
       return { ...c, kind: "cold", index: wc, label: "Wind chill" };
     }
-    return { t: "Comfortable", c: "#2e7a58", lvl: 0, kind: "mild", index: T, label: "Feels like" };
+    return { t: "Comfortable", c: "#1e9e5a", lvl: 0, kind: "mild", index: T, label: "Feels like" };
   }
   function uvCat(u) {
     if (u == null) return { t: "—", c: "#999" };
-    if (u < 3) return { t: "Low", c: "#2e9a5e", tip: "No protection needed for most people." };
-    if (u < 6) return { t: "Moderate", c: "#d9a80f", tip: "Sunscreen and shade around midday." };
-    if (u < 8) return { t: "High", c: "#e07b2a", tip: "Sunscreen, a hat and shade from 10 am to 4 pm." };
-    if (u < 11) return { t: "Very high", c: "#c9402f", tip: "Minimize sun between 10 am and 4 pm." };
-    return { t: "Extreme", c: "#8f3f97", tip: "Avoid the midday sun." };
+    if (u < 3) return { t: "Low", c: "#1e9e5a", tip: "No protection needed for most people." };
+    if (u < 6) return { t: "Moderate", c: "#e3a900", tip: "Sunscreen and shade around midday." };
+    if (u < 8) return { t: "High", c: "#ef7d16", tip: "Sunscreen, a hat and shade from 10 am to 4 pm." };
+    if (u < 11) return { t: "Very high", c: "#d6283b", tip: "Minimize sun between 10 am and 4 pm." };
+    return { t: "Extreme", c: "#8f1d4a", tip: "Avoid the midday sun." };
   }
   function season(d = new Date()) {
     const md = (d.getMonth() + 1) * 100 + d.getDate();

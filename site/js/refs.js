@@ -33,7 +33,7 @@ const REFS = (() => {
     U.$("#refSoft").innerHTML = SOFT.map(([h, u]) => li(h, u)).join("");
     U.$$("#v-refs [data-copy]").forEach(b => b.onclick = async () => {
       const t = b.parentElement.cloneNode(true); t.querySelector("button").remove();
-      try { await navigator.clipboard.writeText(t.textContent.replace(/\s+/g, " ").trim()); b.textContent = "Copied ✓"; setTimeout(() => b.textContent = "Copy", 1600); } catch { U.toast("Copy isn't allowed here; select the text instead."); }
+      try { await navigator.clipboard.writeText(t.textContent.replace(/\s+/g, " ").trim()); b.textContent = "Copied"; setTimeout(() => b.textContent = "Copy", 1600); } catch { U.toast("Copy isn't allowed here; select the text instead."); }
     });
     FX.reveal(U.$("#v-refs"));
   }

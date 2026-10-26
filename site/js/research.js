@@ -1,4 +1,4 @@
-/* Researcher mode: explorer, compare, correlate, live feeds, download */
+/* Data section: explorer, compare, correlate, live feeds, download */
 const RSC = (() => {
   const D = () => APP.data;
   const charts = {};
@@ -39,7 +39,7 @@ const RSC = (() => {
     if (p.nonres) return `<b>${U.esc(p.name)}</b><br>${U.esc(p.nonres)}`;
     if (S.geo === "csa") { const c = D().csaByName[p.csa]; if (!c) return U.esc(p.csa || "—"); return `<b>${U.esc(c.name)}</b> (neighborhood)<br>${U.esc(i.label)}: <b>${U.fmt(c[S.key], i.decimals, i.unit)}</b><br>City percentile: ${U.fmt(c["pc_" + S.key], 0)}`; }
     const c = cv(p, i);
-    return `<b>${U.esc(p.csa)}</b> · ${U.esc(p.name)}<br>${U.esc(i.label)}: <b>${U.fmt(p[S.key], i.decimals, i.unit)}</b>${p[uKey(i)] != null ? ` (${uLab(i)} ${U.fmt(p[uKey(i)], i.decimals)})` : ""}${c != null && c > .3 ? '<br><span class="flag">⚠ Low reliability (CV > 30%)</span>' : ""}<br>City percentile (burden): ${U.fmt(p["pc_" + S.key], 0)}`;
+    return `<b>${U.esc(p.csa)}</b> · ${U.esc(p.name)}<br>${U.esc(i.label)}: <b>${U.fmt(p[S.key], i.decimals, i.unit)}</b>${p[uKey(i)] != null ? ` (${uLab(i)} ${U.fmt(p[uKey(i)], i.decimals)})` : ""}${c != null && c > .3 ? '<br><span class="flag">Low reliability (CV > 30%)</span>' : ""}<br>City percentile (burden): ${U.fmt(p["pc_" + S.key], 0)}`;
   }
   function exRender() {
     const i = D().ind[S.key], rows = rowsFor();
@@ -57,7 +57,7 @@ const RSC = (() => {
     U.$("#exStats").innerHTML = st.map(([k, v]) => `<div><div class="kicker" style="margin:0">${k}</div><b style="font-family:var(--display);font-size:1.25rem">${k === "Areas" ? v : U.fmt(v, i.decimals, i.unit)}</b></div>`).join("");
     const flagged = rows.filter(r => r.cv != null && r.cv > .3).length;
     U.$("#exMoe").innerHTML = (i.direction > 0 ? "Higher values mean more burden. " : i.direction < 0 ? "Higher values are better. " : "Context variable with no better or worse direction. ") +
-      (i.uncertainty && rows.some(r => r.moe != null) ? `${flagged} of ${rows.length} areas have a coefficient of variation above 30% (⚠ in the table). ` : i.uncertainty ? "No margin of error is available at this geography. " : "") +
+      (i.uncertainty && rows.some(r => r.moe != null) ? `${flagged} of ${rows.length} areas have a coefficient of variation above 30% (marked in the table). ` : i.uncertainty ? "No margin of error is available at this geography. " : "") +
       (S.geo === "csa" && i.source === "acs" ? (i.key === "median_income" ? `Neighborhood median income: ${D().csa[0]?.median_income_method || "approximate"}. ` : D().csa[0]?.[i.key + "_moe"] != null ? "Neighborhood shares are recomputed from pooled tract counts. " : "Neighborhood values are population-weighted averages of tracts. ") : "") +
       (i.level === "csa" && S.geo === "tract" ? "This measure exists only at neighborhood level." : "") + ` ${D().meta.nonres ? Object.keys(D().meta.nonres).length + " non-residential tracts are excluded." : ""}`;
     const lo = Math.min(...vals), hi = Math.max(...vals), nb = 20, w = (hi - lo) / nb || 1;
@@ -77,7 +77,7 @@ const RSC = (() => {
     const th = (c, t, num) => `<th data-col="${c}" class="${num ? "num" : ""}">${t}${S.sort.col === c ? (S.sort.dir > 0 ? " ▲" : " ▼") : ""}</th>`;
     const showU = !!i.uncertainty;
     U.$("#exTable").innerHTML = `<thead><tr>${th("name", S.geo === "csa" ? "Neighborhood" : "Tract")}${S.geo === "tract" ? th("csa", "Neighborhood") : ""}${th("v", U.esc(i.label), 1)}${showU ? th("moe", uLab(i), 1) : ""}${th("pc", "Percentile", 1)}${th("pop", "Population", 1)}</tr></thead><tbody>` +
-      rows.map(r => `<tr data-id="${U.esc(r.id)}"><td>${U.esc(r.name)}</td>${S.geo === "tract" ? `<td>${U.esc(r.csa)}</td>` : ""}<td class="num">${U.fmt(r.v, i.decimals, i.unit)}${r.cv > .3 ? ' <span class="flag" title="Coefficient of variation above 30%">⚠</span>' : ""}</td>${showU ? `<td class="num">${U.fmt(r.moe, i.decimals)}</td>` : ""}<td class="num">${U.fmt(r.pc, 0)}</td><td class="num">${U.fmt(r.pop, 0)}</td></tr>`).join("") + "</tbody>";
+      rows.map(r => `<tr data-id="${U.esc(r.id)}"><td>${U.esc(r.name)}</td>${S.geo === "tract" ? `<td>${U.esc(r.csa)}</td>` : ""}<td class="num">${U.fmt(r.v, i.decimals, i.unit)}${r.cv > .3 ? ' <span class="flag" title="Coefficient of variation above 30%">${I("info", 15)}</span>' : ""}</td>${showU ? `<td class="num">${U.fmt(r.moe, i.decimals)}</td>` : ""}<td class="num">${U.fmt(r.pc, 0)}</td><td class="num">${U.fmt(r.pop, 0)}</td></tr>`).join("") + "</tbody>";
     U.$$("#exTable th").forEach(h => h.onclick = () => { const c = h.dataset.col; S.sort = { col: c, dir: S.sort.col === c ? -S.sort.dir : (c === "name" || c === "csa" ? 1 : -1) }; exTable(); });
     U.$$("#exTable tbody tr").forEach(tr => tr.onclick = () => {
       const id = tr.dataset.id; const ids = id.startsWith("csa:") ? D().csaByName[id.slice(4)].tracts : [id];

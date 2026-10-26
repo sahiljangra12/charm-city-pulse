@@ -1,12 +1,10 @@
-/* Core: data, routing, modes, units, theme, maps, ticker, address search, live data-release watcher */
+/* Core: data, routing, navigation, units, theme, maps, address search, live data-release watcher */
 const APP = (() => {
-  const TABS = {
-    resident: [["today", "Today"], ["plan", "Plan"], ["place", "My block"], ["map", "Map"], ["help", "Get help"]],
-    research: [["conditions", "Live conditions"], ["explore", "Indicator explorer"], ["layers", "Map layers"], ["report", "Area report"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["download", "Download"], ["refs", "References"], ["about", "Methods"]],
-  };
-  const SHARED = ["refs", "about"];
+  const TABS = [["today", "Today", "sun"], ["plan", "Plan", "calendar"], ["place", "My block", "pin"], ["map", "Map", "map"], ["help", "Help", "phone"]];
+  const DATA = [["explore", "Explore"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["download", "Download"], ["refs", "Sources"], ["about", "About"]];
+  const ALL = [...TABS.map(t => t[0]), ...DATA.map(t => t[0])];
   const VIEWS = {}; const inited = {};
-  const A = { data: null, maps: [], mode: U.store.get("mode", "resident"), view: null };
+  const A = { data: null, maps: [], view: null };
 
   // ---------- theme ----------
   function isDark() { const t = document.documentElement.dataset.theme; return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; }
@@ -52,36 +50,18 @@ const APP = (() => {
     LIVE.feeds.meta.on(async m => {
       if (!m || !A.data || m.built === A.data.meta.built) return;
       try {
-        await load(m.built); U.toast("New neighborhood data published " + new Date(m.built).toLocaleDateString() + " — updated.");
+        await load(m.built); U.toast("New neighborhood data published " + new Date(m.built).toLocaleDateString("en-US") + ". The page has been updated.");
         Object.keys(inited).forEach(k => { if (VIEWS[k]?.reload) VIEWS[k].reload(); });
         route();
       } catch (e) { console.warn("reload failed", e); }
     });
   }
 
-  // ---------- ticker ----------
-  function ticker() {
-    const parts = {};
-    const draw = () => {
-      const items = Object.values(parts).filter(Boolean);
-      if (!items.length) return;
-      const html = items.map(t => `<span class="item">${t}</span>`).join("");
-      U.$("#tickerTrack").innerHTML = `<span class="item"><span class="livedot"></span><b>LIVE</b></span>` + html + html;
-    };
-    LIVE.feeds.weather.on(w => { if (!w) return; const c = w.current, fc = LIVE.feelsCat(c.temperature_2m, c.relative_humidity_2m, c.wind_speed_10m);
-      parts.w = `<b>${U.tF(c.temperature_2m)}</b> ${LIVE.WMO[c.weather_code] || ""}`; parts.f = fc && fc.kind !== "mild" ? `${fc.label} <b>${U.tF(fc.index)}</b> · ${fc.t}` : null;
-      parts.u = `UV peak <b>${Math.round(w.daily.uv_index_max[0])}</b>`; parts.r = `Rain chance today <b>${w.daily.precipitation_probability_max[0] ?? 0}%</b>`; draw(); });
-    const airTick = () => { const v = RES.aqiNow(); if (v.aqi == null) return; parts.a = `Air quality <b>${Math.round(v.aqi)}</b> · ${LIVE.aqiCat(v.aqi).t}${v.site ? " (" + U.esc(v.site) + " monitor)" : ""}`; draw(); };
-    LIVE.feeds.air.on(airTick); LIVE.feeds.airnow.on(airTick);
-    LIVE.feeds.alerts.on(al => { parts.al = al && al.length ? `⚠ <b>${al.map(x => U.esc(x.event)).join(" · ")}</b>` : "No weather alerts"; draw(); });
-    LIVE.feeds.water.on(s => { if (!s) return; const f = s.filter(x => x.readings["00060"]).sort((a, b) => b.readings["00060"].value - a.readings["00060"].value); parts.h = `<b>${s.length}</b> USGS stream gauges reporting${f[0] ? ` · ${U.esc(RES.short(f[0].name))} ${Math.round(f[0].readings["00060"].value)} ft³/s` : ""}`; draw(); });
-  }
-
   // ---------- address search with autocomplete (shared) ----------
   function searchForm(form, onPick) {
-    form.innerHTML = `<div class="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input type="search" placeholder="Start typing a Baltimore address…" aria-label="Address" role="combobox" aria-expanded="false" aria-autocomplete="list" required>
-      <ul class="suggest" role="listbox"></ul></div><button class="btn">Check</button><button type="button" class="btn alt" data-locate>📍 Use my location</button>`;
+    form.innerHTML = `<div class="field">${I("search", 18)}
+      <input type="search" placeholder="Start typing a Baltimore address" aria-label="Address" role="combobox" aria-expanded="false" aria-autocomplete="list" required>
+      <ul class="suggest" role="listbox"></ul></div><button class="btn">Check</button><button type="button" class="btn alt" data-locate>${I("locate", 18)}<span>Use my location</span></button>`;
     const input = form.querySelector("input"), list = form.querySelector(".suggest"), btn = form.querySelector(".btn");
     let items = [], sel = -1, seq = 0;
     const close = () => { list.classList.remove("on"); input.setAttribute("aria-expanded", "false"); sel = -1; };
@@ -90,7 +70,7 @@ const APP = (() => {
       list.classList.toggle("on", items.length > 0); input.setAttribute("aria-expanded", String(items.length > 0));
     };
     const go = async item => {
-      close(); btn.disabled = true; btn.textContent = "Finding…";
+      close(); btn.disabled = true; btn.textContent = "Finding";
       try { const r = await LIVE.geocode(item || input.value.trim()); if (!r) throw new Error("nf"); input.value = r.label || input.value; onPick(r.lat, r.lon, r.label); }
       catch (e) { onPick(null, null, null, e.message === "nf" ? "We couldn't find that address in Baltimore City. Try the house number and street, e.g. 3400 N Charles St." : "Address search is unavailable right now. Click the map instead."); }
       finally { btn.disabled = false; btn.textContent = "Check"; }
@@ -112,37 +92,41 @@ const APP = (() => {
     form.querySelector("[data-locate]").onclick = ev => {
       const b = ev.currentTarget;
       if (!navigator.geolocation) return onPick(null, null, null, "Your browser doesn't share location. Search an address instead.");
-      b.textContent = "Locating…";
-      navigator.geolocation.getCurrentPosition(p => { b.textContent = "📍 Use my location"; onPick(p.coords.latitude, p.coords.longitude, "Your location"); },
-        () => { b.textContent = "📍 Use my location"; onPick(null, null, null, "Location permission was denied. Search an address instead."); }, { timeout: 12000, enableHighAccuracy: true });
+      const lbl = b.querySelector("span"); lbl.textContent = "Locating";
+      navigator.geolocation.getCurrentPosition(p => { lbl.textContent = "Use my location"; onPick(p.coords.latitude, p.coords.longitude, "Your location"); },
+        () => { lbl.textContent = "Use my location"; onPick(null, null, null, "Location permission was denied. Search an address instead."); }, { timeout: 12000, enableHighAccuracy: true });
     };
   }
 
   // ---------- routing ----------
   function route() {
-    const [name, ...rest] = (location.hash.slice(1) || (A.mode === "research" ? "conditions" : "today")).split("/");
-    const owner = SHARED.includes(name) ? (TABS[A.mode].some(t => t[0] === name) ? A.mode : A.mode) : TABS.resident.some(t => t[0] === name) ? "resident" : TABS.research.some(t => t[0] === name) ? "research" : null;
-    if (!owner) { location.hash = A.mode === "research" ? "conditions" : "today"; return; }
-    if (owner !== A.mode) setMode(owner, false);
-    renderTabs(name); A.view = name;
+    const [name, ...rest] = (location.hash.slice(1) || "today").split("/");
+    if (!ALL.includes(name)) { location.hash = "today"; return; }
+    renderNav(name); A.view = name;
     U.$$("section.view").forEach(s => s.classList.toggle("on", s.id === "v-" + name));
     const v = VIEWS[name];
     if (v) { if (!inited[name] && v.init) { v.init(); inited[name] = true; } v.show && v.show(rest.map(decodeURIComponent)); }
     FX.reveal(U.$("#v-" + name));
-    U.$$("#v-" + name + " .place-list, #v-" + name + " .facts, #v-" + name + " .todo, #v-" + name + " .meters, #v-" + name + " .grid.g3, #v-" + name + " .grid.g2").forEach(el => { el.classList.remove("stagger"); void el.offsetWidth; el.classList.add("stagger"); });
+    U.$$("#v-" + name + " .place-list, #v-" + name + " .facts, #v-" + name + " .todo, #v-" + name + " .meters, #v-" + name + " .actions, #v-" + name + " .grid.g3, #v-" + name + " .grid.g2").forEach(el => { el.classList.remove("stagger"); void el.offsetWidth; el.classList.add("stagger"); });
     setTimeout(() => A.maps.forEach(m => m.invalidateSize()), 80);
     if (!route.first) window.scrollTo(0, 0); route.first = false;
   }
-  function renderTabs(active) {
-    U.$("#tabs").innerHTML = TABS[A.mode].map(([k, t]) => `<a href="#${k}" class="${k === active ? "on" : ""}">${t}</a>`).join("");
-    U.$$("#appbar a").forEach(a => a.classList.toggle("on", a.dataset.tab === active));
-    if (navigator.vibrate && route.touched) navigator.vibrate(6);
+  const isData = n => DATA.some(d => d[0] === n);
+  function buildNav() {
+    const link = ([k, t, ic]) => `<a href="#${k}" data-tab="${k}">${I(ic, 20)}<span>${t}</span></a>`;
+    U.$("#mainnav").innerHTML = TABS.map(link).join("") + link(["explore", "Data", "chart"]).replace('data-tab="explore"', 'data-tab="data"');
+    U.$("#appbar").innerHTML = TABS.map(link).join("");
+    const sub = DATA.map(([k, t]) => `<a href="#${k}" data-s="${k}">${t}</a>`).join("");
+    U.$$("[data-sub]").forEach(n => n.innerHTML = sub);
+    U.$("#alertBtn").innerHTML = I("bell", 20); U.$("#dataBtn").innerHTML = I("chart", 20); U.$("#sheetClose").innerHTML = I("x", 20);
+    U.$$("[data-icon]").forEach(t => t.innerHTML = I(t.dataset.icon, 22));
   }
-  function setMode(m, nav = true) {
-    A.mode = m; U.store.set("mode", m);
-    document.body.classList.toggle("research", m === "research"); document.body.classList.toggle("resident", m !== "research");
-    const b = U.$("#modeBtn"); b.setAttribute("aria-pressed", String(m === "research")); b.textContent = m === "research" ? (innerWidth < 480 ? "Simple" : "Simple view") : (innerWidth < 480 ? "Research" : "Researcher mode");
-    if (nav) location.hash = m === "research" ? "conditions" : "today";
+  function renderNav(active) {
+    const key = isData(active) ? "data" : active;
+    U.$$("#mainnav a, #appbar a").forEach(a => { const on = a.dataset.tab === key; a.classList.toggle("on", on); on ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"); });
+    U.$("#dataBtn").classList.toggle("on", isData(active));
+    U.$$("[data-sub] a").forEach(a => a.classList.toggle("on", a.dataset.s === active));
+    const cur = U.$(`#v-${active} [data-sub] a.on`); if (cur) cur.scrollIntoView({ block: "nearest", inline: "center" });
   }
   function setUnit(u) {
     U.store.set("unit", u); U.$$("[data-unit]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.unit === u)));
@@ -184,15 +168,15 @@ const APP = (() => {
   }
 
   async function start() {
-    U.$("#modeBtn").onclick = () => setMode(A.mode === "research" ? "resident" : "research");
+    buildNav();
     U.$$("[data-unit]").forEach(b => b.onclick = () => setUnit(b.dataset.unit)); setUnit(U.unit());
     U.$("#themeBtn").onclick = () => setTheme(isDark() ? "light" : "dark");
     try { await load(); }
     catch (e) { U.$("main").innerHTML = `<div class="card alert"><h3>Could not load data</h3><p>${U.esc(e.message)}. If you opened the file directly, serve the folder with a local web server (for example <code>python3 -m http.server</code>).</p></div>`; return; }
     U.$("#buildStamp").textContent = "Data build " + new Date(A.data.meta.built).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" });
-    Object.assign(VIEWS, RES.views, PLAN.views, COND.views, RSC.views, REFS.views);
+    Object.assign(VIEWS, RES.views, PLAN.views, RSC.views, REFS.views);
     ALERTS.init(); segThumbs(); parallax();
-    setMode(A.mode, false); route.first = true;
+    route.first = true;
     addEventListener("hashchange", () => {
       let ran = false; const run = () => { if (!ran) { ran = true; route(); } };
       if (document.startViewTransition && !FX.reduce && !document.hidden) {
@@ -200,11 +184,11 @@ const APP = (() => {
         setTimeout(run, 350);   // never let a transition hold up navigation
       } else run();
     }); route();
-    ticker(); watchReleases();
+    watchReleases();
     document.addEventListener("unitchange", () => { if (A.view && VIEWS[A.view]?.unit) VIEWS[A.view].unit(); else if (A.view && VIEWS[A.view]?.show) VIEWS[A.view].show(location.hash.slice(1).split("/").slice(1).map(decodeURIComponent)); });
     if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
   }
-  Object.assign(A, { makeMap, legend, tractAt, centroid, setMode, isDark, searchForm, NONRES_STYLE, TABS, route });
+  Object.assign(A, { makeMap, legend, tractAt, centroid, isDark, searchForm, NONRES_STYLE, TABS, route });
   document.addEventListener("DOMContentLoaded", start);
   return A;
 })();

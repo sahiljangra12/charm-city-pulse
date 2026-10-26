@@ -22,7 +22,7 @@ const ALERTS = (() => {
     sw.setAttribute("aria-checked", String(enabled()));
     U.$("#alertBtn").classList.toggle("on", enabled());
     U.$("#notifPrefs").style.display = enabled() ? "block" : "none";
-    if (!supported) { sw.disabled = true; st.textContent = "This browser can't show notifications. On iPhone, add Charm City Pulse to your Home Screen first (Share › Add to Home Screen), then open it from there."; }
+    if (!supported) { sw.disabled = true; st.textContent = "This browser can't show notifications. On iPhone, add Charm City Pulse to your Home Screen first (Share, then Add to Home Screen), then open it from there."; }
     else if (Notification.permission === "denied") st.textContent = "Notifications are blocked for this site. Allow them in your browser's site settings, then turn this on.";
     U.$$("#notifPrefs [data-pref]").forEach(c => { c.checked = !!prefs()[c.dataset.pref]; c.onchange = () => U.store.set("notifyPrefs", { ...prefs(), [c.dataset.pref]: c.checked }); });
   }
@@ -48,14 +48,14 @@ const ALERTS = (() => {
   function check() {
     if (!enabled()) return; const P = prefs();
     const AL = LIVE.feeds.alerts.value || [];
-    if (P.nws) AL.forEach(a => once("nws:" + (a.id || a.event + a.onset), "⚠️ " + a.event, a.headline || "Active for Baltimore. Open Charm City Pulse for details."));
+    if (P.nws) AL.forEach(a => once("nws:" + (a.id || a.event + a.onset), a.event, a.headline || "Active for Baltimore. Open Charm City Pulse for details."));
     const aq = RES.aqiNow().aqi;
-    if (P.air && aq != null && aq > 100) once("air", "💨 Air is " + LIVE.aqiCat(aq).t.toLowerCase(), LIVE.aqiCat(aq).tip);
+    if (P.air && aq != null && aq > 100) once("air", "Air is " + LIVE.aqiCat(aq).t.toLowerCase(), LIVE.aqiCat(aq).tip);
     const c = LIVE.feeds.weather.value?.current;
     if (c) {
       const fc = LIVE.feelsCat(c.temperature_2m, c.relative_humidity_2m, c.wind_speed_10m);
-      if (P.heat && fc?.kind === "heat" && fc.index >= 103) once("heat", `🔥 Heat index ${U.tF(fc.index)} in Baltimore`, "Dangerous heat. Stay somewhere cool, drink water, and check on neighbors. Call 311 for cooling centers.");
-      if (P.cold && fc?.kind === "cold" && fc.index <= 13) once("cold", `🥶 Wind chill ${U.tF(fc.index)} in Baltimore`, "Code Blue cold. Warming centers and shelters are open: Shelter Hotline 443-984-9540.");
+      if (P.heat && fc?.kind === "heat" && fc.index >= 103) once("heat", `Heat index ${U.tF(fc.index)} in Baltimore`, "Dangerous heat. Stay somewhere cool, drink water, and check on neighbors. Call 311 for cooling centers.");
+      if (P.cold && fc?.kind === "cold" && fc.index <= 13) once("cold", `Wind chill ${U.tF(fc.index)} in Baltimore`, "Code Blue cold. Warming centers and shelters are open: Shelter Hotline 443-984-9540.");
     }
   }
   function init() {
