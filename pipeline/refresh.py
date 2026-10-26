@@ -41,7 +41,12 @@ def fetch(url, tries=3, timeout=90, data=None):
     raise RuntimeError(f"{url[:120]}: {err}")
 
 
-def fjson(url, **kw): return json.loads(fetch(url, **kw))
+def fjson(url, **kw):
+    b = fetch(url, **kw)
+    try:
+        return json.loads(b)
+    except json.JSONDecodeError:
+        raise RuntimeError(f"non-JSON from {url[:90]}: {b[:160]!r}")
 def cache_put(name, obj): json.dump(obj, open(os.path.join(CACHE, name), "w"), separators=(",", ":"))
 def cache_get(name):
     p = os.path.join(CACHE, name)
@@ -111,18 +116,18 @@ def acs_download():
     for y in range(year0, year0 - 4, -1):
         base = f"https://api.census.gov/data/{y}/acs/acs5"
         try:
-            fetch(f"{base}?get=NAME&for=state:24", tries=1, timeout=30)
-        except Exception:
-            continue
-        cells = {}
-        for g in GROUPS:
-            rows = fjson(f"{base}?get=group({g})&for=tract:*&in=state:24%20county:510")
-            head = rows[0]
-            for r in rows[1:]:
-                d = dict(zip(head, r)); gid = d["GEO_ID"][-11:]
-                cells.setdefault(gid, {}).update({k: d[k] for k in head if re.match(r"^[BC]\d+_\d{3}[EM]$", k)})
-            log("ACS", y, g, len(rows) - 1, "tracts")
-        return {"vintage": y, "cells": cells}
+            cells = {}
+            for g in GROUPS:
+                rows = fjson(f"{base}?get=group({g})&for=tract:*&in=state:24&in=county:510", tries=2)
+                head = rows[0]
+                for r in rows[1:]:
+                    d = dict(zip(head, r)); gid = d["GEO_ID"][-11:]
+                    cells.setdefault(gid, {}).update({k: d[k] for k in head if re.match(r"^[BC]\d+_\d{3}[EM]$", k)})
+            log("ACS", y, "ok:", len(cells), "tracts,", len(GROUPS), "tables")
+            if len(cells) < 150: raise RuntimeError("too few tracts")
+            return {"vintage": y, "cells": cells}
+        except Exception as e:
+            log("ACS", y, "not usable:", str(e)[:220])
     raise RuntimeError("no ACS 5-year vintage reachable")
 
 
@@ -177,10 +182,12 @@ def places_download():
     best = None
     for r in cat.get("results", []):
         nm = r["resource"]["name"]
-        mt = re.search(r"PLACES: Local Data for Better Health, Census Tract Data (\d{4}) release", nm)
+        mt = re.search(r"PLACES:? Local Data for Better Health,? Census Tract Data,? (\d{4}) [Rr]elease", nm)
         if mt and "GIS" not in nm and (not best or int(mt.group(1)) > best[0]):
             best = (int(mt.group(1)), r["resource"]["id"], nm)
     if not best: raise RuntimeError("PLACES tract dataset not found in catalog")
+    log("PLACES newest release in catalog:", best)
+    if best[0] < 2025: raise RuntimeError(f"catalog newest {best[0]} is older than the 2025 release already in use")
     rel, did, nm = best
     rows = fjson(f"https://data.cdc.gov/resource/{did}.json?$where=countyfips='24510'&$limit=50000")
     out = {}
@@ -199,6 +206,7 @@ try:
     pl = places_download(); cache_put("places.json", pl); pl_status = "live"
 except Exception as e:
     log("PLACES download failed:", e); pl = cache_get("places.json"); pl_status = "cached"
+    if pl and pl.get("release", 0) < 2025: pl = None
 if pl:
     yrs = sorted({v.get("year") for v in pl["tracts"].values() if v.get("year")})
     src("places", name="PLACES: Local Data for Better Health (census tract)", by="Centers for Disease Control and Prevention",
@@ -423,12 +431,30 @@ def city_cooling():
 
 
 cool = json.load(open(os.path.join(BASE, "cooling_2025.json")))
+def norm_addr(a):
+    a = (a or "").lower().split(",")[0]
+    for k, v in {"street": "st", "avenue": "ave", "road": "rd", "north": "n", "south": "s", "east": "e", "west": "w"}.items():
+        a = re.sub(r"\b%s\b" % k, v, a)
+    return re.sub(r"[^a-z0-9 ]", "", a).split()
+KNOWN = {" ".join(norm_addr(c["address"])[:2]): c for c in cool}
+
+
+def tidy(c):
+    k = KNOWN.get(" ".join(norm_addr(c["address"])[:2]))
+    if k:
+        c["name"], c["type"] = k["name"], k["type"]
+        if not c.get("hours") or "varies" in c.get("hours", ""): c["hours"] = k["hours"]
+    c["hours"] = (c.get("hours") or "").replace("Normal business hours varies by site", "Regular hours (vary by site)")
+    if re.search(r"librar|branch|pratt", c["name"], re.I) and "Library" not in c["type"]: c["type"] = "Library"
+    return c
+
+
 try:
-    live, title, item, layer = city_cooling(); cool = live; cache_put("cooling.json", live)
+    live, title, item, layer = city_cooling(); live = [tidy(c) for c in live]; cool = live; cache_put("cooling.json", live)
     src("cooling", name=f"Baltimore City cooling centers ({title})", by="Baltimore City Health Department / Open Baltimore", vintage="current city layer", url=layer, status="live")
 except Exception as e:
     log("city cooling layer:", e); c2 = cache_get("cooling.json")
-    if c2: cool = c2
+    if c2: cool = [tidy(c) for c in c2]
     src("cooling", name="Baltimore City Code Red cooling centers", by="Baltimore City Health Department", vintage="2025 season list" if not c2 else "last city layer",
         url="https://data.baltimorecity.gov/datasets/code-red-cooling-center", status="cached" if c2 else "frozen (2025 list)")
 

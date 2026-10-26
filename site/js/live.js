@@ -59,23 +59,19 @@ const LIVE = (() => {
 
   // ---------- AirNow monitors ----------
   const AIRNOW = "https://services.arcgis.com/cJ9YHowT8TU7DUyn/arcgis/rest/services/Air_Now_Monitor_Data_Public/FeatureServer/0";
-  const pickKey = (o, re) => Object.keys(o).find(k => re.test(k));
-  feed("airnow", async () => {
+    feed("airnow", async () => {
     const j = await U.getJSON(`${AIRNOW}/query?where=1%3D1&geometry=-76.95,39.05,-76.30,39.60&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&outFields=*&f=json`, {}, 20000);
     if (j.error) throw new Error(j.error.message);
     const sites = {};
     (j.features || []).forEach(f => {
-      const a = f.attributes, g = f.geometry; if (!g) return;
-      const name = a[pickKey(a, /^site.?name$/i) || pickKey(a, /name/i)] || "Monitor";
-      const keyF = n => a[pickKey(a, n)];
-      const s = sites[name] || (sites[name] = { name, lat: g.y, lon: g.x, readings: {} });
-      // wide layout (one row per site with columns per pollutant)
-      [["PM25", /pm.?2.?5.*aqi|aqi.*pm.?2.?5/i, /^pm.?2.?5$|pm25_?conc|pm.?2.?5.*(value|conc)/i], ["OZONE", /ozone.*aqi|aqi.*ozone|o3.*aqi/i, /^ozone$|ozone.*(value|conc)|^o3$/i], ["PM10", /pm.?10.*aqi/i, /^pm.?10$/i]]
-        .forEach(([p, reA, reV]) => { const ak = pickKey(a, reA); if (ak && a[ak] != null && a[ak] >= 0) s.readings[p] = { aqi: a[ak], value: a[pickKey(a, reV)] }; });
-      // long layout (one row per pollutant)
-      const par = keyF(/^parameter|pollutant/i), aqi = keyF(/^aqi$/i);
-      if (par && aqi != null && aqi >= 0) s.readings[String(par).toUpperCase().replace(/[^A-Z0-9]/g, "")] = { aqi, value: keyF(/^(value|raw.?conc|concentration)$/i) };
-      const t = keyF(/utc|time|date/i); if (t) s.time = typeof t === "number" ? new Date(t) : new Date(t);
+      const a = f.attributes; if (!a || (a.Status && a.Status !== "Active")) return;
+      const lat = a.Latitude ?? f.geometry?.y, lon = a.Longitude ?? f.geometry?.x; if (lat == null) return;
+      const name = a.SiteName || "Monitor";
+      const s = sites[name] || (sites[name] = { name, lat, lon, readings: {} });
+      [["PM2.5", "PM25"], ["Ozone", "OZONE"], ["PM10", "PM10"]].forEach(([lab, k]) => {
+        const v = a[k + "_AQI"]; if (v != null && v >= 0) s.readings[lab] = { aqi: v, value: a[k], unit: a[k + "_Unit"] };
+      });
+      if (a.ValidTime) s.time = new Date(a.ValidTime);
     });
     const out = Object.values(sites).filter(s => Object.keys(s.readings).length);
     out.forEach(s => { s.aqi = Math.max(...Object.values(s.readings).map(r => r.aqi)); s.km = U.km([CENTER[1], CENTER[0]], [s.lon, s.lat]); });
