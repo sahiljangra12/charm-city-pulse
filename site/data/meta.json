@@ -1,8 +1,8 @@
 {
- "built": "2026-10-26T08:10:50+00:00",
+ "built": "2026-10-26T08:18:49+00:00",
  "sources": {
   "acs": {
-   "retrieved": "2026-10-26T08:10+00:00",
+   "retrieved": "2026-10-26T08:18+00:00",
    "name": "American Community Survey 5-year estimates",
    "by": "U.S. Census Bureau",
    "vintage": "2020\u20132024",
@@ -10,7 +10,7 @@
    "status": "live via Census Reporter"
   },
   "places": {
-   "retrieved": "2026-10-26T08:10+00:00",
+   "retrieved": "2026-10-26T08:18+00:00",
    "name": "PLACES: Local Data for Better Health (census tract)",
    "by": "Centers for Disease Control and Prevention",
    "vintage": "2025 release (BRFSS 2023)",
@@ -18,7 +18,7 @@
    "status": "live"
   },
   "heat": {
-   "retrieved": "2026-10-26T08:10+00:00",
+   "retrieved": "2026-10-26T08:18+00:00",
    "name": "Baltimore Heat Atlas: surface temperature, land cover and heat vulnerability index",
    "by": "Sahil (Johns Hopkins University)",
    "vintage": "Landsat 8/9 summers 2019\u20132025; MODIS Aqua night LST; ESA WorldCover 2021; HVI Oct 2026",
@@ -26,7 +26,7 @@
    "status": "research release"
   },
   "svi": {
-   "retrieved": "2026-10-26T08:10+00:00",
+   "retrieved": "2026-10-26T08:18+00:00",
    "name": "CDC/ATSDR Social Vulnerability Index",
    "by": "CDC/ATSDR",
    "vintage": "2022 (Maryland ranking)",
@@ -34,7 +34,7 @@
    "status": "research release"
   },
   "holc": {
-   "retrieved": "2026-10-26T08:10+00:00",
+   "retrieved": "2026-10-26T08:18+00:00",
    "name": "Mapping Inequality: Redlining in New Deal America (HOLC 1937 maps)",
    "by": "Nelson, Winling et al., University of Richmond",
    "vintage": "1937 survey",
@@ -42,7 +42,7 @@
    "status": "historical"
   },
   "trees": {
-   "retrieved": "2026-10-26T08:10+00:00",
+   "retrieved": "2026-10-26T08:18+00:00",
    "name": "Street-tree plantings 2013\u20132020 by neighborhood (TreeBaltimore records)",
    "by": "Sahil, Baltimore Tree Cooling study",
    "vintage": "Plantings 2013\u20132020; city inventory 2017\u201318",
@@ -50,7 +50,7 @@
    "status": "research release"
   },
   "census2020": {
-   "retrieved": "2026-10-26T08:10+00:00",
+   "retrieved": "2026-10-26T08:18+00:00",
    "name": "2020 Decennial Census redistricting data",
    "by": "U.S. Census Bureau",
    "vintage": "2020",
@@ -58,7 +58,7 @@
    "status": "fixed"
   },
   "cooling": {
-   "retrieved": "2026-10-26T08:10+00:00",
+   "retrieved": "2026-10-26T08:18+00:00",
    "name": "Baltimore City cooling centers (Code Red Cooling Center)",
    "by": "Baltimore City Health Department / Open Baltimore",
    "vintage": "current city layer",
@@ -66,7 +66,7 @@
    "status": "live"
   },
   "winter": {
-   "retrieved": "2026-10-26T08:10+00:00",
+   "retrieved": "2026-10-26T08:18+00:00",
    "name": "FY 2027 Winter Shelter & Code Purple Plan",
    "by": "Baltimore City Mayor's Office of Homeless Services",
    "vintage": "Nov 15, 2026 \u2013 Mar 15, 2027",
@@ -74,7 +74,7 @@
    "status": "verified 2026-10-26"
   },
   "parks": {
-   "retrieved": "2026-10-26T08:10+00:00",
+   "retrieved": "2026-10-26T08:18+00:00",
    "name": "Parks, pools and recreation centers (BCRP)",
    "by": "Baltimore City Department of Recreation & Parks",
    "vintage": "current city layer",
@@ -87,7 +87,7 @@
    }
   },
   "osm": {
-   "retrieved": "2026-10-26T08:10+00:00",
+   "retrieved": "2026-10-26T08:18+00:00",
    "name": "Drinking fountains, transit stations, bike lanes, EV chargers, gardens, recycling and markets",
    "by": "OpenStreetMap contributors (Overpass API)",
    "vintage": "daily snapshot",
