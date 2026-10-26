@@ -408,3 +408,5 @@ footer a{color:var(--ink-2)}
 @media (max-width:440px){#themeBtn{display:none}.brand{gap:8px;margin-right:4px}.brand .mark{width:30px;height:30px}.brand b{font-size:1rem}}
 @media (max-width:350px){.brand b{display:none}}
 .numbers td:last-child{min-width:140px;max-width:260px;white-space:normal}
+/* laptops and small tablets in landscape: keep the brand whole by slimming the nav */
+@media (min-width:900px) and (max-width:1180px){.mainnav a .ic{display:none}.mainnav a{padding:8px 10px}.hdr-actions{gap:4px}#themeBtn{display:none}}
