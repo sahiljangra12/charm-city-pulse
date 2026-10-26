@@ -194,7 +194,11 @@ const APP = (() => {
     ALERTS.init(); segThumbs(); parallax();
     setMode(A.mode, false); route.first = true;
     addEventListener("hashchange", () => {
-      if (document.startViewTransition && !FX.reduce) { const vt = document.startViewTransition(() => route()); vt.ready.catch(() => {}); vt.finished.catch(() => {}); vt.updateCallbackDone.catch(() => {}); } else route();
+      let ran = false; const run = () => { if (!ran) { ran = true; route(); } };
+      if (document.startViewTransition && !FX.reduce && !document.hidden) {
+        try { const vt = document.startViewTransition(run); vt.ready.catch(() => {}); vt.finished.catch(() => {}); vt.updateCallbackDone.catch(() => {}); } catch { run(); }
+        setTimeout(run, 350);   // never let a transition hold up navigation
+      } else run();
     }); route();
     ticker(); watchReleases();
     document.addEventListener("unitchange", () => { if (A.view && VIEWS[A.view]?.unit) VIEWS[A.view].unit(); else if (A.view && VIEWS[A.view]?.show) VIEWS[A.view].show(location.hash.slice(1).split("/").slice(1).map(decodeURIComponent)); });
