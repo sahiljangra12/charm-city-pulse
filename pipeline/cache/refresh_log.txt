@@ -1,0 +1,4 @@
+[refresh] ACS download failed: Expecting value: line 1 column 1 (char 0)
+[refresh] using Heat Atlas ACS 2020–2024 values
+[refresh] PLACES 2024 ai6z-tcin 198 tracts
+[refresh] done: 199 tracts, 55 CSAs; sources: {'acs': 'frozen (Heat Atlas)', 'places': 'live', 'heat': 'research release', 'svi': 'research release', 'holc': 'historical', 'trees': 'research release', 'census2020': 'fixed', 'cooling': 'live', 'winter': 'verified 2026-10-26', 'parks': 'live'}
