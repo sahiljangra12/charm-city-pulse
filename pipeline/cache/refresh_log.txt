@@ -11,9 +11,9 @@
 [refresh] PLACES newest release in catalog: (2025, 'cwsq-ngmh', 'PLACES: Local Data for Better Health, Census Tract Data, 2025 release')
 [refresh] PLACES 2025 cwsq-ngmh 198 tracts
 [refresh] OSM fountains failed: https://overpass.private.coffee/api/interpreter: The read operation timed out
-[refresh] OSM transit failed: https://overpass.private.coffee/api/interpreter: The read operation timed out
-[refresh] OSM bike failed: time budget used
-[refresh] OSM ev failed: time budget used
+[refresh] OSM transit 38
+[refresh] OSM bike 2378
+[refresh] OSM ev 58
 [refresh] OSM gardens failed: time budget used
 [refresh] OSM recycling failed: time budget used
 [refresh] OSM markets failed: time budget used
