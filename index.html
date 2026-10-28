@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Charm City Pulse</title>
+<meta name="description" content="Is it safe outside in Baltimore today? Live air, heat, cold and alerts, the best time for your plans, your block's flood and heat risk, and where to find help.">
+<meta name="theme-color" content="#000000">
+<meta name="build" content="202610281604">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/leaflet.css">
+<link rel="stylesheet" href="css/app.css?v=202610281604">
+<link rel="stylesheet" href="css/cinema.css?v=202610281604">
+<link rel="preload" as="image" href="img/hero_night-m.jpg" media="(max-width:760px)">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#d5dde3"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a9aa6" stroke-width="2"/></pattern></defs></svg>
+<a class="sr" href="#main">Skip to content</a>
+<header class="top">
+  <div class="topbar">
+    <a class="brand" href="#today" aria-label="Charm City Pulse, home">
+      <span class="mark"><svg width="24" height="24" viewBox="0 0 64 64" aria-hidden="true"><path d="M4 36h12l6-16 9 28 7-21 4 9h18" fill="none" stroke="#e8a800" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <b>Charm City <span>Pulse</span></b>
+    </a>
+    <nav class="mainnav" id="mainnav" aria-label="Sections"></nav>
+    <div class="hdr-actions">
+      <div class="seg" role="group" aria-label="Temperature unit"><button data-unit="F" aria-pressed="true">°F</button><button data-unit="C" aria-pressed="false">°C</button></div>
+      <button class="iconbtn" id="themeBtn" title="Light or dark" aria-label="Switch light or dark theme"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 0 0 17z" fill="currentColor"/></svg></button>
+      <button class="iconbtn bell" id="alertBtn" title="Get alerts" aria-label="Get alerts by text, email or on this device"></button>
+      <a class="iconbtn" id="dataBtn" href="#explore" title="Data" aria-label="Data and sources"></a>
+      <button class="menubtn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><i></i><i></i><i></i></button>
+    </div>
+  </div>
+  <div class="flagband" aria-hidden="true"></div>
+</header>
+
+<main class="wrap" id="main">
+
+<!-- ======================= TODAY ======================= -->
+<section class="view" id="v-today">
+  <div class="hero bleed" id="hSky" data-day="0">
+    <div class="hero-bg"><img data-img="hero_night" alt="" fetchpriority="high"><img data-img="hero_day" alt="" class="day"></div>
+    <canvas class="hero-fx" id="heroFx" aria-hidden="true"></canvas>
+    <div id="hScene" hidden></div>
+    <div class="hero-in">
+      <div class="temp" id="hTemp"></div>
+      <div class="content">
+        <div class="when" id="hWhen">Baltimore right now</div>
+        <h1 class="answer" id="hAnswer">Checking the air and weather</h1>
+        <p class="why" id="hWhy"></p>
+        <div class="stats" id="hStats"></div>
+        <div class="cta"><a class="xbtn solid" href="#place"><span>Check my block</span></a><a class="xbtn" href="#plan"><span>Plan my day</span></a></div>
+      </div>
+    </div>
+    <a class="scrollcue" href="#prioAnchor" aria-label="Scroll to what matters right now"><span>Scroll</span><i></i></a>
+  </div>
+  <div id="prioAnchor"></div>
+  <div class="section-h prio-h"><div><h2>What matters right now</h2><p class="sub" id="hPrioSub">Checking the forecast, air and warnings</p></div><span class="livetag"><span class="livedot"></span>Live</span></div>
+  <div class="prios" id="hPrio"><div class="prio skeleton" style="height:118px"></div><div class="prio skeleton" style="height:96px"></div><div class="prio skeleton" style="height:96px"></div></div>
+  <div id="hMyArea"></div>
+
+  <div class="actions" id="hActions" hidden></div>
+
+  <div class="section-h" id="forecastAnchor"><h2>Next 12 hours</h2></div>
+  <div class="hours" id="hHours"></div>
+  <div class="section-h"><h2>This week</h2></div>
+  <div class="card"><div class="week" id="hWeek"></div></div>
+
+  <details class="more" id="detailsBox">
+    <summary><span class="tile sm" id="detailsIcon"></span><span>Air, heat, sun and rivers in detail<br><small style="font-weight:500">Official monitor readings, gauges and stream levels</small></span><span id="detailsChev"></span></summary>
+    <div class="inner grid g2">
+      <div class="card" id="airCard"><div class="label">Air quality</div><div class="skeleton" style="height:150px"></div></div>
+      <div class="card" id="feelCard"><div class="label">Heat and cold</div><div class="skeleton" style="height:150px"></div></div>
+      <div class="card" id="uvCard"><div class="label">Sun, UV and solar</div><div class="skeleton" style="height:150px"></div></div>
+      <div class="card" id="waterCard"><div class="label">Streams and rivers</div><div class="skeleton" style="height:150px"></div></div>
+    </div>
+  </details>
+  <div id="hFeatures"></div>
+</section>
+
+<!-- ======================= PLAN ======================= -->
+<section class="view" id="v-plan">
+  <div class="pagehead"><h1>Plan your day</h1><p>Pick what you want to do. We'll find the best hours in the next two days from the forecast for heat, cold, rain, air and sun.</p></div>
+  <div class="plan-acts" id="planActs" role="group" aria-label="Activity"></div>
+  <div id="planBest" style="margin-top:6px"></div>
+  <div class="section-h"><h2>Hour by hour</h2><span class="muted" id="planRange" style="font-size:.9rem"></span></div>
+  <div class="card"><div class="timeline" id="planTL" aria-label="How good each hour is"></div><div class="tl-axis" id="planAxis"></div>
+    <div class="tl-legend"><span><span class="dot" style="background:var(--s0)"></span>Great</span><span><span class="dot" style="background:var(--s2)"></span>OK</span><span><span class="dot" style="background:var(--s3)"></span>Not ideal</span><span><span class="dot" style="background:var(--s4)"></span>Avoid</span></div></div>
+  <div id="planAvoid" class="grid" style="margin-top:14px;gap:10px"></div>
+  <div class="section-h"><h2>Where to go</h2><a href="#map">Open the map</a></div>
+  <div class="place-list" id="planWhere"></div>
+</section>
+
+<!-- ======================= MY BLOCK ======================= -->
+<section class="view" id="v-place">
+  <div class="pagehead"><h1>Check your block</h1><p>Type an address, use your location, or tap the map to see summer heat, flood risk and the nearest help.</p></div>
+  <form class="search" data-geo autocomplete="off"></form>
+  <p class="note" id="pMsg"></p>
+  <div id="pBody"></div>
+  <div class="mapbox short" id="pMap" style="margin-top:18px"></div>
+</section>
+
+<!-- ======================= MAP ======================= -->
+<section class="view" id="v-map">
+  <div class="pagehead"><h1>Map</h1><p>Turn on what you're looking for. Tap anywhere for that spot's heat and flood risk.</p></div>
+  <div class="chips" id="mapChips"></div>
+  <div class="controls"><label for="mapColor" class="muted" style="font-weight:600">Shade the city by</label><select id="mapColor"></select></div>
+  <div class="mapbox" id="mainMap"></div>
+  <p class="note" id="mapMsg"></p>
+</section>
+
+<!-- ======================= HELP ======================= -->
+<section class="view" id="v-help">
+  <div class="pagehead"><h1>Get help</h1><p id="helpIntro"></p></div>
+  <div class="callgrid" id="helpCalls"></div>
+  <div class="section-h"><h2 id="helpPlacesTitle">Places near you</h2><a href="#" data-near>Use my location</a></div>
+  <div class="place-list" id="helpPlaces"></div>
+  <div class="section-h"><h2>Programs that can help</h2></div>
+  <div class="place-list" id="helpPrograms"></div>
+</section>
+
+<!-- ======================= DATA ======================= -->
+<section class="view" id="v-explore">
+  <div class="pagehead"><h1>Explore the data</h1><p>Every indicator behind the app, for every census tract and neighborhood.</p></div>
+  <nav class="subnav" data-sub></nav>
+  <div class="controls">
+    <select id="exInd" aria-label="Indicator"></select>
+    <div class="seg sq" role="group" aria-label="Unit"><button data-ex="value" aria-pressed="true">Value</button><button data-ex="pc" aria-pressed="false">City rank</button></div>
+    <div class="seg sq" role="group" aria-label="Geography"><button data-geo-level="tract" aria-pressed="true">Tracts</button><button data-geo-level="csa" aria-pressed="false">Neighborhoods</button></div>
+  </div>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))">
+    <div class="mapbox" id="exMap" style="height:min(60vh,520px)"></div>
+    <div class="grid">
+      <div class="card"><div class="label" id="exSrc"></div><h3 id="exTitle"></h3><div class="grid g4" id="exStats" style="gap:12px"></div><p class="note" id="exMoe"></p></div>
+      <div class="card"><div class="label">Distribution</div><div class="chartbox"><canvas id="exHist"></canvas></div></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px"><div class="controls" style="margin:0 0 12px"><h3 style="margin:0;margin-right:auto">All areas</h3><input type="search" id="exFilter" placeholder="Filter by name" aria-label="Filter areas" style="padding:9px 12px;border-radius:12px;border:1px solid var(--line-2);background:var(--surface)"></div><div class="tablewrap" style="max-height:440px;box-shadow:none"><table id="exTable"></table></div></div>
+</section>
+
+<section class="view" id="v-compare">
+  <div class="pagehead"><h1>Compare two places</h1><p>Side by side on every indicator.</p></div>
+  <nav class="subnav" data-sub></nav>
+  <div class="controls"><select id="cmpA" aria-label="First place"></select><span class="muted">and</span><select id="cmpB" aria-label="Second place"></select></div>
+  <div class="grid g2" style="margin-bottom:16px"><div class="card"><div class="label">Scores (higher means harder)</div><div class="chartbox"><canvas id="cmpRadar"></canvas></div></div><div class="card" id="cmpNotes"></div></div>
+  <div class="tablewrap"><table id="cmpTable"></table></div>
+</section>
+
+<section class="view" id="v-correlate">
+  <div class="pagehead"><h1>How things relate</h1><p>Plot any two indicators across Baltimore's census tracts.</p></div>
+  <nav class="subnav" data-sub></nav>
+  <div class="controls"><label>Across <select id="cx"></select></label><label>Up <select id="cy"></select></label><label class="chk"><input type="checkbox" id="cHolc"> Color by 1937 redlining grade</label></div>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))">
+    <div class="card" style="grid-column:1/-1;min-width:0"><div class="chartbox tall"><canvas id="cChart"></canvas></div></div>
+    <div class="card"><div class="label">How strongly they move together</div><div id="cStats"></div><p class="note">Spearman's ρ is rank-based and robust to outliers. These describe places, not individuals, and don't prove cause. Non-residential tracts are left out.</p></div>
+  </div>
+</section>
+
+<section class="view" id="v-live">
+  <div class="pagehead"><h1>Live feeds</h1><p>Weather refreshes every 5 minutes, alerts every 3, air and rivers every 10 to 15 while the page is open. Neighborhood data and map layers rebuild every morning.</p></div>
+  <nav class="subnav" data-sub></nav>
+  <div class="tablewrap"><table id="liveTable"></table></div>
+  <div class="section-h"><h2>Data releases in this build</h2></div><div class="tablewrap"><table id="releaseTable"></table></div>
+  <div class="section-h"><h2>Stream gauges</h2></div><div class="tablewrap"><table id="gaugeTable"></table></div>
+  <div class="section-h"><h2>Air-quality monitors</h2></div><div class="tablewrap"><table id="monitorTable"></table></div>
+</section>
+
+<section class="view" id="v-download">
+  <div class="pagehead"><h1>Download</h1><p>Free to use with credit. Updated every morning.</p></div>
+  <nav class="subnav" data-sub></nav>
+  <div class="grid g3">
+    <div class="card"><h3>Census tracts (CSV)</h3><p class="muted">Every tract and indicator, with margins of error, city ranks and scores.</p><button class="btn" data-dl="tracts">Download CSV</button></div>
+    <div class="card"><h3>Neighborhoods (CSV)</h3><p class="muted">55 Community Statistical Areas, combined from tract counts.</p><button class="btn" data-dl="csa">Download CSV</button></div>
+    <div class="card"><h3>Map file (GeoJSON)</h3><p class="muted">Boundaries with data, for QGIS, R or Python.</p><a class="btn" href="data/tracts.geojson" download>Download GeoJSON</a></div>
+    <div class="card"><h3>Indicator dictionary</h3><p class="muted">Label, unit, direction, source and year for every field.</p><a class="btn alt" href="data/catalog.json" download>Download JSON</a></div>
+    <div class="card"><h3>Build record</h3><p class="muted">When each source was last pulled, and from where.</p><a class="btn alt" href="data/meta.json" download>Download JSON</a></div>
+  </div>
+  <div class="card" style="margin-top:16px"><h3>Cite this app</h3><p class="mono" id="cite"></p></div>
+</section>
+
+<section class="view" id="v-refs">
+  <div class="pagehead"><h1>Sources</h1><p>Every number on this site comes from one of these. Data sources and years update automatically with each morning's build.</p></div>
+  <nav class="subnav" data-sub></nav>
+  <h2>Data in this build</h2><ol class="refs" id="refData"></ol>
+  <h2 style="margin-top:28px">Live feeds</h2><ol class="refs" id="refLive"></ol>
+  <h2 style="margin-top:28px">Methods and research</h2><ol class="refs" id="refLit"></ol>
+  <h2 style="margin-top:28px">Software and maps</h2><ol class="refs" id="refSoft"></ol>
+  <h2 style="margin-top:28px">Photographs</h2><ol class="refs" id="refPhotos"></ol>
+</section>
+
+<section class="view" id="v-about">
+  <div class="pagehead"><h1>About</h1><p>Charm City Pulse turns public data into everyday answers for people who live in Baltimore.</p></div>
+  <nav class="subnav" data-sub></nav>
+  <div class="grid g2">
+    <div class="card"><h3>What it does</h3><p>It answers three everyday questions: <b>is it safe to be outside right now</b>, <b>when is the best time for my plans</b>, and <b>how does my block compare</b>, along with where to go for help. The Data section opens every number behind those answers.</p><p>Built by Sahil (MSE Data Science, Johns Hopkins University) on two of his studies: the <i>Baltimore Heat Atlas</i> and <i>Do new street trees cool Baltimore?</i></p><div id="aboutFindings"></div></div>
+    <div class="card"><h3>How the comparisons work</h3><p>Each area is compared with Baltimore's other residential census tracts. "Hotter than most" means it ranks in the hottest two-fifths of the city; "among the hottest" means the top fifth.</p><ul id="themeDefs"></ul><p class="note">Health figures are CDC model-based estimates. Census figures are survey estimates with a margin of error, shown in My block under "See the numbers".</p></div>
+    <div class="card"><h3>How it stays current</h3><ul><li><b>Live in your browser:</b> weather, heat index and wind chill, air quality from EPA monitors and a forecast model, NWS alerts, stream gauges and FEMA flood zones.</li><li><b>Every morning:</b> the newest Census and CDC releases, city cooling centers, parks, pools and rec centers, and OpenStreetMap places.</li><li><b>From the research:</b> summer heat, tree cover and the heat vulnerability index.</li></ul></div>
+    <div class="card"><h3>Limits</h3><ul><li>Weather and modeled air quality are for central Baltimore; conditions vary block to block.</li><li>FEMA flood zones miss much of the street and basement flooding from heavy rain.</li><li>Cooling and warming centers open only when the city activates them. Call 311 to confirm.</li><li>Not a substitute for official alerts. In an emergency, call 911.</li></ul></div>
+  </div>
+</section>
+
+</main>
+<footer><div class="wrap"><span>Charm City Pulse · Public data from the U.S. Census Bureau, CDC, EPA, NOAA's National Weather Service, USGS, FEMA, Open-Meteo, OpenStreetMap and Baltimore City.</span><a href="#explore">Data</a><a href="#refs">Sources</a><a href="#about">About</a><a href="privacy.html">Privacy</a><span id="buildStamp"></span></div></footer>
+
+<nav class="appbar" id="appbar" aria-label="App"></nav>
+
+<div class="menu" id="menu" aria-hidden="true"><nav class="menu-in" id="menuNav" aria-label="Menu"></nav></div>
+<div class="sheet-back" id="sheetBack"></div>
+<div class="sheet" id="alertSheet" role="dialog" aria-modal="true" aria-labelledby="alertTitle" aria-hidden="true">
+  <div class="grab"></div>
+  <button class="iconbtn close-x" id="sheetClose" aria-label="Close"></button>
+  <h2 id="alertTitle">Get live alerts</h2>
+  <p class="muted" style="margin:0">Two ways to hear about dangerous heat and cold, storms, floods and bad air.</p>
+  <div class="opt"><span class="tile" data-icon="phone"></span><div><b>Text, call or email from Baltimore City</b><span>Sign up for BMORE Alert, the city's official system. Choose text, phone call or email, and add your address for alerts about your area.</span></div><a class="btn small" href="https://member.everbridge.net/311440963535053/new" target="_blank" rel="noopener">Sign up</a></div>
+  <div class="opt"><span class="tile" data-icon="bell"></span><div><b>Notifications on this device</b><span id="notifState">Get notified about weather warnings, unhealthy air, and dangerous heat or cold. Works while the site is open or added to your home screen.</span></div><button class="switch" id="notifSwitch" role="switch" aria-checked="false" aria-label="Notifications on this device"></button></div>
+  <div class="opt" id="notifPrefs" style="display:block">
+    <b style="margin-bottom:6px">Notify me about</b>
+    <label class="chk"><input type="checkbox" data-pref="nws" checked> Weather warnings and advisories</label>
+    <label class="chk"><input type="checkbox" data-pref="air" checked> Air unhealthy for sensitive groups or worse</label>
+    <label class="chk"><input type="checkbox" data-pref="heat" checked> Heat index 103°F or higher</label>
+    <label class="chk"><input type="checkbox" data-pref="cold" checked> Wind chill 13°F or lower (Code Blue)</label>
+  </div>
+  <p class="note">BMORE Alert is run by the Baltimore City Office of Emergency Management. Charm City Pulse doesn't collect or store phone numbers or email addresses.</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://unpkg.com/esri-leaflet@3.0.12/dist/esri-leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="js/icons.js?v=202610281604"></script>
+<script src="js/util.js?v=202610281604"></script>
+<script src="js/live.js?v=202610281604"></script>
+<script src="js/fx.js?v=202610281604"></script>
+<script src="js/layers.js?v=202610281604"></script>
+<script src="js/resident.js?v=202610281604"></script>
+<script src="js/details.js?v=202610281604"></script>
+<script src="js/priority.js?v=202610281604"></script>
+<script src="js/planner.js?v=202610281604"></script>
+<script src="js/alerts.js?v=202610281604"></script>
+<script src="js/research.js?v=202610281604"></script>
+<script src="js/refs.js?v=202610281604"></script>
+<script src="js/cinema.js?v=202610281604"></script>
+<script src="js/app.js?v=202610281604"></script>
+</body>
+</html>
