@@ -146,7 +146,8 @@ SERIES = {   # key: (BNIA service, field prefix, label, unit, direction: +1 mean
 # Neighborhoods (Community Statistical Areas) renamed between the 2010 and 2020 boundaries; older BNIA series use 2010 names
 RENAMED = {"Claremont/Armistead": "Orchard Ridge/Armistead", "Greenmount East": "Oliver/Johnston Square", "Harford/Echodale": "Hamilton Hills",
            "Lauraville": "Greater Lauraville", "Medfield/Hampden/Woodberry/Remington": "Hampden/Remington",
-           "Orangeville/East Highlandtown": "Greektown/Bayview", "Washington Village/Pigtown": "Pigtown/Carroll Park"}
+           "Orangeville/East Highlandtown": "Greektown/Bayview", "Washington Village/Pigtown": "Pigtown/Carroll Park",
+           "Oliver/Johnson Square": "Oliver/Johnston Square"}   # last one: a misspelling in some BNIA 2020 tables
 
 
 def trends():
@@ -170,7 +171,7 @@ def trends():
         try:
             j = jget(BNIA.format(svc, "false"))
             for f in j.get("features", []):
-                a = f["attributes"]; csa = a.get("CSA2020") or RENAMED.get(a.get("CSA2010"), a.get("CSA2010"))
+                a = f["attributes"]; csa = a.get("CSA2020") or a.get("CSA2010"); csa = RENAMED.get(csa, csa)
                 vals = {}
                 for k, v in a.items():
                     m = re.fullmatch(pre + r"(\d\d)", k)
