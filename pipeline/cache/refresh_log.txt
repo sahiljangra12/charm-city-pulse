@@ -10,13 +10,13 @@
 [refresh] Census Reporter ACS 2024 5-year ['B28002', 'C16002'] 199 tracts
 [refresh] PLACES newest release in catalog: (2025, 'cwsq-ngmh', 'PLACES: Local Data for Better Health, Census Tract Data, 2025 release')
 [refresh] PLACES 2025 cwsq-ngmh 198 tracts
-[refresh] OSM fountains 28
-[refresh] OSM transit 38
-[refresh] OSM bike 2378
 [refresh] host timed out, skipping it for the rest of this build: overpass.kumi.systems
 [refresh] host timed out, skipping it for the rest of this build: overpass.private.coffee
-[refresh] OSM ev failed: https://overpass.private.coffee/api/interpreter: The read operation timed out
-[refresh] OSM gardens failed: time budget used
+[refresh] OSM fountains failed: https://overpass.private.coffee/api/interpreter: The read operation timed out
+[refresh] OSM transit 38
+[refresh] OSM bike 2378
+[refresh] OSM ev 58
+[refresh] OSM gardens failed: overpass.private.coffee skipped (timed out earlier in this build)
 [refresh] OSM recycling failed: time budget used
 [refresh] OSM markets failed: time budget used
 [refresh] done: 199 tracts, 55 CSAs; sources: {'acs': 'live via Census Reporter', 'places': 'live', 'heat': 'research release', 'svi': 'research release', 'holc': 'historical', 'trees': 'research release', 'census2020': 'fixed', 'cooling': 'live', 'winter': 'verified 2026-10-26', 'parks': 'live', 'osm': 'live'}
