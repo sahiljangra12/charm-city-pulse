@@ -14,5 +14,11 @@
   }
  },
  "water": [],
- "water_source": "https://www.baltimorecity.gov/publicworks/news-and-media"
+ "water_source": "https://www.baltimorecity.gov/publicworks/news-and-media",
+ "snow": {
+  "active": false,
+  "latest": null
+ },
+ "snow_source": "https://www.baltimorecity.gov/transportation/news-media",
+ "changed": "2026-11-09T14:06+00:00"
 }
