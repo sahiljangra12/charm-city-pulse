@@ -94,13 +94,15 @@ def sensors():
     def j(url):
         with urllib.request.urlopen(urllib.request.Request(url, headers=H), timeout=30) as r: return json.load(r)
     locs = j("https://api.openaq.org/v3/locations?bbox=-76.712,39.197,-76.529,39.372&parameters_id=2&limit=100").get("results", [])
-    now = datetime.now(timezone.utc); out = []
+    now = datetime.now(timezone.utc); out = []; why = {"monitor": 0, "no_pm25": 0, "stale": 0, "error": 0}
+    print(f"[city-alerts] OpenAQ: {len(locs)} PM2.5 locations in the Baltimore box")
     for L in locs:
-        if L.get("isMonitor"): continue                          # official monitors already come from EPA AirNow
+        if L.get("isMonitor"): why["monitor"] += 1; continue                          # official monitors already come from EPA AirNow
         pm = {s["id"] for s in L.get("sensors", []) if (s.get("parameter") or {}).get("name") == "pm25"}
-        if not pm: continue
+        if not pm: why["no_pm25"] += 1; continue
         try: latest = j(f"https://api.openaq.org/v3/locations/{L['id']}/latest").get("results", [])
-        except Exception as e: print("[city-alerts] sensor", L["id"], e); continue
+        except Exception as e: why["error"] += 1; print("[city-alerts] sensor", L["id"], e); continue
+        n0 = len(out)
         for r in latest:
             if r.get("sensorsId") not in pm or r.get("value") is None: continue
             t = datetime.fromisoformat(r["datetime"]["utc"].replace("Z", "+00:00"))
@@ -109,6 +111,8 @@ def sensors():
             out.append({"name": L.get("name") or "Sensor", "provider": (L.get("provider") or {}).get("name"), "pm25": round(r["value"], 1),
                         "time": r["datetime"]["utc"], "lat": round(c.get("latitude"), 5), "lon": round(c.get("longitude"), 5)})
             break
+        if len(out) == n0: why["stale"] += 1; print("[city-alerts]   no recent reading:", L.get("name"), (L.get("datetimeLast") or {}).get("utc"))
+    print("[city-alerts] OpenAQ skipped:", why)
     json.dump({"source": "OpenAQ (low-cost sensors)", "updated": now.isoformat(timespec="minutes"), "sensors": out}, open(SENSORS_OUT, "w"), indent=1)
     print(f"[city-alerts] {len(out)} neighborhood air sensors reporting")
 
