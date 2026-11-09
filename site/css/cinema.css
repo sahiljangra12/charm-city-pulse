@@ -382,3 +382,6 @@ html.easy .hero .why,html.easy .banner-in p{opacity:1!important;color:#fff!impor
 .guide-item p{margin:0;color:var(--ink-2);font-size:.95rem;line-height:1.5}
 @media print{.jumpbar,.welcome{display:none!important}}
 @media (max-width:400px){.brand{gap:8px}.brand b{letter-spacing:.1em!important;font-size:.8rem!important}}
+
+/* data health */
+.health-sum{border-left:5px solid #24804f}.health-sum.warn{border-left-color:#c77700}.health-sum h2{margin:0 0 6px}.health-sum .steps{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}

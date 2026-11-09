@@ -43,7 +43,8 @@
 <!-- ======================= TODAY ======================= -->
 <section class="view" id="v-today">
   <div class="hero bleed" id="hSky" data-day="0">
-    <div class="hero-bg"><img data-img="hero_night" alt="" fetchpriority="high" sizes="100vw" srcset="img/hero_night-m.jpg 1100w, img/hero_night.jpg 2000w, img/hero_night-4k.jpg 3840w" src="img/hero_night.jpg"><img data-img="hero_day" alt="" class="day" loading="lazy"></div>
+    <div class="hero-bg"><img id="heroImg" data-img="hero_night" alt="" fetchpriority="high"><script>/* only fetch the big photo right away on the Today page */
+(function (i) { if (location.hash.length > 1 && !/^#today/.test(location.hash)) i.loading = "lazy"; i.sizes = "(max-width: 700px) 60vw, 100vw"; i.srcset = "img/hero_night-m.jpg 1100w, img/hero_night.jpg 2000w, img/hero_night-4k.jpg 3840w"; i.src = "img/hero_night.jpg"; })(document.getElementById("heroImg"));</script><img data-img="hero_day" alt="" class="day" loading="lazy"></div>
     <canvas class="hero-fx" id="heroFx" aria-hidden="true"></canvas>
     <div id="hScene" hidden></div>
     <div class="hero-in">
@@ -220,6 +221,12 @@
   <div class="section-h"><h2>Air-quality monitors</h2></div><div class="tablewrap"><table id="monitorTable"></table></div>
 </section>
 
+<section class="view" id="v-status">
+  <div class="pagehead"><h1>Data health</h1><p>Is every number on this site fresh? This page checks each source and says so in plain words.</p></div>
+  <nav class="subnav" data-sub></nav>
+  <div id="healthBody"></div>
+</section>
+
 <section class="view" id="v-download">
   <div class="pagehead"><h1>Download</h1><p>Free to use with credit. Updated every morning.</p></div>
   <nav class="subnav" data-sub></nav>
@@ -283,7 +290,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="js/icons.js?v=__BUILD__"></script>
 <script src="js/util.js?v=__BUILD__"></script>
-<script src="js/es.js?v=__BUILD__"></script>
+<script>/* the Spanish dictionary (76 KB) is only downloaded for Spanish readers */
+try { if ((localStorage.getItem("ccp.lang") || ((navigator.language || "").toLowerCase().startsWith("es") ? "es" : "en")) === "es") document.write('<script src="js/es.js?v=__BUILD__"><\/script>'); } catch (e) {}</script>
 <script src="js/i18n.js?v=__BUILD__"></script>
 <script src="js/live.js?v=__BUILD__"></script>
 <script src="js/fx.js?v=__BUILD__"></script>
@@ -297,6 +305,7 @@
 <script src="js/research.js?v=__BUILD__"></script>
 <script src="js/refs.js?v=__BUILD__"></script>
 <script src="js/brief.js?v=__BUILD__"></script>
+<script src="js/health.js?v=__BUILD__"></script>
 <script src="js/cinema.js?v=__BUILD__"></script>
 <script src="js/flag.js?v=__BUILD__"></script>
 <script src="js/app.js?v=__BUILD__"></script>

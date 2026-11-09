@@ -9,7 +9,7 @@ const CINEMA = (() => {
   function setImg(img) {
     const k = img.dataset.img; if (!k || img.dataset.set) return; img.dataset.set = 1;
     img.decoding = "async";
-    if (!img.getAttribute("srcset")) { img.sizes = "100vw"; img.srcset = `img/${k}-m.jpg 1100w, img/${k}.jpg 2000w, img/${k}-4k.jpg 3840w`; img.src = `img/${k}.jpg`; }
+    if (!img.getAttribute("srcset")) { img.sizes = "(max-width: 700px) 60vw, 100vw"; img.srcset = `img/${k}-m.jpg 1100w, img/${k}.jpg 2000w, img/${k}-4k.jpg 3840w`; img.src = `img/${k}.jpg`; }
     if (img.complete && img.naturalWidth) img.classList.add("ok");
     else img.addEventListener("load", () => img.classList.add("ok"), { once: true });
     img.addEventListener("error", async () => { await ready; const c = CREDITS.find(x => x.key === k); if (!c || img.dataset.fb) return; img.dataset.fb = 1;
@@ -76,8 +76,8 @@ const CINEMA = (() => {
   }
 
   // ---------- page banners ----------
-  const BANNER = { guide: "sunrise", brief: "harbor", plan: "plan", place: "block", map: "places", help: "help", explore: "data", compare: "harbor", correlate: "water", live: "hero_night", download: "sunrise", refs: "harbor", about: "hero_day" };
-  const EYEBROW = { guide: "Start here", brief: "For city and state staff", plan: "Plan", place: "My block", map: "Map", help: "Help", explore: "Data", compare: "Data", correlate: "Data", live: "Data", download: "Data", refs: "Sources", about: "About" };
+  const BANNER = { guide: "sunrise", brief: "harbor", plan: "plan", place: "block", map: "places", help: "help", explore: "data", compare: "harbor", correlate: "water", live: "hero_night", status: "hero_night", download: "sunrise", refs: "harbor", about: "hero_day" };
+  const EYEBROW = { guide: "Start here", brief: "For city and state staff", plan: "Plan", place: "My block", map: "Map", help: "Help", explore: "Data", compare: "Data", correlate: "Data", live: "Data", status: "Data", download: "Data", refs: "Sources", about: "About" };
   function banners() {
     Object.entries(BANNER).forEach(([v, img]) => {
       const ph = U.$(`#v-${v} .pagehead`); if (!ph || ph.classList.contains("banner")) return;
@@ -111,10 +111,10 @@ const CINEMA = (() => {
   function menu() {
     const m = U.$("#menu"), b = U.$("#menuBtn");
     const main = [["today", "Today"], ["plan", "Plan my day"], ["place", "My block"], ["map", "Map"], ["help", "Get help"], ["guide", "How it works"]];
-    const data = [["brief", "City brief"], ["explore", "Explore"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["download", "Download"], ["refs", "Sources"], ["about", "About"]];
+    const data = [["brief", "City brief"], ["explore", "Explore"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["status", "Data health"], ["download", "Download"], ["refs", "Sources"], ["about", "About"]];
     U.$("#menuNav").innerHTML = `<div class="menu-main">${main.map(([k, t], i) => `<a href="#${k}" style="--i:${i}">${t}</a>`).join("")}</div>
       <div class="menu-sub"><span class="eyebrow">For researchers and officials</span>${data.map(([k, t], i) => `<a href="#${k}" style="--i:${i + 6}">${t}</a>`).join("")}</div>
-      <div class="menu-foot" style="--i:12"><button class="xbtn" id="menuAlerts">${I("bell", 16)}<span>Get alerts</span></button><button class="xbtn" data-easy aria-pressed="false">${I("search", 16)}<span>Easy reading</span></button><a class="xbtn call" href="tel:311">${I("phone", 16)}<span>Call 311</span></a></div>`;
+      <div class="menu-foot" style="--i:13"><button class="xbtn" id="menuAlerts">${I("bell", 16)}<span>Get alerts</span></button><button class="xbtn" data-easy aria-pressed="false">${I("search", 16)}<span>Easy reading</span></button><a class="xbtn call" href="tel:311">${I("phone", 16)}<span>Call 311</span></a></div>`;
     const set = on => { m.classList.toggle("on", on); document.body.classList.toggle("menu-open", on); b.setAttribute("aria-expanded", String(on)); m.setAttribute("aria-hidden", String(!on)); b.setAttribute("aria-label", on ? "Close menu" : "Open menu"); };
     b.onclick = () => set(!m.classList.contains("on"));
     U.$("#menuAlerts").onclick = () => { set(false); setTimeout(() => ALERTS.open(), 200); };

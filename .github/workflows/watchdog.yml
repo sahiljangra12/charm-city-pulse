@@ -1,0 +1,21 @@
+name: Watchdog (is the live data fresh?)
+
+on:
+  schedule:
+    - cron: "23 */6 * * *"     # every 6 hours
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the live site and email an alert if data is stale
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 pipeline/notify.py watch

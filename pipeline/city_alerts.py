@@ -138,7 +138,8 @@ def main():
         out["water"] = water_notices(page, today); out["water_source"] = DPW
     except Exception as e:
         print("[city-alerts] Public Works:", e, "- keeping the previous water notices")
-    if old != out:
+    if {k: v for k, v in old.items() if k != "changed"} != {k: v for k, v in out.items() if k != "changed"}:
+        out["changed"] = datetime.now(timezone.utc).isoformat(timespec="minutes")
         json.dump(out, open(OUT, "w"), indent=1)
         print("[city-alerts] updated:", [a["title"] for a in out.get("active", [])] or "no Code Blue/Red", "| water:", [w["title"] for w in out.get("water", [])] or "none")
     else:
