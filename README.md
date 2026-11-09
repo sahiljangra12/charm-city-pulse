@@ -5,7 +5,7 @@ Sahil, Johns Hopkins University, 2026.
 
 **Live site:** https://sahiljangra12.github.io/charm-city-pulse/
 
-An independent project; not affiliated with Baltimore City. The waving city flag is the public-domain flag of Baltimore from Wikimedia Commons.
+An independent project. The waving city flag is the public-domain flag of Baltimore from Wikimedia Commons.
 
 ## What it does
 
@@ -40,6 +40,8 @@ An independent project; not affiliated with Baltimore City. The waving city flag
 | Heat, land cover, heat vulnerability index | per study release | Baltimore Heat Atlas |
 
 When a new daily build is published, open pages pick it up without reloading. If an upstream source fails, the build keeps the last good copy from `pipeline/cache/`, then falls back to the frozen research inputs in `pipeline/base/`.
+
+Background photos come from Wikimedia Commons. `pipeline/images.py` takes each original at up to 4K (3840 px), lightly enhances it (contrast, colour, sharpening) and saves 4K, 2000 px and phone sizes; browsers pick the size that fits the screen.
 
 A slow server can't stall the build: the network phase has a 13-minute budget, and once a host times out every later request to it is skipped for that run and served from cache. If the daily build ever falls more than 36 hours behind, the site says so in the footer, on the Data pages and in Live feeds.
 

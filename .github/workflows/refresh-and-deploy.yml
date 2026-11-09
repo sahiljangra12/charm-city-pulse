@@ -17,7 +17,7 @@ concurrency:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -38,10 +38,12 @@ jobs:
         continue-on-error: true
         timeout-minutes: 2
         run: python pipeline/city_alerts.py
-      - name: Fetch background photos (Wikimedia Commons, once)
+      - name: Fetch and enhance photos in 4K (Wikimedia Commons, once per photo)
         continue-on-error: true
-        timeout-minutes: 3
-        run: python pipeline/images.py
+        timeout-minutes: 10
+        run: |
+          pip install --quiet pillow
+          python pipeline/images.py
       - name: Commit refreshed data to main
         run: |
           git config user.name "charm-city-pulse-bot"

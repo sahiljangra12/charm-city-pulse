@@ -12,7 +12,7 @@ const ES_DICT = {
   "Charm City Pulse, home": "Charm City Pulse, inicio", "Scroll": "Desplazar", "Scroll to what matters right now": "Ir a lo importante ahora",
   "Charm City Pulse · Public data from the U.S. Census Bureau, CDC, EPA, NOAA's National Weather Service, USGS, FEMA, Open-Meteo, OpenStreetMap and Baltimore City.":
     "Charm City Pulse · Datos públicos de la Oficina del Censo de EE. UU., los CDC, la EPA, el Servicio Meteorológico Nacional (NOAA), el USGS, FEMA, Open-Meteo, OpenStreetMap y la Ciudad de Baltimore.",
-  "Independent project by Sahil, Johns Hopkins University. Not affiliated with Baltimore City.": "Proyecto independiente de Sahil, Universidad Johns Hopkins. No está afiliado a la Ciudad de Baltimore.",
+  "Independent project by Sahil, Johns Hopkins University.": "Proyecto independiente de Sahil, Universidad Johns Hopkins.",
   "Zoom in": "Acercar", "Zoom out": "Alejar", "Close popup": "Cerrar", "Live": "En vivo", "Refreshes automatically": "Se actualiza solo", "updated just now": "actualizado ahora mismo",
 
   // ---------- Today: hero ----------

@@ -43,7 +43,7 @@
 <!-- ======================= TODAY ======================= -->
 <section class="view" id="v-today">
   <div class="hero bleed" id="hSky" data-day="0">
-    <div class="hero-bg"><img data-img="hero_night" alt="" fetchpriority="high" sizes="100vw" srcset="img/hero_night-m.jpg 1100w, img/hero_night.jpg 2000w" src="img/hero_night.jpg"><img data-img="hero_day" alt="" class="day"></div>
+    <div class="hero-bg"><img data-img="hero_night" alt="" fetchpriority="high" sizes="100vw" srcset="img/hero_night-m.jpg 1100w, img/hero_night.jpg 2000w, img/hero_night-4k.jpg 3840w" src="img/hero_night.jpg"><img data-img="hero_day" alt="" class="day" loading="lazy"></div>
     <canvas class="hero-fx" id="heroFx" aria-hidden="true"></canvas>
     <div id="hScene" hidden></div>
     <div class="hero-in">
@@ -138,7 +138,7 @@
   <p class="note">Tap a neighborhood for its key numbers. Scores are city ranks from 0 to 100 among residential census tracts, combined into Community Statistical Areas from tract counts; higher means harder. <span id="bSeason"></span></p>
   <div class="grid g2" style="margin-top:22px">
     <div class="card"><h3>How to read this</h3><ul><li><b>Overall priority</b> is the average of the heat, low-shade, health and social-vulnerability scores, so it highlights places where several pressures stack up.</li><li>These describe neighborhoods, not individual people, and don't prove cause.</li><li>Census figures are survey estimates with margins of error; the full numbers are in Explore and Download.</li></ul></div>
-    <div class="card"><h3>Sources in this brief</h3><ul class="small" id="bSources"></ul><p class="note">Charm City Pulse is an independent project by Sahil, Johns Hopkins University, and is not affiliated with Baltimore City. Live version: <span class="mono">sahiljangra12.github.io/charm-city-pulse/#brief</span></p></div>
+    <div class="card"><h3>Sources in this brief</h3><ul class="small" id="bSources"></ul><p class="note">Charm City Pulse is an independent project by Sahil, Johns Hopkins University. Live version: <span class="mono">sahiljangra12.github.io/charm-city-pulse/#brief</span></p></div>
   </div>
 </section>
 
@@ -223,7 +223,7 @@
 </section>
 
 </main>
-<footer><div class="wrap footflag"><canvas class="flagwave" id="footFlag" width="150" height="100" aria-hidden="true"></canvas><p>Independent project by Sahil, Johns Hopkins University. Not affiliated with Baltimore City.</p></div><div class="wrap"><span>Charm City Pulse · Public data from the U.S. Census Bureau, CDC, EPA, NOAA's National Weather Service, USGS, FEMA, Open-Meteo, OpenStreetMap and Baltimore City.</span><a href="#brief">City brief</a><a href="#explore">Data</a><a href="#refs">Sources</a><a href="#about">About</a><a href="privacy.html">Privacy</a><span id="buildStamp"></span></div></footer>
+<footer><div class="wrap footflag"><canvas class="flagwave" id="footFlag" width="150" height="100" aria-hidden="true"></canvas><p>Independent project by Sahil, Johns Hopkins University.</p></div><div class="wrap"><span>Charm City Pulse · Public data from the U.S. Census Bureau, CDC, EPA, NOAA's National Weather Service, USGS, FEMA, Open-Meteo, OpenStreetMap and Baltimore City.</span><a href="#brief">City brief</a><a href="#explore">Data</a><a href="#refs">Sources</a><a href="#about">About</a><a href="privacy.html">Privacy</a><span id="buildStamp"></span></div></footer>
 
 <nav class="appbar" id="appbar" aria-label="App"></nav>
 
