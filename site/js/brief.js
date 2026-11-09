@@ -88,15 +88,29 @@ const BRIEF = (() => {
     U.$("#bFigures").innerHTML = figures(rows, centers);
     U.$("#bTable").innerHTML = table(rows);
     U.$("#bSeason").textContent = `Nearest center is the straight-line distance from the neighborhood's population-weighted center to the closest of ${centers.list.length} ${centers.label} (${centers.when}).`;
+    trendsTable(rows);
     const src = m.sources;
     U.$("#bSources").innerHTML = ["acs", "places", "heat", "svi", "trees", centers.kind === "warming" ? "winter" : "cooling"].filter(k => src[k])
       .map(k => `<li>${U.esc(src[k].by)}. <i>${U.esc(src[k].name)}</i>, ${U.esc(src[k].vintage || "")}.</li>`).join("");
   }
 
+  async function trendsTable(rows) {
+    let T; try { T = await MORE.file("trends.json"); } catch { U.$("#bTrends").innerHTML = ""; return; }
+    const keys = MORE.TREND_ORDER.filter(k => T.series[k]);
+    const key = S.rank, list = rows.filter(x => x.score(key) != null).sort((a, b) => b.score(key) - a.score(key)).slice(0, S.n || 99);
+    let up = 0, n = 0;
+    Object.values(T.csa).forEach(c => { if (c.heat) { const ch = MORE.change("heat", c.heat, T.series.heat); if (ch) { n++; if (ch.worse) up++; } } });
+    U.$("#bTrendNote").textContent = n ? `Summer surface heat rose in ${up} of ${n} neighborhoods between ${Object.keys(Object.values(T.csa).find(c => c.heat).heat).sort()[0]} and the latest summer. Listed in the same order as the table above.` : "";
+    U.$("#bTrends").innerHTML = `<thead><tr><th>Neighborhood</th>${keys.map(k => `<th>${U.esc(T.series[k].label)}</th>`).join("")}</tr></thead><tbody>` +
+      list.map(x => { const c = T.csa[x.r.name] || {};
+        return `<tr><td><b>${U.esc(x.r.name)}</b></td>${keys.map(k => { const ch = c[k] && MORE.change(k, c[k], T.series[k]);
+          return ch ? `<td class="tcell ${ch.worse == null ? "" : ch.worse ? "worse" : "better"}"><span class="chg">${ch.d}</span><small>${ch.y0}–${ch.y1}</small></td>` : `<td class="muted">—</td>`; }).join("")}</tr>`; }).join("") + "</tbody>";
+  }
+
   function init() {
     U.$("#bRank").innerHTML = Object.entries(RANKS).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join("");
-    U.$("#bRank").onchange = e => { S.rank = e.target.value; U.$("#bTable").innerHTML = table(rowsCache); };
-    U.$("#bAll").onclick = e => { S.n = S.n ? 0 : 15; e.currentTarget.textContent = S.n ? "Show all 55" : "Show top 15"; U.$("#bTable").innerHTML = table(rowsCache); };
+    U.$("#bRank").onchange = e => { S.rank = e.target.value; U.$("#bTable").innerHTML = table(rowsCache); trendsTable(rowsCache); };
+    U.$("#bAll").onclick = e => { S.n = S.n ? 0 : 15; e.currentTarget.textContent = S.n ? "Show all 55" : "Show top 15"; U.$("#bTable").innerHTML = table(rowsCache); trendsTable(rowsCache); };
     U.$("#bTable").addEventListener("click", e => { const tr = e.target.closest("tr[data-csa]"); if (!tr) return;
       const open = tr.nextElementSibling?.classList.contains("bdetail"); U.$$("#bTable .bdetail").forEach(d => d.remove()); U.$$("#bTable tr.on").forEach(t => t.classList.remove("on"));
       if (!open) { tr.classList.add("on"); tr.insertAdjacentHTML("afterend", detail(tr.dataset.csa, rowsCache)); } });

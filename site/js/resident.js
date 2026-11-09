@@ -184,10 +184,19 @@ const RES = (() => {
         <div class="section-h"><h2>What you can do</h2></div>
         <ul class="todo stagger">${top3.map(k => { const [ic, t, d, href] = ACTIONS[k]; return `<li>${tile(ic, "var(--link)")}<div><b>${href ? `<a href="${href}"${href.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>${t}</a>` : t}</b><span>${d}</span></div></li>`; }).join("")}</ul>
         <div class="section-h"><h2>Closest help</h2><a href="#help">All places and phone numbers</a></div>
-        <div class="place-list stagger">${cards}</div>
+        <div class="place-list stagger">${cards}${MORE.leadCard(p, null)}</div>
+        <div id="pReport"></div>
+        <div class="section-h"><h2>Food help nearby</h2><a href="#help">More food help</a></div>
+        <div class="place-list" id="pFood"><div class="skeleton" style="height:70px"></div></div>
+        <div class="section-h"><h2>Buses and trains nearby</h2></div>
+        <div class="place-list" id="pTransit"><div class="skeleton" style="height:70px"></div></div>
+        <div class="section-h"><h2>How this neighborhood is changing</h2></div>
+        <div id="pTrends"></div>
         <details class="more"><summary>${tile("chart", "var(--ink)", 20).replace('class="tile"', 'class="tile sm"')}<span>See the numbers<br><small style="font-weight:500">Every measure behind these comparisons, with margins of error and source years</small></span>${I("chev", 20).replace('class="ic"', 'class="ic chev"')}</summary><div class="inner"><div class="card" style="overflow-x:auto">${numbersTable(p)}</div></div></details>
         <div class="report-actions"><button class="btn small" data-print>Print or save as PDF</button><button class="btn small alt" data-share>Copy link to this report</button></div>
         <p class="note print-only">Charm City Pulse report for ${U.esc(p.csa)} (census tract ${U.esc(p.name.replace("Tract ", ""))}), data build ${new Date(D().meta.built).toLocaleDateString(LOC(), { dateStyle: "long" })}. ${location.origin}${location.pathname}#place/${id}</p>`;
+      MORE.foodSection(U.$("#pFood"), here[0], here[1]); MORE.transitSection(U.$("#pTransit"), here[0], here[1]); MORE.trendsSection(U.$("#pTrends"), p.csa);
+      MORE.file("trends.json").then(T => { const lc = MORE.leadCard(p, T.csa[p.csa]); const old = body.querySelector(".place.lead"); if (old) old.outerHTML = lc; else if (lc) body.querySelector(".place-list").insertAdjacentHTML("beforeend", lc); }).catch(() => {});
       body.querySelector("[data-print]").onclick = () => { body.querySelectorAll("details.more").forEach(d => d.open = true); window.print(); };
       body.querySelector("[data-share]").onclick = () => SHARE.link(`${location.origin}${location.pathname}#place/${id}`, `${p.csa}: heat, flood risk and help nearby`);
     }
@@ -195,7 +204,8 @@ const RES = (() => {
     if (pMarker) pMarker.remove(); if (pt) pMarker = L.marker([pt.lat, pt.lon]).addTo(pMap);
     pMap.invalidateSize(); pLayer.eachLayer(l => { if (l.feature.properties.id === id) { try { pMap.flyToBounds(l.getBounds(), { maxZoom: 15, padding: [30, 30], duration: .8 }); } catch { pMap.fitBounds(l.getBounds(), { maxZoom: 15 }); } } });
     LIVE.floodAt(here[0], here[1]).then(r => { const el = U.$("#pFlood"); if (!el) return; const w = floodWords(r);
-      el.style.background = `color-mix(in srgb,${w.c} 10%,var(--surface))`; el.innerHTML = `${tile(w.icon, w.c)}<div><b>${w.short}${pt ? "" : " (center of the area)"}</b><br><span style="font-size:.93rem;color:var(--ink-2)">${w.long}</span></div>`; })
+      el.style.background = `color-mix(in srgb,${w.c} 10%,var(--surface))`; el.innerHTML = `${tile(w.icon, w.c)}<div><b>${w.short}${pt ? "" : " (center of the area)"}</b><br><span style="font-size:.93rem;color:var(--ink-2)">${w.long}</span></div>`;
+      const rp = U.$("#pReport"); if (rp) rp.innerHTML = MORE.report("flood") + MORE.report("basement"); })
       .catch(() => { const el = U.$("#pFlood"); if (el) el.innerHTML = `${tile("waves", "var(--ink-3)")}<div><b>The flood map didn't answer</b><br><span style="font-size:.93rem">Try again in a minute, or check the <a href="https://msc.fema.gov/portal/home" target="_blank" rel="noopener">FEMA flood map</a>.</span></div>`; });
     window.scrollTo({ top: 0 });
   }
@@ -212,6 +222,10 @@ const RES = (() => {
     ["flood", "Flood zones", "waves", "#2f78c4", ["flood"]],
     ["air", "Air monitors", "wind", "#1e9e5a", ["airmon"]],
     ["streams", "Stream gauges", "droplet", "#0c1c2c", ["gauges"]],
+    ["foodhelp", "Food help", "hands", "#2f8a5b", ["foodsites", "snap"]],
+    ["stops", "Bus & rail stops", "bus", "#6b4c9a", ["stops"]],
+    ["harbor", "Harbor water", "waves", "#1d6fb8", ["harbor"]],
+    ["sensors", "Air sensors", "wind", "#24804f", ["sensors"]],
   ];
   const SHADES = [["t_heat", "Summer heat"], ["t_trees", "Tree shade"], ["hvi", "Heat vulnerability"], ["t_health", "Health risks"], ["t_social", "Money and jobs"], ["t_energy", "Housing and energy bills"], ["t_mobility", "Getting around and food"], ["none", "Nothing"]];
   let map, shade, loaded = {};
@@ -241,11 +255,12 @@ const RES = (() => {
       if (!turnOn) { if (loaded[k]) { map.removeLayer(loaded[k]); if (loaded[k]._unsub) { loaded[k]._unsub(); delete loaded[k]; } } continue; }
       if (loaded[k]) { loaded[k].addTo(map); continue; }
       b.classList.add("busy");
-      try { loaded[k] = await LAYERS.load(k, { pins: true }); loaded[k].addTo(map); }
+      try { loaded[k] = await LAYERS.load(k, { pins: true, map, onCount: n => { if (k === "sensors" && !n) msgEl.textContent = "No neighborhood air sensors are reporting right now. EPA monitors are under Air monitors."; } }); loaded[k].addTo(map); }
       catch { msgEl.textContent = `${LAYERS.DEF[k].label} didn't load. Try again in a minute.`; b.setAttribute("aria-pressed", "false"); }
       b.classList.remove("busy");
     }
     if (turnOn && g[0] === "flood") msgEl.textContent = "Blue areas are FEMA flood zones. Tap any spot to check it.";
+    if (turnOn && g[0] === "stops") { msgEl.textContent = "Zoom in to see bus and rail stops. Tap one for its next scheduled times."; if (map.getZoom() < 15) map.setZoom(15); }
   }
   async function mapClick(ll) {
     const id = APP.tractAt(ll.lat, ll.lng), p = id ? D().byId[id].properties : null;
@@ -293,8 +308,9 @@ const RES = (() => {
       s === "summer" ? "It's heat season. Cooling centers open on Code Red heat days." : "Warming centers open for the winter from November 15. Cooling centers open on Code Red heat days.";
     const calls = [["alert", "var(--red)", "Emergency", "Heat stroke, hypothermia, any emergency", "911", "911", true], ["building", "var(--link)", "Baltimore 311", "City services, center hours, report problems", "311", "311"], ["hands", "var(--s0)", "211 Maryland", "Food, rent and utility help, 24/7, any language", "211", "2-1-1"],
       ["bed", "var(--s3)", "Shelter Hotline", "Shelter beds and warming centers", "4439849540", "443-984-9540"], ["moon", "#6b4c9a", "Winter Shelter Hotline", "9 pm to midnight in winter", "4436957378", "443-695-7378"], ["bolt", "var(--accent)", "Heating bill help", "Community Action Partnership", "4103965555", "410-396-5555"]];
-    U.$("#helpStatus").innerHTML = codeStatus();
-    if (!helpShow.wired) { helpShow.wired = true; F("city").on(() => { if (APP.view === "help") U.$("#helpStatus").innerHTML = codeStatus(); }); }
+    U.$("#helpStatus").innerHTML = MORE.waterBars() + codeStatus();
+    if (!helpShow.wired) { helpShow.wired = true; F("city").on(() => { if (APP.view === "help") U.$("#helpStatus").innerHTML = MORE.waterBars() + codeStatus(); }); }
+    U.$("#helpNeighbor").innerHTML = MORE.neighborCard(LIVE.cityAlert("blue") || s === "winter" ? "cold" : LIVE.cityAlert("red") || s === "summer" ? "heat" : "help");
     U.$("#helpCalls").innerHTML = calls.map(([ic, col, t, d, tel, show, urgent]) => `<div class="callrow${urgent ? " urgent" : ""}">${tile(ic, col)}<div><b>${t}</b><small>${d}</small><span class="numtxt tnum">${show}</span></div><a class="round call${urgent ? " urgent" : ""}" href="tel:${tel}" aria-label="Call ${t} at ${show}" title="Call ${show}">${I("phone", 22)}</a></div>`).join("");
     U.$("#helpCalls").classList.add("stagger");
     const here = userLoc ? [userLoc.lon, userLoc.lat] : [LIVE.CENTER[1], LIVE.CENTER[0]];
@@ -305,6 +321,8 @@ const RES = (() => {
     U.$("#helpPlaces").innerHTML = list.map(placeCard).join("") + `<p class="note">Centers open only when the city activates them. Call 311 to check. For overnight shelters, call the Shelter Hotline first.</p>`;
     U.$("[data-near]").onclick = e => { e.preventDefault(); navigator.geolocation && navigator.geolocation.getCurrentPosition(p => { userLoc = { lat: p.coords.latitude, lon: p.coords.longitude, label: "your location" }; U.store.set("loc", userLoc); helpShow(); }, () => U.toast("Location is off. Search your address on My block instead.")); };
     U.$("#helpRights").innerHTML = rights();
+    const mo = new Date().getMonth() + 1; if (mo >= 10 || mo <= 4) U.$("#helpRights").insertAdjacentHTML("beforeend", MORE.report("heat"));
+    MORE.foodSection(U.$("#helpFood"), here[1], here[0]); MORE.harborSection(U.$("#helpHarbor"));
     const P = [["tree", "var(--s0)", "TreeBaltimore", "A free street tree, planted and watered for you.", "https://www.treebaltimore.org"],
       ["bolt", "var(--accent)", "Energy bill help (OHEP)", "Help with electric and gas bills and past-due balances.", "https://dhs.maryland.gov/office-of-home-energy-programs/"],
       ["hospital", "var(--s4)", "Baltimore City Health Department", "Code Red heat and Code Blue cold alerts, clinics.", "https://health.baltimorecity.gov"],

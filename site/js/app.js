@@ -178,6 +178,7 @@ const APP = (() => {
 
   async function start() {
     buildNav(); CINEMA.init(); I18N.init();
+    MORE.easy(); document.addEventListener("click", e => { const b = e.target.closest("[data-easy]"); if (b) MORE.easy(!document.documentElement.classList.contains("easy")); });
     U.$$("canvas.flagwave").forEach(c => FLAG.mount(c, c.id === "footFlag" ? { pole: true } : { amp: 0.09, speed: 0.8 }));
     U.$$("[data-unit]").forEach(b => b.onclick = () => setUnit(b.dataset.unit)); setUnit(U.unit());
     U.$("#themeBtn").onclick = () => setTheme(isDark() ? "light" : "dark");

@@ -114,7 +114,7 @@ const CINEMA = (() => {
     const data = [["brief", "City brief"], ["explore", "Explore"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["download", "Download"], ["refs", "Sources"], ["about", "About"]];
     U.$("#menuNav").innerHTML = `<div class="menu-main">${main.map(([k, t], i) => `<a href="#${k}" style="--i:${i}">${t}</a>`).join("")}</div>
       <div class="menu-sub"><span class="eyebrow">Data</span>${data.map(([k, t], i) => `<a href="#${k}" style="--i:${i + 5}">${t}</a>`).join("")}</div>
-      <div class="menu-foot" style="--i:12"><button class="xbtn" id="menuAlerts">${I("bell", 16)}<span>Get alerts</span></button><a class="xbtn call" href="tel:311">${I("phone", 16)}<span>Call 311</span></a></div>`;
+      <div class="menu-foot" style="--i:12"><button class="xbtn" id="menuAlerts">${I("bell", 16)}<span>Get alerts</span></button><button class="xbtn" data-easy aria-pressed="false">${I("search", 16)}<span>Easy reading</span></button><a class="xbtn call" href="tel:311">${I("phone", 16)}<span>Call 311</span></a></div>`;
     const set = on => { m.classList.toggle("on", on); document.body.classList.toggle("menu-open", on); b.setAttribute("aria-expanded", String(on)); m.setAttribute("aria-hidden", String(!on)); b.setAttribute("aria-label", on ? "Close menu" : "Open menu"); };
     b.onclick = () => set(!m.classList.contains("on"));
     U.$("#menuAlerts").onclick = () => { set(false); setTimeout(() => ALERTS.open(), 200); };

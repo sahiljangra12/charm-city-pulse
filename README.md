@@ -21,6 +21,17 @@ An independent project. The waving city flag is the public-domain flag of Baltim
 
 **Español:** an EN/ES switch in the header translates Today, Plan, My block, Map and Help (`site/js/es.js`). Place names and official National Weather Service wording stay in English; the Data pages stay in English.
 
+**More help for residents:**
+- *Food:* nearby city food distribution sites (Department of Planning via BNIA) and groceries that take SNAP (USDA, refreshed monthly), plus the Maryland Food Bank pantry finder, 211 and WIC.
+- *Buses and trains:* the next scheduled departures at nearby MTA bus, Light RailLink and Metro stops (MTA GTFS, rebuilt daily), and stops on the map when zoomed in. Live arrivals need an MTA (Swiftly) key and a small server; until then the page links to the Transit app.
+- *Water:* Department of Public Works boil-water advisories, main breaks and supply notices (checked hourly), and the Waterfront Partnership's harbor bacteria results.
+- *Lead:* in neighborhoods with many pre-1940 homes, My block explains the lead-paint risk with BNIA's children's blood-lead data and the Health Department's free testing line.
+- *311 shortcuts:* "no heat", "street flooding" and "water in basement" buttons that name the exact 311 request to choose.
+- *Check on a neighbor:* on Code Blue and Code Red days, a ready-to-send text with the hotline numbers.
+- *Neighborhood change:* heat (Heat Atlas 2019–2025), tree canopy, poverty, vacancy, life expectancy and children's lead over time, on My block and in the City brief.
+- *Air sensors:* low-cost neighborhood sensors from OpenAQ appear on the map once a free key is saved as the `OPENAQ_API_KEY` repository secret.
+- *Easy reading:* larger text and stronger contrast, from the menu or the footer.
+
 **City brief** (`#brief`): a one-page summary for city and state staff. It ranks all 55 neighborhoods by combined heat, missing shade, health sensitivity and social vulnerability (or any one of them), shows how far each is from the nearest warming or cooling center open this season, and headlines the key citywide figures. It prints cleanly or saves as a PDF, has its own link, and the table downloads as CSV. Every neighborhood report under My block can also be printed or shared by link.
 
 **Researcher mode:** an explorer for 54 indicators across tracts or neighborhoods (CSAs), with margins of error and reliability flags. It also has place comparison with a radar chart, a correlation tool with a redlining overlay, a live-feed and release status page, and CSV and GeoJSON downloads.

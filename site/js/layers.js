@@ -18,6 +18,11 @@ const LAYERS = (() => {
     flood:     { label: "Flood zones", icon: "waves", color: "#3d7fb2" },
     gauges:    { label: "Stream gauges (live)", icon: "droplet", color: "#0e2a3b" },
     airmon:    { label: "Air monitors (live)", icon: "wind", color: "#24804f" },
+    foodsites: { label: "Food distribution sites", icon: "hands", color: "#2f8a5b" },
+    snap:      { label: "Groceries that take SNAP", icon: "basket", color: "#b8382b" },
+    stops:     { label: "Bus and rail stops", icon: "bus", color: "#6b4c9a" },
+    harbor:    { label: "Harbor water quality", icon: "waves", color: "#1d6fb8" },
+    sensors:   { label: "Neighborhood air sensors", icon: "wind", color: "#24804f" },
   };
   const dot = (lat, lon, color, r = 7) => L.circleMarker([lat, lon], { radius: r, color: "#fff", weight: 2, fillColor: color, fillOpacity: 1 });
   const pinMk = (lat, lon, d) => L.marker([lat, lon], { icon: L.divIcon({ className: "", html: `<div class="mpin" style="--c:${d.color}">${I(d.icon, 15)}</div>`, iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -12] }) });
@@ -30,6 +35,38 @@ const LAYERS = (() => {
     const d = DEF[key], C = D().centers, mk = (lat, lon) => opts.pins ? pinMk(lat, lon, d) : dot(lat, lon, d.color);
     if (key === "cool") { opts.onCount?.(C.cooling.length); return L.layerGroup(C.cooling.map(c => mk(c.lat, c.lon).bindPopup(`<h4>${U.esc(c.name)}</h4>${U.esc(c.address)}<br><small>${U.esc(c.hours || "")}</small><br><small>Opens on Code Red heat days. Call 311 to confirm.</small><br>${dir(c.lat, c.lon)}`))); }
     if (key === "warm") { const s = C.winter.sites.filter(x => x.lat != null); opts.onCount?.(s.length); return L.layerGroup(s.map(x => mk(x.lat, x.lon).bindPopup(`<h4>${U.esc(x.name)}</h4>${U.esc(x.address)}<br><small>${U.esc(x.hours)}${x.serves && x.serves !== "All" ? ", " + U.esc(x.serves) : ""}</small><br><small>Nov 15 to Mar 15, on cold days. Shelter Hotline 443-984-9540.</small><br>${dir(x.lat, x.lon)}`))); }
+    if (key === "foodsites" || key === "snap") {
+      const f = await MORE.file("food.json"), list = key === "snap" ? (f.snap || []).filter(s => s.grocery) : (f.sites || []);
+      opts.onCount?.(list.length);
+      return L.layerGroup(list.map(x => mk(x.lat, x.lon).bindPopup(`<h4>${U.esc(x.name)}</h4>${U.esc(x.address)}<br><small>${key === "snap" ? "Takes SNAP (EBT)" + (x.type ? ", " + U.esc(x.type) : "") : "City food distribution site. Call 211 to confirm hours."}</small><br>${dir(x.lat, x.lon)}`)));
+    }
+    if (key === "harbor") {
+      const h = await MORE.file("harbor.json"); opts.onCount?.(h.sites.length);
+      return L.layerGroup(h.sites.map(x => { const ok = /pass/i.test(x.status);
+        return L.circleMarker([x.lat, x.lon], { radius: 9, color: "#fff", weight: 2, fillColor: ok ? "#1e9e5a" : "#d6283b", fillOpacity: 1 })
+          .bindPopup(`<h4>${U.esc(x.name)}</h4>${ok ? "Passing" : "Advisory: avoid contact"}<br><small>Bacteria ${x.count ?? "—"}, sampled ${U.esc(x.date || "")}</small><br><small>Waterfront Partnership, ${U.esc(h.season)}</small>`); }));
+    }
+    if (key === "sensors") {
+      const s = await MORE.sensors(); opts.onCount?.(s.length);
+      return L.layerGroup(s.map(x => { const c = LIVE.aqiCat(x.aqi);
+        return L.marker([x.lat, x.lon], { icon: L.divIcon({ className: "", html: `<div style="width:28px;height:28px;line-height:24px;border-radius:6px;text-align:center;font:700 11px var(--font);background:${c.c};border:2px solid #fff;color:#fff">${x.aqi}</div>`, iconSize: [28, 28] }) })
+          .bindPopup(`<h4>${U.esc(x.name)}</h4>Air quality about <b>${x.aqi}</b>, ${c.t}<br><small>PM2.5 ${x.pm25} µg/m³, low-cost sensor${x.provider ? " (" + U.esc(x.provider) + ")" : ""}, ${U.timeAgo(x.time)}</small><br><small>Sensors are less accurate than EPA monitors.</small>`); }));
+    }
+    if (key === "stops") {
+      // stops load by map area once zoomed in, so the map stays fast
+      const g = L.layerGroup(), shown = new Set(), map = opts.map;
+      const hm = t => t.toLocaleTimeString(LOC(), { hour: "numeric", minute: "2-digit" });
+      const draw = async () => {
+        if (!map || map.getZoom() < 15) { g.clearLayers(); shown.clear(); opts.onCount?.(0); return; }
+        const c = map.getCenter(), groups = await MORE.stopsNear(c.lat, c.lng, 60, 1.2).catch(() => []);
+        groups.forEach(gr => gr.forEach(s => { if (shown.has(s.id)) return; shown.add(s.id);
+          L.circleMarker([s.lat, s.lon], { radius: 6, color: "#fff", weight: 2, fillColor: s.mode === "bus" ? "#6b4c9a" : "#b98500", fillOpacity: 1 }).addTo(g)
+            .bindPopup(() => { const nx = MORE.upcoming([s], 4); return `<h4>${U.esc(s.name)}</h4><small>${MORE.MODE[s.mode]?.[1] || "Stop"}</small><br>${nx.length ? nx.map(x => `<b>${U.esc(x.route)}</b> ${U.esc(x.head)}: ${hm(x.t)}`).join("<br>") : "<small>No more scheduled service in the next 3 hours.</small>"}<br><small>Scheduled times (MTA)</small>`; }); }));
+        opts.onCount?.(shown.size);
+      };
+      if (map) { map.on("moveend", draw); g._unsub = () => map.off("moveend", draw); }
+      draw(); return g;
+    }
     if (key === "flood") { opts.onCount?.(null); return L.esri.dynamicMapLayer({ url: LIVE.NFHL, layers: [LIVE.floodLayer()], opacity: .55, f: "image" }); }
     if (key === "gauges") {
       const g = L.layerGroup();

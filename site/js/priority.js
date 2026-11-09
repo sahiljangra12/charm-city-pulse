@@ -13,8 +13,12 @@ const PRIO = (() => {
     // 0. Code Blue / Code Red declared by the Baltimore City Health Department
     const fmtD = d => new Date(d + "T12:00:00").toLocaleDateString(LOC(), { weekday: "long", month: "long", day: "numeric" });
     const blue = LIVE.cityAlert("blue"), red = LIVE.cityAlert("red");
-    if (blue) add({ s: 99, icon: "snow", title: "Code Blue is in effect", text: `The city has declared a Code Blue Extreme Cold Alert through ${fmtD(blue.until)}. All emergency shelters are open. If you or someone you see needs a warm place, call the Shelter Hotline.`, more: blue.summary, act: ["Call the Shelter Hotline", "tel:4439849540"], link: blue.url });
-    if (red) add({ s: 99, icon: "thermo", title: "Code Red heat alert is in effect", text: `The city has declared a Code Red Extreme Heat Alert through ${fmtD(red.until)}. Cooling centers are open. Stay somewhere cool and check on older neighbors.`, more: red.summary, act: ["Find a cool place", "#help"], link: red.url });
+    if (blue) add({ s: 99, icon: "snow", title: "Code Blue is in effect", text: `The city has declared a Code Blue Extreme Cold Alert through ${fmtD(blue.until)}. All emergency shelters are open. If you or someone you see needs a warm place, call the Shelter Hotline.`, more: blue.summary, act: ["Call the Shelter Hotline", "tel:4439849540"], act2: ["Text a neighbor", MORE.neighborText("cold")], link: blue.url });
+    if (red) add({ s: 99, icon: "thermo", title: "Code Red heat alert is in effect", text: `The city has declared a Code Red Extreme Heat Alert through ${fmtD(red.until)}. Cooling centers are open. Stay somewhere cool and check on older neighbors.`, more: red.summary, act: ["Find a cool place", "#help"], act2: ["Text a neighbor", MORE.neighborText("heat")], link: red.url });
+    // 0b. Water notices from the Department of Public Works
+    (F("city").value?.water || []).forEach(n => {
+      const L = { boil: [96, "Boil-water advisory", "Boil tap water for 1 minute before drinking or cooking, or use bottled water, until the city lifts it."], main: [50, "Water main break", "Some homes may have low pressure or no water while crews repair it."], outage: [50, "Water service interruption", "Some homes may be without water for a while."], supply: [20, "Water supply notice", "An update from the Department of Public Works about the city's water."] }[n.kind];
+      add({ s: L[0], icon: n.kind === "boil" ? "alert" : "droplet", title: L[1], text: L[2], more: n.title, link: n.url, linkText: "Read the Public Works notice" }); });
     // 1. Official warnings from the National Weather Service
     AL.forEach((a, i) => {
       const s = /Extreme/.test(a.severity) ? 100 : /Severe/.test(a.severity) ? 92 : /Moderate/.test(a.severity) ? 72 : 55;
@@ -33,7 +37,7 @@ const PRIO = (() => {
       if (curFc && peak && curFc.index >= peak.feel && cw.temperature_2m >= 80) peak = { t: null, T: cw.temperature_2m, feel: curFc.index };
       if (peak && peak.T >= 80) {
         const f = peak.feel;
-        if (f >= 103) add({ s: f >= 125 ? 97 : 88, icon: "thermo", title: `Dangerous heat, feels like ${U.tF(f)}`, text: `${peak.t ? "Worst around " + hm(peak.t) : "Right now"}. Stay somewhere air-conditioned, drink water often, and check on older neighbors.`, act: ["Find a cool place", "#help"] });
+        if (f >= 103) add({ s: f >= 125 ? 97 : 88, icon: "thermo", title: `Dangerous heat, feels like ${U.tF(f)}`, text: `${peak.t ? "Worst around " + hm(peak.t) : "Right now"}. Stay somewhere air-conditioned, drink water often, and check on older neighbors.`, act: ["Find a cool place", "#help"], act2: ["Text a neighbor", MORE.neighborText("heat")] });
         else if (f >= 90) add({ s: 62, icon: "thermo", title: `Hot today, feels like ${U.tF(f)}`, text: `${peak.t ? "Hottest around " + hm(peak.t) : "Hottest right now"}. Drink water, rest in the shade, and keep hard work for the morning.`, act: ["Best time to go out", "#plan"] });
         else add({ s: 30, icon: "thermo", title: `Warm, up to ${U.tF(f)}`, text: "Bring water if you'll be outside for a while." });
       }
@@ -41,7 +45,7 @@ const PRIO = (() => {
       const low = h18.reduce((a, b) => b.feel < a.feel ? b : a, h18[0]);
       if (low && low.T <= 50) {
         const f = low.feel;
-        if (f <= 13 && !blue) add({ s: 93, icon: "snow", title: `Code Blue cold expected, wind chill ${U.tF(f)}`, text: `Coldest around ${hm(low.t)}. The city usually declares a Code Blue at this level, which opens every emergency shelter. Limit time outside; the Shelter Hotline can find you a bed.`, act: ["Call the Shelter Hotline", "tel:4439849540"] });
+        if (f <= 13 && !blue) add({ s: 93, icon: "snow", title: `Code Blue cold expected, wind chill ${U.tF(f)}`, text: `Coldest around ${hm(low.t)}. The city usually declares a Code Blue at this level, which opens every emergency shelter. Limit time outside; the Shelter Hotline can find you a bed.`, act: ["Call the Shelter Hotline", "tel:4439849540"], act2: ["Text a neighbor", MORE.neighborText("cold")] });
         else if (f <= 13) add({ s: 60, icon: "snow", title: `Coldest around ${hm(low.t)}, wind chill ${U.tF(f)}`, text: "Cover hands, ears and face, and bring pets inside." });
         else if (f <= 32) add({ s: 70, icon: "snow", title: `Freezing, down to ${U.tF(f)}`, text: `Coldest around ${hm(low.t)}. Wear layers, cover hands and ears, and bring pets inside.`, act: LIVE.season() === "winter" ? ["Find a warm place", "#help"] : null });
         else if (f <= 40) add({ s: 36, icon: "snow", title: `Cold, down to ${U.tF(f)}`, text: `Coldest around ${hm(low.t)}. A warm coat helps.` });
@@ -94,7 +98,7 @@ const PRIO = (() => {
       return `<article class="prio ${l.key}${i === 0 ? " first" : ""}" style="--c:${l.c}">
         <span class="tile">${I(x.icon, i === 0 ? 26 : 22)}</span>
         <div class="body"><span class="badge">${l.label}</span><h3>${U.esc(x.title)}</h3><p>${U.esc(x.text)}</p>
-          ${x.more ? `<details><summary>What to do</summary><p>${U.esc(x.more)}</p></details>` : ""}${x.link ? `<p class="src"><a href="${U.esc(x.link)}" target="_blank" rel="noopener">Read the city's announcement</a></p>` : ""}</div>
+          ${x.more ? `<details><summary>What to do</summary><p>${U.esc(x.more)}</p></details>` : ""}${x.link ? `<p class="src"><a href="${U.esc(x.link)}" target="_blank" rel="noopener">${x.linkText || "Read the city's announcement"}</a></p>` : ""}${x.act2 ? `<p class="src"><a class="btn small alt" href="${x.act2[1]}">${I("heart", 16)}<span>${x.act2[0]}</span></a></p>` : ""}</div>
         ${x.act ? `<a class="btn ${i === 0 && l.key !== "fyi" ? "" : "alt"} small go" href="${href}">${href.startsWith("tel:") ? I("phone", 16) : ""}<span>${x.act[0]}</span>${href.startsWith("tel:") ? "" : I("chev", 16)}</a>` : ""}
       </article>`; }).join("");
     if (fresh) { box.classList.remove("stagger"); void box.offsetWidth; box.classList.add("stagger"); }

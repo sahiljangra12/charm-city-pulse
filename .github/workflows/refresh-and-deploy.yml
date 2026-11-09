@@ -34,9 +34,15 @@ jobs:
         run: |
           set -o pipefail
           python pipeline/refresh.py 2>&1 | tee pipeline/cache/refresh_log.txt
-      - name: Check for Code Blue / Code Red (Baltimore City Health Department)
+      - name: Food help, harbor water, neighborhood trends and transit schedules
         continue-on-error: true
-        timeout-minutes: 2
+        timeout-minutes: 14
+        run: python pipeline/extras.py
+      - name: Code Blue / Code Red, water notices and air sensors
+        continue-on-error: true
+        timeout-minutes: 3
+        env:
+          OPENAQ_API_KEY: ${{ secrets.OPENAQ_API_KEY }}
         run: python pipeline/city_alerts.py
       - name: Fetch and enhance photos in 4K (Wikimedia Commons, once per photo)
         continue-on-error: true

@@ -120,10 +120,15 @@
   <div class="callgrid" id="helpCalls"></div>
   <div class="section-h"><h2 id="helpPlacesTitle">Places near you</h2><a href="#" data-near>Use my location</a></div>
   <div class="place-list" id="helpPlaces"></div>
+  <div class="place-list" id="helpNeighbor" style="margin-top:18px"></div>
+  <div class="section-h"><h2>Food help</h2></div>
+  <div class="place-list" id="helpFood"><div class="skeleton" style="height:70px"></div></div>
   <div class="section-h"><h2 id="rightsTitle">Your rights</h2></div>
   <div class="rights" id="helpRights"></div>
   <div class="section-h"><h2>Programs that can help</h2></div>
   <div class="place-list" id="helpPrograms"></div>
+  <div class="section-h"><h2>Water</h2></div>
+  <div class="place-list" id="helpHarbor"></div>
 </section>
 
 <!-- ======================= CITY BRIEF ======================= -->
@@ -136,6 +141,10 @@
   <div class="controls"><label for="bRank" class="muted" style="font-weight:600">Rank by</label><select id="bRank"></select><button class="btn small alt" id="bAll">Show all 55</button></div>
   <div class="tablewrap"><table id="bTable" class="btable"></table></div>
   <p class="note">Tap a neighborhood for its key numbers. Scores are city ranks from 0 to 100 among residential census tracts, combined into Community Statistical Areas from tract counts; higher means harder. <span id="bSeason"></span></p>
+  <div class="section-h"><h2>How neighborhoods are changing</h2></div>
+  <p class="note" id="bTrendNote"></p>
+  <div class="tablewrap"><table id="bTrends" class="btable trends-table"></table></div>
+  <p class="note">Each cell shows the change between the first and latest year available, following the trend line where there are four or more years. Red means the change made things harder (for example more heat, less tree canopy, more poverty); green means it eased. Heat: Baltimore Heat Atlas (Landsat summers 2019–2025); satellite surface temperatures depend on which clear summer days were captured each year, so read the heat trend as a signal to look closer, not a precise warming rate. Others: Baltimore Neighborhood Indicators Alliance, Vital Signs.</p>
   <div class="grid g2" style="margin-top:22px">
     <div class="card"><h3>How to read this</h3><ul><li><b>Overall priority</b> is the average of the heat, low-shade, health and social-vulnerability scores, so it highlights places where several pressures stack up.</li><li>These describe neighborhoods, not individual people, and don't prove cause.</li><li>Census figures are survey estimates with margins of error; the full numbers are in Explore and Download.</li></ul></div>
     <div class="card"><h3>Sources in this brief</h3><ul class="small" id="bSources"></ul><p class="note">Charm City Pulse is an independent project by Sahil, Johns Hopkins University. Live version: <span class="mono">sahiljangra12.github.io/charm-city-pulse/#brief</span></p></div>
@@ -223,7 +232,7 @@
 </section>
 
 </main>
-<footer><div class="wrap footflag"><canvas class="flagwave" id="footFlag" width="150" height="100" aria-hidden="true"></canvas><p>Independent project by Sahil, Johns Hopkins University.</p></div><div class="wrap"><span>Charm City Pulse · Public data from the U.S. Census Bureau, CDC, EPA, NOAA's National Weather Service, USGS, FEMA, Open-Meteo, OpenStreetMap and Baltimore City.</span><a href="#brief">City brief</a><a href="#explore">Data</a><a href="#refs">Sources</a><a href="#about">About</a><a href="privacy.html">Privacy</a><span id="buildStamp"></span></div></footer>
+<footer><div class="wrap footflag"><canvas class="flagwave" id="footFlag" width="150" height="100" aria-hidden="true"></canvas><p>Independent project by Sahil, Johns Hopkins University.</p></div><div class="wrap"><span>Charm City Pulse · Public data from the U.S. Census Bureau, CDC, EPA, NOAA's National Weather Service, USGS, FEMA, Open-Meteo, OpenStreetMap and Baltimore City.</span><a href="#brief">City brief</a><a href="#explore">Data</a><a href="#refs">Sources</a><a href="#about">About</a><a href="privacy.html">Privacy</a><button class="linkbtn" data-easy aria-pressed="false">Easy reading</button><span id="buildStamp"></span></div></footer>
 
 <nav class="appbar" id="appbar" aria-label="App"></nav>
 
@@ -256,6 +265,7 @@
 <script src="js/live.js?v=__BUILD__"></script>
 <script src="js/fx.js?v=__BUILD__"></script>
 <script src="js/layers.js?v=__BUILD__"></script>
+<script src="js/more.js?v=__BUILD__"></script>
 <script src="js/resident.js?v=__BUILD__"></script>
 <script src="js/details.js?v=__BUILD__"></script>
 <script src="js/priority.js?v=__BUILD__"></script>
