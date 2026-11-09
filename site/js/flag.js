@@ -29,10 +29,10 @@ const FLAG = (() => {
           if (sh) { ctx.fillStyle = sh > 0 ? `rgba(255,255,255,${sh * 0.55})` : `rgba(0,0,0,${-sh})`; ctx.fillRect(px + x, top + dy, step + 0.6, fh); }
         }
       };
-      if (reduce) { draw(900); return; }
+      draw(900); canvas.classList.add("on");      // first frame right away, so the logo never shows blank
+      if (reduce) return;
       const loop = t => { requestAnimationFrame(loop); if (vis && !document.hidden) draw(t); };
       requestAnimationFrame(loop);
-      canvas.classList.add("on");
     }).catch(() => canvas.remove());
   }
   return { mount };
