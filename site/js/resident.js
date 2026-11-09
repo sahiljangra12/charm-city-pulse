@@ -231,7 +231,7 @@ const RES = (() => {
       body.querySelector("[data-share]").onclick = () => SHARE.link(`${location.origin}${location.pathname}#place/${id}`, `${p.csa}: heat, flood risk and help nearby`);
     }
     pLayer.setStyle(g => g.properties.id === id ? { color: "#0c1c2c", weight: 3, fillOpacity: .25, fillColor: "#e8a800" } : g.properties.nonres ? APP.NONRES_STYLE : { color: "#8a9aa6", weight: .6, fillOpacity: .04, fillColor: "#999" });
-    if (pMarker) pMarker.remove(); if (pt) pMarker = L.marker([pt.lat, pt.lon]).addTo(pMap);
+    if (pMarker) pMarker.remove(); if (pt) pMarker = L.marker([pt.lat, pt.lon], { title: pt.label || "Your spot", alt: pt.label || "Your spot", keyboard: false }).addTo(pMap);
     pMap.invalidateSize(); pLayer.eachLayer(l => { if (l.feature.properties.id === id) { try { pMap.flyToBounds(l.getBounds(), { maxZoom: 15, padding: [30, 30], duration: .8 }); } catch { pMap.fitBounds(l.getBounds(), { maxZoom: 15 }); } } });
     LIVE.floodAt(here[0], here[1]).then(r => { const el = U.$("#pFlood"); if (!el) return; const w = floodWords(r);
       el.style.background = `color-mix(in srgb,${w.c} 10%,var(--surface))`; el.innerHTML = `${tile(w.icon, w.c)}<div><b>${w.short}${pt ? "" : " (center of the area)"}</b><br><span style="font-size:.93rem;color:var(--ink-2)">${w.long}</span></div>`;

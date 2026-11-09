@@ -26,7 +26,7 @@ const LAYERS = (() => {
     ...CITY.DEF,
   };
   const dot = (lat, lon, color, r = 7) => L.circleMarker([lat, lon], { radius: r, color: "#fff", weight: 2, fillColor: color, fillOpacity: 1 });
-  const pinMk = (lat, lon, d) => L.marker([lat, lon], { icon: L.divIcon({ className: "", html: `<div class="mpin" style="--c:${d.color}">${I(d.icon, 15)}</div>`, iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -12] }) });
+  const pinMk = (lat, lon, d) => L.marker([lat, lon], { title: d.label, alt: d.label, icon: L.divIcon({ className: "", html: `<div class="mpin" style="--c:${d.color}">${I(d.icon, 15)}</div>`, iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -12] }) });
   const dir = (lat, lon) => `<a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}" target="_blank" rel="noopener">Directions</a>`;
   const cache = {};
   async function file(name) { return cache[name] || (cache[name] = U.getJSON("data/" + name).catch(e => { delete cache[name]; throw e; })); }
@@ -51,7 +51,7 @@ const LAYERS = (() => {
     if (key === "sensors") {
       const s = await MORE.sensors(); opts.onCount?.(s.length);
       return L.layerGroup(s.map(x => { const c = LIVE.aqiCat(x.aqi);
-        return L.marker([x.lat, x.lon], { icon: L.divIcon({ className: "", html: `<div style="width:28px;height:28px;line-height:24px;border-radius:6px;text-align:center;font:700 11px var(--font);background:${c.c};border:2px solid #fff;color:#fff">${x.aqi}</div>`, iconSize: [28, 28] }) })
+        return L.marker([x.lat, x.lon], { title: x.name, alt: x.name, icon: L.divIcon({ className: "", html: `<div style="width:28px;height:28px;line-height:24px;border-radius:6px;text-align:center;font:700 11px var(--font);background:${c.c};border:2px solid #fff;color:#fff">${x.aqi}</div>`, iconSize: [28, 28] }) })
           .bindPopup(`<h4>${U.esc(x.name)}</h4>Air quality about <b>${x.aqi}</b>, ${c.t}<br><small>PM2.5 ${x.pm25} µg/m³, low-cost sensor${x.provider ? " (" + U.esc(x.provider) + ")" : ""}, ${U.timeAgo(x.time)}</small><br><small>Sensors are less accurate than EPA monitors.</small>`); }));
     }
     if (key === "stops") {
@@ -73,14 +73,14 @@ const LAYERS = (() => {
     if (key === "gauges") {
       const g = L.layerGroup();
       g._unsub = LIVE.feeds.water.on(s => { g.clearLayers(); (s || []).forEach(x => {
-        L.marker([x.coords[1], x.coords[0]], { icon: L.divIcon({ className: "", html: `<div class="pulse-mk" style="width:14px;height:14px;background:#0c1c2c;border:2px solid #fff"></div>`, iconSize: [14, 14] }) })
+        L.marker([x.coords[1], x.coords[0]], { title: RES.short(x.name), alt: RES.short(x.name), icon: L.divIcon({ className: "", html: `<div class="pulse-mk" style="width:14px;height:14px;background:#0c1c2c;border:2px solid #fff"></div>`, iconSize: [14, 14] }) })
           .bindPopup(`<h4>${U.esc(RES.short(x.name))}</h4>${Object.entries(x.readings).map(([pc, r]) => `${LIVE.PCODES[pc].name}: <b>${U.fmt(r.value, pc === "00060" ? 0 : 1)} ${U.esc(r.unit)}</b>`).join("<br>")}<br><small>${U.timeAgo(Object.values(x.readings)[0].time)}, USGS ${U.esc(x.id.replace("USGS-", ""))}</small>`).addTo(g); }); opts.onCount?.((s || []).length); });
       return g;
     }
     if (key === "airmon") {
       const g = L.layerGroup();
       g._unsub = LIVE.feeds.airnow.on(s => { g.clearLayers(); (s || []).forEach(x => { const c = LIVE.aqiCat(x.aqi);
-        L.marker([x.lat, x.lon], { icon: L.divIcon({ className: "", html: `<div style="width:32px;height:32px;line-height:28px;border-radius:50%;text-align:center;font:700 12px var(--font);background:${c.c};border:2px solid #fff;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3)">${Math.round(x.aqi)}</div>`, iconSize: [32, 32] }) })
+        L.marker([x.lat, x.lon], { title: x.name, alt: x.name, icon: L.divIcon({ className: "", html: `<div style="width:32px;height:32px;line-height:28px;border-radius:50%;text-align:center;font:700 12px var(--font);background:${c.c};border:2px solid #fff;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3)">${Math.round(x.aqi)}</div>`, iconSize: [32, 32] }) })
           .bindPopup(`<h4>${U.esc(x.name)}</h4>Air quality <b>${Math.round(x.aqi)}</b>, ${c.t}<br>${Object.entries(x.readings).map(([p, r]) => `${U.esc(p)}: ${Math.round(r.aqi)}`).join("<br>")}<br><small>EPA AirNow${x.time ? ", " + U.timeAgo(x.time) : ""}</small>`).addTo(g); }); opts.onCount?.((s || []).length); });
       return g;
     }

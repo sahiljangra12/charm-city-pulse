@@ -89,7 +89,7 @@ const CITY = (() => {
     if (A.trash) {
       const nt = next(A.trash.trash), nr = next(A.trash.recycling), evening = /evening/i.test(A.trash.trash);
       rows.push(`<div class="place svc">${tile("trash", "var(--ink-2)")}<div><b>${evening ? `Trash and recycling: ${U.esc(A.trash.trash)}` : `Trash: ${U.esc(A.trash.trash)} · Recycling: ${U.esc(A.trash.recycling)}`}</b>
-        ${nt && !evening ? `<small>Next trash pickup <b>${when(nt)}</b>${nr ? `, next recycling <b>${when(nr)}</b>` : ""}. Pickup starts at 6 a.m. (5 a.m. in summer), so set cans out the night before, after 6 p.m.</small>` : ""}${approx}
+        ${nt && !evening ? `<small>Next trash pickup <strong>${when(nt)}</strong>${nr ? `, next recycling <strong>${when(nr)}</strong>` : ""}. Pickup starts at 6 a.m. (5 a.m. in summer), so set cans out the night before, after 6 p.m.</small>` : ""}${approx}
         <small>${ext("https://www.baltimorecity.gov/publicworks/trash-recycling/find-your-trash-recycling-collection-day", "Check with Public Works")} · Holidays can shift pickup by a day.</small></div></div>`);
     }
     rows.push(`<div class="place svc">${tile("home", "var(--s3)")}<div><b>Big items: free bulk pickup</b><small>Up to 3 big items (furniture, mattresses, appliances, up to 4 tires without rims) a month, picked up on a Saturday. Call 311 at least 4 working days before, mark items "bulk collection", and set them out by 7 a.m. No building materials, auto parts, paint or hazardous waste.</small>
@@ -100,7 +100,7 @@ const CITY = (() => {
       const on = A.snow.m <= (exact ? 35 : 0), live = LIVE.snowEmergency?.();
       rows.push(`<div class="place svc ${on && live ? "warnrow" : ""}">${tile("car", on ? "var(--s4)" : "var(--link)")}<div><b>${on ? `Your street is a snow emergency route (${U.esc(A.snow.street)})` : `Nearest snow emergency route: ${U.esc(A.snow.street)}, ${U.dist(A.snow.m / 1000)} away`}</b>
         <small>${on ? "When the city declares a snow emergency, you can't park here: cars get a $52 ticket and can be towed." : "When the city declares a snow emergency, cars can't park on these routes ($52 ticket, and towing). Look for black-and-white signs high on the pole."}
-        ${live ? " <b>A snow emergency is in effect now.</b>" : ""}</small>${exact ? "" : `<small class="muted">Search your exact address to check your own street.</small>`}
+        ${live ? " <strong>A snow emergency is in effect now.</strong>" : ""}</small>${exact ? "" : `<small class="muted">Search your exact address to check your own street.</small>`}
         <small>${ext("https://www.baltimorecity.gov/transportation/snow-center/parking-during-snow-emergency", "Snow parking rules")} · Towed? Call 410-396-9958.</small></div></div>`);
     }
     if (A.council) rows.push(`<div class="place svc">${tile("users", "#6b4c9a")}<div><b>City Council District ${A.council.district}: ${U.esc(A.council.member || "")}</b><small>Your council member can help with city services that aren't getting fixed.</small>
@@ -138,7 +138,7 @@ const CITY = (() => {
   const DAYC = { Monday: "#1d6fb8", Tuesday: "#24804f", Wednesday: "#b98500", Thursday: "#6b4c9a", Friday: "#d26a1c" };
   async function layer(key, mk) {
     if (key === "snowroutes") { const g = await geo("snow");
-      return L.geoJSON(g, { style: { color: "#d6283b", weight: 4, opacity: .85 }, onEachFeature: (f, l) => l.bindPopup(`<h4>${U.esc(f.properties.street)}</h4>Snow emergency route. No parking when a snow emergency is declared ($52 ticket, towing).`) }); }
+      return L.geoJSON(g, { style: { color: "#d6283b", weight: 3, opacity: .8 }, onEachFeature: (f, l) => l.bindPopup(`<h4>${U.esc(f.properties.street)}</h4>Snow emergency route. No parking when a snow emergency is declared ($52 ticket, towing).`) }); }
     if (key === "trashzones") { const g = await geo("trash");
       return L.geoJSON(g, { style: f => ({ color: "#fff", weight: 1, fillColor: DAYC[f.properties.trash] || "#5a6b78", fillOpacity: .32 }), onEachFeature: (f, l) => l.bindPopup(`<h4>Trash: ${U.esc(f.properties.trash)}</h4>Recycling: ${U.esc(f.properties.recycling)}<br><small>Baltimore Public Works</small>`) }); }
     if (key === "sweepzones") { const g = await geo("sweep"); g.features = g.features.filter(f => f.properties.kind === "alley");

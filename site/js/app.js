@@ -122,6 +122,8 @@ const APP = (() => {
     if (sec) setTimeout(() => { const el = document.getElementById(sec); if (el) el.scrollIntoView({ behavior: FX.reduce ? "auto" : "smooth", block: "start" }); }, 260);
     else if (!route.first) window.scrollTo(0, 0);
     route.first = false;
+    // keyboard users must be able to scroll wide tables: make each scroll box focusable and named
+    setTimeout(() => U.$$(".tablewrap:not([tabindex])").forEach(t => { t.tabIndex = 0; t.setAttribute("role", "region"); t.setAttribute("aria-label", (t.previousElementSibling?.innerText || "Table").split("\n")[0].slice(0, 60) + " (scrollable)"); }), 1500);
   }
   const isData = n => DATA.some(d => d[0] === n);
   function buildNav() {
