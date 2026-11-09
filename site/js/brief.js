@@ -103,7 +103,7 @@ const BRIEF = (() => {
     U.$("#bTrendNote").textContent = n ? `Summer surface heat rose in ${up} of ${n} neighborhoods between ${Object.keys(Object.values(T.csa).find(c => c.heat).heat).sort()[0]} and the latest summer. Listed in the same order as the table above.` : "";
     U.$("#bTrends").innerHTML = `<thead><tr><th>Neighborhood</th>${keys.map(k => `<th>${U.esc(T.series[k].label)}</th>`).join("")}</tr></thead><tbody>` +
       list.map(x => { const c = T.csa[x.r.name] || {};
-        return `<tr><td><b>${U.esc(x.r.name)}</b></td>${keys.map(k => { const ch = c[k] && MORE.change(k, c[k], T.series[k]);
+        return `<tr><td><b>${U.esc(x.r.name)}</b></td>${keys.map(k => { const ch = c[k] && MORE.change(k, k === "lead" ? MORE.nonzero(c[k]) : c[k], T.series[k]);
           return ch ? `<td class="tcell ${ch.worse == null ? "" : ch.worse ? "worse" : "better"}"><span class="chg">${ch.d}</span><small>${ch.y0}–${ch.y1}</small></td>` : `<td class="muted">—</td>`; }).join("")}</tr>`; }).join("") + "</tbody>";
   }
 

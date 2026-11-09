@@ -91,7 +91,7 @@ const MORE = (() => {
 
   // ---------- lead risk ----------
   function leadCard(p, csa) {
-    const old = p.pct_pre1940, kids = latest(csa?.lead);
+    const old = p.pct_pre1940, kids = latest(nonzero(csa?.lead));
     if (old == null || (old < 40 && !(kids && kids.v >= 1))) return "";
     return `<div class="place lead">${tile("alert", "var(--s3)")}<div><b>Lead paint is a risk in older homes</b>
       <small>About ${Math.round(old)}% of homes here were built before 1940, when lead paint was common.${kids ? ` In ${kids.y}, ${U.fmt(kids.v, 1)}% of children tested in this neighborhood had elevated blood lead.` : ""} Children under 6 and pregnant women are most at risk.</small>
@@ -99,6 +99,8 @@ const MORE = (() => {
   }
 
   // ---------- how a neighborhood is changing ----------
+  // BNIA records suppressed or very small counts of children's lead tests as 0, so zero years are left out
+  const nonzero = s => s && Object.fromEntries(Object.entries(s).filter(([, v]) => v > 0));
   const latest = s => { if (!s) return null; const ys = Object.keys(s).sort(); const y = ys[ys.length - 1]; return y ? { y, v: s[y] } : null; };
   function spark(series, unit) {
     const ys = Object.keys(series).sort(), v = ys.map(y => series[y]); if (v.length < 2) return "";
@@ -122,8 +124,8 @@ const MORE = (() => {
   async function trendsSection(el, csaName) {
     try {
       const T = await file("trends.json"), c = T.csa[csaName]; if (!c) { el.innerHTML = ""; return; }
-      el.innerHTML = `<div class="trends">${TREND_ORDER.filter(k => c[k] && T.series[k]).map(k => { const m = T.series[k], ch = change(k, c[k], m); if (!ch) return "";
-        return `<div class="trend ${ch.worse == null ? "" : ch.worse ? "worse" : "better"}"><div><b>${U.esc(m.label)}</b><small>${ch.y0}: ${ch.a} → ${ch.y1}: ${ch.b}${ch.fit ? " (trend)" : ""}</small><span class="chg">${ch.d}</span></div>${spark(c[k])}</div>`; }).join("")}</div>
+      el.innerHTML = `<div class="trends">${TREND_ORDER.filter(k => c[k] && T.series[k]).map(k => { const m = T.series[k], ser = k === "lead" ? nonzero(c[k]) : c[k], ch = change(k, ser, m); if (!ch) return "";
+        return `<div class="trend ${ch.worse == null ? "" : ch.worse ? "worse" : "better"}"><div><b>${U.esc(m.label)}</b><small>${ch.y0}: ${ch.a} → ${ch.y1}: ${ch.b}${ch.fit ? " (trend)" : ""}</small><span class="chg">${ch.d}</span></div>${spark(ser)}</div>`; }).join("")}</div>
         <p class="note">Neighborhood (Community Statistical Area) history. Where there are four or more years, the change follows the trend line rather than just the first and last year. Heat from the Baltimore Heat Atlas (satellite surface readings vary with which summer days were captured, so treat the heat trend as approximate); the rest from the Baltimore Neighborhood Indicators Alliance's Vital Signs.</p>`;
     } catch { el.innerHTML = ""; }
   }
@@ -156,5 +158,5 @@ const MORE = (() => {
     U.$$("[data-easy]").forEach(b => { b.setAttribute("aria-pressed", String(!!on)); });
   }
 
-  return { upcoming, MODE, report, neighborText, neighborCard, foodSection, foodNear, transitSection, stopsNear, leadCard, trendsSection, latest, change, spark, waterBars, harborSection, sensors, easy, file, TREND_ORDER };
+  return { nonzero, upcoming, MODE, report, neighborText, neighborCard, foodSection, foodNear, transitSection, stopsNear, leadCard, trendsSection, latest, change, spark, waterBars, harborSection, sensors, easy, file, TREND_ORDER };
 })();
