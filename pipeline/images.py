@@ -27,6 +27,15 @@ def main():
             except Exception as e:
                 ok = False
                 print(f"could not fetch {c['key']}{suffix}: {e}", file=sys.stderr)
+    # The Baltimore city flag (public domain in the US), rendered by Commons as a PNG, for the waving flag
+    flag = os.path.join(IMG, "baltimore-flag.png")
+    if not (os.path.exists(flag) and os.path.getsize(flag) > 2000):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(thumb("Flag of Baltimore, Maryland.svg", 480), headers=UA), timeout=60) as r:
+                data = r.read()
+            open(flag, "wb").write(data); print(f"saved baltimore-flag.png ({len(data)//1024} KB)")
+        except Exception as e:
+            print(f"could not fetch the flag: {e}", file=sys.stderr)
     return 0 if ok else 0  # never fail the build over a photo; the page falls back to a gradient
 
 if __name__ == "__main__":

@@ -5,6 +5,8 @@ Sahil, Johns Hopkins University, 2026.
 
 **Live site:** https://sahiljangra12.github.io/charm-city-pulse/
 
+An independent project; not affiliated with Baltimore City. The waving city flag is the public-domain flag of Baltimore from Wikimedia Commons.
+
 ## What it does
 
 **Resident mode**
@@ -12,6 +14,12 @@ Sahil, Johns Hopkins University, 2026.
 - **My neighborhood:** address autocomplete leads to a report card on heat, trees, health, social vulnerability, housing and energy strain, and getting around and food. Uncertain estimates are flagged, and each report shows the FEMA flood zone at the exact address and the nearest cooling or warming centers for the current season.
 - **Map:** layers for scores, cooling and warming centers, FEMA flood zones, live gauges and air monitors, city parks, pools and recreation centers, and OpenStreetMap amenities. Click anywhere for that spot's flood zone and scores.
 - **Find help:** a seasonal list of centers, hotlines and programs.
+
+**Code Blue and Code Red:** every hour, `pipeline/city_alerts.py` reads the Baltimore City Health Department's announcements. While an alert is in effect, Today leads with it and Help shows a status bar with the shelter hotline. When the forecast reaches Code Blue levels before the city has declared one, the site says it is expected rather than in effect.
+
+**Your rights:** the Help page explains, by season, the city's minimum heat rule for rented homes (Oct 1 – Apr 30), Maryland's winter and heat-wave limits on gas and electric shut-offs, medical delays, and how to apply for energy assistance, each linked to its source.
+
+**Español:** an EN/ES switch in the header translates Today, Plan, My block, Map and Help (`site/js/es.js`). Place names and official National Weather Service wording stay in English; the Data pages stay in English.
 
 **City brief** (`#brief`): a one-page summary for city and state staff. It ranks all 55 neighborhoods by combined heat, missing shade, health sensitivity and social vulnerability (or any one of them), shows how far each is from the nearest warming or cooling center open this season, and headlines the key citywide figures. It prints cleanly or saves as a PDF, has its own link, and the table downloads as CSV. Every neighborhood report under My block can also be printed or shared by link.
 

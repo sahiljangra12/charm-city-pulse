@@ -31,7 +31,8 @@ const REFS = (() => {
     U.$("#refLive").innerHTML = LIVE.SOURCES.filter(s => s.id !== "meta").map(s => li(`${U.esc(s.by)}. <i>${U.esc(s.name)}</i>. Live API, ${s.every ? "refreshed every " + s.every + " minutes in your browser" : "queried on request"}.`, s.url)).join("");
     U.$("#refLit").innerHTML = LIT.map(([h, u]) => li(h, u)).join("");
     U.$("#refSoft").innerHTML = SOFT.map(([h, u]) => li(h, u)).join("");
-    CINEMA.credits().then(cs => { U.$("#refPhotos").innerHTML = cs.map(c => li(`${U.esc(c.artist)}. <i>${U.esc(c.caption)}</i>. Wikimedia Commons, ${U.esc(c.license)}${c.license === "CC0" ? " (public domain dedication)" : ""}.`, c.page)).join(""); wire(); });
+    CINEMA.credits().then(cs => { U.$("#refPhotos").innerHTML = cs.map(c => li(`${U.esc(c.artist)}. <i>${U.esc(c.caption)}</i>. Wikimedia Commons, ${U.esc(c.license)}${c.license === "CC0" ? " (public domain dedication)" : ""}.`, c.page)).join("") +
+      li("City of Baltimore. <i>Flag of Baltimore</i>. Wikimedia Commons, public domain in the United States.", "https://commons.wikimedia.org/wiki/File:Flag_of_Baltimore,_Maryland.svg"); wire(); });
     wire();
   }
   function wire() {

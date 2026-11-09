@@ -35,7 +35,7 @@ const DETAILS = (() => {
     const el = U.$("#uvCard"), W = F("weather").value; if (!el || !W) return;
     const i = curHour(W.hourly), uvNow = W.hourly.uv_index[i], uvMax = W.daily.uv_index_max[0], uc = LIVE.uvCat(uvMax);
     const kwh = W.daily.shortwave_radiation_sum[0] / 3.6, rise = new Date(W.daily.sunrise[0]), set = new Date(W.daily.sunset[0]);
-    const t = d => d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    const t = d => d.toLocaleTimeString(LOC(), { hour: "numeric", minute: "2-digit" });
     el.innerHTML = head("Sun, UV and solar", "weather") + `<div class="gwrap"></div>
       <p style="text-align:center;margin:0 0 4px"><span class="pill"><span class="dot" style="background:${uc.c}"></span>Peak UV: ${uc.t}</span> <small class="muted">now ${Math.round(uvNow ?? 0)}</small></p>
       ${FX.sunPath(rise, set)}<div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--ink-2)"><span>Sunrise ${t(rise)}</span><span>Sunset ${t(set)}</span></div>

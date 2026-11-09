@@ -10,7 +10,7 @@ const RES = (() => {
     return m ? { aqi: m.aqi, site: m.name, km: m.km, time: m.time, mon: m } : { aqi: AQ?.current.us_aqi ?? null, site: null };
   }
   const curHour = h => { const now = Date.now(); let i = h.time.findIndex(t => new Date(t).getTime() > now); return Math.max(0, (i < 0 ? h.time.length : i) - 1); };
-  const hourLabel = t => new Date(t).toLocaleTimeString("en-US", { hour: "numeric" });
+  const hourLabel = t => new Date(t).toLocaleTimeString(LOC(), { hour: "numeric" });
   const tile = (icon, color, size = 22) => `<span class="tile" style="--tc:${color}">${I(icon, size)}</span>`;
   const dirBtn = (lat, lon, name) => `<a class="round dir" href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}" target="_blank" rel="noopener" aria-label="Directions to ${U.esc(name)}" title="Directions">${I("nav", 18)}</a>`;
   const LEVEL_C = ["var(--s0)", "var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)"];
@@ -44,7 +44,7 @@ const RES = (() => {
   function drawHome() {
     if (!U.$("#hWhen")) return;
     const W = F("weather").value, AQ = F("air").value, AL = F("alerts").value || [];
-    U.$("#hWhen").innerHTML = `<span class="livedot"></span> Baltimore, ${new Date().toLocaleString("en-US", { weekday: "long", hour: "numeric", minute: "2-digit" })}`;
+    U.$("#hWhen").innerHTML = `<span class="livedot"></span> Baltimore, ${new Date().toLocaleString(LOC(), { weekday: "long", hour: "numeric", minute: "2-digit" })}`;
     if (!W && !AQ) { if (F("weather").err) { U.$("#hAnswer").textContent = "Reconnecting to the weather service"; U.$("#hWhy").textContent = "This page tries again on its own."; } return; }
     const c = W?.current, now = aqiNow(), ac = LIVE.aqiCat(now.aqi);
     const fw = c ? feelsWord(c.temperature_2m, c.relative_humidity_2m, c.wind_speed_10m) : { fc: null };
@@ -61,7 +61,7 @@ const RES = (() => {
     if (ac.lvl > 0) why.push(`The air is ${ac.t.toLowerCase()}${ac.lvl === 1 ? ", fine for most people" : ""}.`);
     if (AL.length) why.push(`${AL[0].event} in effect.`);
     if (!why.length) why.push(`${c ? LIVE.WMO[c.weather_code] || "Calm" : "Calm"}, clean air${rainMax < 30 ? " and no rain expected" : ""}.`);
-    U.$("#hWhy").textContent = why.join(" ");
+    U.$("#hWhy").textContent = why.map(I18N.t).join(" ");
     if (c) {
       const kind = LIVE.sky(c.weather_code), day = !!c.is_day, hot = fw.fc?.kind === "heat" && fw.fc.lvl >= 2, cold = fw.fc?.kind === "cold" && fw.fc.lvl >= 2;
       const cls = `sky ${day ? "day" : "night"} ${kind}${hot ? " hot" : ""}${cold ? " cold" : ""}`;
@@ -79,7 +79,7 @@ const RES = (() => {
         `<div class="hour"><span>${j === 0 ? "Now" : hourLabel(H.time[k])}</span>${FX.icon(H.weather_code[k], H.is_day ? H.is_day[k] : 1, 30)}<b class="tnum">${U.tF(H.temperature_2m[k])}</b><div class="rain">${(H.precipitation_probability[k] ?? 0) >= 20 ? H.precipitation_probability[k] + "%" : ""}</div></div>`).join("");
       const d = W.daily, lo = Math.min(...d.temperature_2m_min), hi = Math.max(...d.temperature_2m_max);
       U.$("#hWeek").innerHTML = d.time.map((t, k) => { const a = (d.temperature_2m_min[k] - lo) / (hi - lo || 1) * 100, b = (d.temperature_2m_max[k] - lo) / (hi - lo || 1) * 100;
-        return `<div class="day"><b>${k === 0 ? "Today" : new Date(t + "T12:00").toLocaleDateString("en-US", { weekday: "short" })}</b>${FX.icon(d.weather_code[k], 1, 26)}<span class="muted tnum" style="text-align:right">${U.tF(d.temperature_2m_min[k])}</span><div class="range"><i style="left:${a}%;width:${Math.max(4, b - a)}%"></i></div><span class="tnum">${U.tF(d.temperature_2m_max[k])}</span>${(d.precipitation_probability_max[k] ?? 0) >= 30 ? `<span class="rain">${d.precipitation_probability_max[k]}% chance of rain</span>` : ""}</div>`; }).join("");
+        return `<div class="day"><b>${k === 0 ? "Today" : new Date(t + "T12:00").toLocaleDateString(LOC(), { weekday: "short" })}</b>${FX.icon(d.weather_code[k], 1, 26)}<span class="muted tnum" style="text-align:right">${U.tF(d.temperature_2m_min[k])}</span><div class="range"><i style="left:${a}%;width:${Math.max(4, b - a)}%"></i></div><span class="tnum">${U.tF(d.temperature_2m_max[k])}</span>${(d.precipitation_probability_max[k] ?? 0) >= 30 ? `<span class="rain">${d.precipitation_probability_max[k]}% chance of rain</span>` : ""}</div>`; }).join("");
     }
   }
   function drawMyArea() {
@@ -108,7 +108,7 @@ const RES = (() => {
     if (args[0] === "details") setTimeout(() => { const d = U.$("#detailsBox"); d.open = true; d.dispatchEvent(new Event("toggle")); d.scrollIntoView({ behavior: "smooth", block: "start" }); }, 120);
     if (homeWired) { drawHome(); DETAILS.redraw(); return; } homeWired = true;
     DETAILS.init();
-    F("weather").on(drawHome); F("air").on(drawHome); F("airnow").on(drawHome); F("alerts").on(drawHome);
+    F("weather").on(drawHome); F("air").on(drawHome); F("airnow").on(drawHome); F("alerts").on(drawHome); F("city").on(drawHome);
     setInterval(() => { if (APP.view === "today") drawHome(); }, 60000);
   }
 
@@ -187,7 +187,7 @@ const RES = (() => {
         <div class="place-list stagger">${cards}</div>
         <details class="more"><summary>${tile("chart", "var(--ink)", 20).replace('class="tile"', 'class="tile sm"')}<span>See the numbers<br><small style="font-weight:500">Every measure behind these comparisons, with margins of error and source years</small></span>${I("chev", 20).replace('class="ic"', 'class="ic chev"')}</summary><div class="inner"><div class="card" style="overflow-x:auto">${numbersTable(p)}</div></div></details>
         <div class="report-actions"><button class="btn small" data-print>Print or save as PDF</button><button class="btn small alt" data-share>Copy link to this report</button></div>
-        <p class="note print-only">Charm City Pulse report for ${U.esc(p.csa)} (census tract ${U.esc(p.name.replace("Tract ", ""))}), data build ${new Date(D().meta.built).toLocaleDateString("en-US", { dateStyle: "long" })}. ${location.origin}${location.pathname}#place/${id}</p>`;
+        <p class="note print-only">Charm City Pulse report for ${U.esc(p.csa)} (census tract ${U.esc(p.name.replace("Tract ", ""))}), data build ${new Date(D().meta.built).toLocaleDateString(LOC(), { dateStyle: "long" })}. ${location.origin}${location.pathname}#place/${id}</p>`;
       body.querySelector("[data-print]").onclick = () => { body.querySelectorAll("details.more").forEach(d => d.open = true); window.print(); };
       body.querySelector("[data-share]").onclick = () => SHARE.link(`${location.origin}${location.pathname}#place/${id}`, `${p.csa}: heat, flood risk and help nearby`);
     }
@@ -259,12 +259,42 @@ const RES = (() => {
   }
 
   // ======================= HELP =======================
+  // Plain-language rights for renters and utility customers. Sources: Baltimore City Building, Fire and
+  // Related Codes §602.3 (heat), COMAR 20.31.02-.03 (Maryland utility shut-off rules), Maryland DHS OHEP.
+  function rights() {
+    const m = new Date().getMonth() + 1, cold = m >= 10 || m <= 4;
+    const R = cold ? [
+      ["home", "var(--s3)", "Your landlord must keep your home warm", "From October 1 to April 30, Baltimore's code requires rented homes to average at least 70°F in bedrooms, living rooms and bathrooms, and 65°F in other rooms. If the heat is out, tell your landlord in writing, keep a copy, and call 311 to report it.", "https://codes.baltimorecity.gov/us/md/cities/baltimore/code/building-codes/VII/602", "Read the heat rule"],
+      ["bolt", "var(--accent)", "Gas and electric can't simply be cut off in winter", "From November 1 to March 31, BGE must first certify to the Maryland Public Service Commission that a shut-off won't endanger anyone's life or health. It can't shut off service for unpaid bills during stretches when the forecast stays at or below 32°F.", "https://www.psc.state.md.us/", "Maryland Public Service Commission"],
+      ["hospital", "var(--s4)", "A serious illness can delay a shut-off", "If someone at home is seriously ill or uses life-support equipment, a certificate from their doctor can postpone a shut-off by 30 days. Ask BGE for the medical certification form, then set up a payment plan within those 30 days.", "https://www.psc.state.md.us/", "Maryland Public Service Commission"],
+      ["hands", "var(--s0)", "Get help paying the bill", "Maryland's energy assistance helps with heating and electric bills, and can pay up to $2,000 of a past-due balance of $300 or more. Apply online, call 1-800-332-6347, or in Baltimore call 410-396-5555.", "https://benefits.maryland.gov/", "Apply for energy assistance"],
+    ] : [
+      ["bolt", "var(--accent)", "No shut-offs during heat waves", "BGE can't shut off electric service for unpaid bills during stretches when the forecast heat index is 95°F or higher.", "https://www.psc.state.md.us/", "Maryland Public Service Commission"],
+      ["hospital", "var(--s4)", "A serious illness can delay a shut-off", "If someone at home is seriously ill or uses life-support equipment, a certificate from their doctor can postpone a shut-off by 30 days. Ask BGE for the medical certification form, then set up a payment plan within those 30 days.", "https://www.psc.state.md.us/", "Maryland Public Service Commission"],
+      ["hands", "var(--s0)", "Get help paying the bill", "Maryland's energy assistance helps with electric bills, and can pay up to $2,000 of a past-due balance of $300 or more. Apply online, call 1-800-332-6347, or in Baltimore call 410-396-5555.", "https://benefits.maryland.gov/", "Apply for energy assistance"],
+    ];
+    U.$("#rightsTitle").textContent = cold ? "Your rights in cold weather" : "Your rights in hot weather";
+    return R.map(([ic, col, t, d, u, lk]) => `<div class="place">${tile(ic, col)}<div><b>${t}</b><small>${d}</small><small><a href="${u}" target="_blank" rel="noopener">${lk}</a></small></div></div>`).join("") +
+      `<p class="note">This is general information, not legal advice. For help with a landlord or utility dispute, call 211 or Maryland Legal Aid at 1-888-465-2468.</p>`;
+  }
+
+  // Whether the city has declared a Code Blue (cold) or Code Red (heat) right now
+  function codeStatus() {
+    const c = F("city").value; if (!c) return "";
+    const d = s => new Date(s + "T12:00:00").toLocaleDateString(LOC(), { month: "long", day: "numeric" });
+    const on = ["blue", "red"].map(k => LIVE.cityAlert(k)).filter(Boolean);
+    if (on.length) return on.map(a => `<div class="codebar ${a.kind}">${tile(a.kind === "blue" ? "snow" : "thermo", "#fff")}<div><b>${a.kind === "blue" ? "Code Blue is in effect" : "Code Red is in effect"} through ${d(a.until)}</b><span>${a.kind === "blue" ? "All emergency shelters are open. Call the Shelter Hotline at 443-984-9540 for a bed." : "Cooling centers are open. Call 311 for hours."} <a href="${U.esc(a.url)}" target="_blank" rel="noopener">City announcement</a></span></div></div>`).join("");
+    const season = LIVE.season() === "summer" ? "red" : "blue", last = c.last?.[season];
+    return `<div class="codebar none">${tile("check", "var(--s0)")}<div><b>No Code Blue or Code Red in effect right now</b><span>Checked hourly against the Baltimore City Health Department's announcements.${last ? ` Last ${season === "blue" ? "Code Blue" : "Code Red"}: ${d(last.posted)}.` : ""}</span></div></div>`;
+  }
   function helpShow() {
     const s = LIVE.season(), C = D().centers, W = C.winter;
     U.$("#helpIntro").textContent = s === "winter" ? "It's winter shelter season. Warming centers and shelters open whenever the wind chill reaches 32°F or below." :
       s === "summer" ? "It's heat season. Cooling centers open on Code Red heat days." : "Warming centers open for the winter from November 15. Cooling centers open on Code Red heat days.";
     const calls = [["alert", "var(--red)", "Emergency", "Heat stroke, hypothermia, any emergency", "911", "911", true], ["building", "var(--link)", "Baltimore 311", "City services, center hours, report problems", "311", "311"], ["hands", "var(--s0)", "211 Maryland", "Food, rent and utility help, 24/7, any language", "211", "2-1-1"],
       ["bed", "var(--s3)", "Shelter Hotline", "Shelter beds and warming centers", "4439849540", "443-984-9540"], ["moon", "#6b4c9a", "Winter Shelter Hotline", "9 pm to midnight in winter", "4436957378", "443-695-7378"], ["bolt", "var(--accent)", "Heating bill help", "Community Action Partnership", "4103965555", "410-396-5555"]];
+    U.$("#helpStatus").innerHTML = codeStatus();
+    if (!helpShow.wired) { helpShow.wired = true; F("city").on(() => { if (APP.view === "help") U.$("#helpStatus").innerHTML = codeStatus(); }); }
     U.$("#helpCalls").innerHTML = calls.map(([ic, col, t, d, tel, show, urgent]) => `<div class="callrow${urgent ? " urgent" : ""}">${tile(ic, col)}<div><b>${t}</b><small>${d}</small><span class="numtxt tnum">${show}</span></div><a class="round call${urgent ? " urgent" : ""}" href="tel:${tel}" aria-label="Call ${t} at ${show}" title="Call ${show}">${I("phone", 22)}</a></div>`).join("");
     U.$("#helpCalls").classList.add("stagger");
     const here = userLoc ? [userLoc.lon, userLoc.lat] : [LIVE.CENTER[1], LIVE.CENTER[0]];
@@ -274,6 +304,7 @@ const RES = (() => {
     const list = (s === "summer" ? cool : s === "winter" ? warm : [...warm.filter(x => x.type === "Warming center"), ...cool.filter(x => !wk.has(addrKey(x.address)))]).map(x => ({ ...x, d: U.km(here, [x.lon, x.lat]) })).sort((a, b) => a.d - b.d).slice(0, 8);
     U.$("#helpPlaces").innerHTML = list.map(placeCard).join("") + `<p class="note">Centers open only when the city activates them. Call 311 to check. For overnight shelters, call the Shelter Hotline first.</p>`;
     U.$("[data-near]").onclick = e => { e.preventDefault(); navigator.geolocation && navigator.geolocation.getCurrentPosition(p => { userLoc = { lat: p.coords.latitude, lon: p.coords.longitude, label: "your location" }; U.store.set("loc", userLoc); helpShow(); }, () => U.toast("Location is off. Search your address on My block instead.")); };
+    U.$("#helpRights").innerHTML = rights();
     const P = [["tree", "var(--s0)", "TreeBaltimore", "A free street tree, planted and watered for you.", "https://www.treebaltimore.org"],
       ["bolt", "var(--accent)", "Energy bill help (OHEP)", "Help with electric and gas bills and past-due balances.", "https://dhs.maryland.gov/office-of-home-energy-programs/"],
       ["hospital", "var(--s4)", "Baltimore City Health Department", "Code Red heat and Code Blue cold alerts, clinics.", "https://health.baltimorecity.gov"],

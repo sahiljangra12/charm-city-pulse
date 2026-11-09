@@ -34,6 +34,10 @@ jobs:
         run: |
           set -o pipefail
           python pipeline/refresh.py 2>&1 | tee pipeline/cache/refresh_log.txt
+      - name: Check for Code Blue / Code Red (Baltimore City Health Department)
+        continue-on-error: true
+        timeout-minutes: 2
+        run: python pipeline/city_alerts.py
       - name: Fetch background photos (Wikimedia Commons, once)
         continue-on-error: true
         timeout-minutes: 3

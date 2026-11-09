@@ -171,7 +171,7 @@ const RSC = (() => {
     draw();
     if (liveWired) return; liveWired = true;
     document.addEventListener("live-status", () => APP.view === "live" && draw());
-    ["weather", "air", "alerts", "meta"].forEach(k => LIVE.feeds[k].on(() => {}));
+    ["weather", "air", "alerts", "meta", "city"].forEach(k => LIVE.feeds[k].on(() => {}));
     U.$("#gaugeTable").innerHTML = `<tbody><tr><td><div class="skeleton" style="height:60px"></div></td></tr></tbody>`;
     LIVE.feeds.water.on(s => {
       if (!s) { U.$("#gaugeTable").innerHTML = `<tbody><tr><td>USGS Water Data API unavailable; retrying.</td></tr></tbody>`; return; }

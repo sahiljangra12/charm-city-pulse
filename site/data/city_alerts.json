@@ -1,0 +1,16 @@
+{
+ "source": "https://www.baltimorecity.gov/health/news-media",
+ "active": [],
+ "last": {
+  "blue": null,
+  "red": {
+   "kind": "red",
+   "title": "Health Commissioner Declares Code Red Extreme Heat Alert for Wednesday, July 15th and Thursday, July 16th",
+   "summary": "Dr. Michelle Taylor, Baltimore City Commissioner of Health, has declared a Code Red Extreme Heat Alert for Wednesday, July 15, 2026 through Thursday, July 16, 2026.",
+   "url": "https://www.baltimorecity.gov/health/news/health-commissioner-declares-code-red-extreme-heat-alert-for-wednesday-july-15th-and-thursday-july-16th",
+   "posted": "2026-07-14",
+   "until": "2026-07-16",
+   "active": false
+  }
+ }
+}

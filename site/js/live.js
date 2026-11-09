@@ -13,6 +13,7 @@ const LIVE = (() => {
     { id: "flood", name: "Flood hazard zone at a point", by: "FEMA National Flood Hazard Layer", url: "https://hazards.fema.gov/femaportal/resources/flood_map_svc.htm", every: 0 },
     { id: "geo", name: "Address search and autocomplete", by: "Esri World Geocoder, with Photon and Nominatim (OpenStreetMap) as fallbacks", url: "https://developers.arcgis.com/rest/geocode/", every: 0 },
     { id: "osm", name: "Fountains, transit, bike lanes, EV chargers, gardens, recycling, markets", by: "OpenStreetMap contributors via the Overpass API", url: "https://wiki.openstreetmap.org/wiki/Overpass_API", every: 0 },
+    { id: "city", name: "Code Blue and Code Red declarations", by: "Baltimore City Health Department (checked hourly)", url: "https://www.baltimorecity.gov/health/news-media", every: 10 },
     { id: "meta", name: "Neighborhood data releases (Census ACS, CDC PLACES, city layers)", by: "Charm City Pulse daily build (GitHub Actions)", url: "https://github.com/sahiljangra12/charm-city-pulse/actions", every: 15 },
   ];
   const status = {};
@@ -105,6 +106,11 @@ const LIVE = (() => {
 
   // ---------- data-release watcher (site/data/meta.json) ----------
   feed("meta", () => U.getJSON("data/meta.json?t=" + Date.now(), { cache: "no-store" }));
+  // ---------- Code Blue / Code Red, as declared by the city (pipeline/city_alerts.py, hourly) ----------
+  feed("city", () => U.getJSON("data/city_alerts.json?t=" + Date.now(), { cache: "no-store" }).then(j => {
+    const today = new Date().toLocaleDateString("en-CA", { timeZone: TZ });   // YYYY-MM-DD in Baltimore
+    j.active = (j.active || []).filter(a => a.until >= today); return j; }));
+  const cityAlert = kind => (feeds.city.value?.active || []).find(a => a.kind === kind) || null;
 
   // ---------- FEMA flood ----------
   const NFHL = "https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer";
@@ -233,5 +239,5 @@ const LIVE = (() => {
   const WMO = { 0: "Clear", 1: "Mostly clear", 2: "Partly cloudy", 3: "Overcast", 45: "Fog", 48: "Freezing fog", 51: "Light drizzle", 53: "Drizzle", 55: "Heavy drizzle", 56: "Freezing drizzle", 57: "Freezing drizzle", 61: "Light rain", 63: "Rain", 65: "Heavy rain", 66: "Freezing rain", 67: "Freezing rain", 71: "Light snow", 73: "Snow", 75: "Heavy snow", 77: "Snow grains", 80: "Showers", 81: "Showers", 82: "Heavy showers", 85: "Snow showers", 86: "Snow showers", 95: "Thunderstorms", 96: "Thunderstorms with hail", 99: "Thunderstorms with hail" };
   const sky = c => c === 0 || c === 1 ? "clear" : c <= 3 ? "cloudy" : c <= 48 ? "fog" : c <= 67 || (c >= 80 && c <= 82) ? "rain" : c <= 77 || c === 85 || c === 86 ? "snow" : "storm";
 
-  return { CENTER, BBOX, SOURCES, status, feeds, PCODES, OSM, osm, NFHL, floodLayer: () => floodLayer, floodAt, suggest, geocode, aqiCat, feelsCat, uvCat, season, WMO, sky };
+  return { cityAlert, CENTER, BBOX, SOURCES, status, feeds, PCODES, OSM, osm, NFHL, floodLayer: () => floodLayer, floodAt, suggest, geocode, aqiCat, feelsCat, uvCat, season, WMO, sky };
 })();

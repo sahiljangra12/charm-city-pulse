@@ -282,3 +282,26 @@ ul.small{font-size:.92rem;padding-left:18px}
 .btable th.sorted{color:var(--accent)}
 .btable td:nth-child(2){min-width:150px}
 
+
+/* ---------- Code Blue / Code Red status ---------- */
+.codebar{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;margin:0 0 18px;border:1px solid var(--line-2)}
+.codebar b{display:block;font-size:1.05rem;margin-bottom:3px}
+.codebar span{color:var(--ink-2);font-size:.93rem;line-height:1.45}
+.codebar a{color:inherit;text-decoration:underline}
+.codebar.blue{background:#1d4f7c;border-color:#1d4f7c;color:#fff}.codebar.red{background:#b3261e;border-color:#b3261e;color:#fff}
+.codebar.blue span,.codebar.red span{color:rgba(255,255,255,.9)}
+.codebar.blue .tile,.codebar.red .tile{background:rgba(255,255,255,.16)!important}
+.prio .src{margin-top:8px;font-size:.86rem}.prio .src a{color:inherit;text-decoration:underline}
+.langbtn{min-width:44px;height:36px;padding:0 10px;border:1px solid rgba(255,255,255,.4);background:transparent;color:#fff;font:600 .74rem/1 var(--display);letter-spacing:.14em;cursor:pointer}
+.langbtn:hover{background:#fff;color:#000}
+.en-note{margin:0 0 16px;font-size:.92rem;color:var(--ink-2)}
+
+/* ---------- waving city flag ---------- */
+.flagwave{display:block;opacity:0;transition:opacity .8s}.flagwave.on{opacity:1}
+.hdrflag{width:36px;height:24px;margin-left:10px}
+@media (max-width:460px){.hdrflag{display:none}}
+.footflag{display:flex!important;align-items:center;gap:18px;margin-bottom:22px}
+#footFlag{width:150px;height:100px;flex:0 0 auto}
+.footflag p{margin:0;max-width:46ch;color:#c9cdd2;font-size:.86rem;line-height:1.5}
+@media print{.flagwave,.footflag{display:none!important}}
+@media (max-width:460px){#alertBtn{display:none}.langbtn{min-width:34px;height:32px;padding:0 6px;font-size:.68rem}}

@@ -48,7 +48,7 @@ const APP = (() => {
   // ---------- build stamp: says plainly when the neighborhood data is behind schedule ----------
   function stamp() {
     const m = A.data.meta, h = U.buildAgeH(m), stale = h > U.STALE_H;
-    const el = U.$("#buildStamp"); el.textContent = "Data build " + new Date(m.built).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }) + (stale ? ` (${Math.round(h / 24)} days old)` : "");
+    const el = U.$("#buildStamp"); el.textContent = "Data build " + new Date(m.built).toLocaleString(LOC(), { dateStyle: "medium", timeStyle: "short" }) + (stale ? ` (${Math.round(h / 24)} days old)` : "");
     el.classList.toggle("stale", stale);
     U.$$(".stale-note").forEach(n => n.remove());
     if (stale) U.$$("section.view [data-sub]").forEach(v => v.insertAdjacentHTML("afterend", `<p class="stale-note">The neighborhood data was last rebuilt ${Math.round(h / 24)} days ago, so it is behind its daily schedule. Live weather, air, alerts and river readings are not affected.</p>`));
@@ -59,7 +59,7 @@ const APP = (() => {
     LIVE.feeds.meta.on(async m => {
       if (!m || !A.data || m.built === A.data.meta.built) return;
       try {
-        await load(m.built); stamp(); U.toast("New neighborhood data published " + new Date(m.built).toLocaleDateString("en-US") + ". The page has been updated.");
+        await load(m.built); stamp(); U.toast("New neighborhood data published " + new Date(m.built).toLocaleDateString(LOC()) + ". The page has been updated.");
         Object.keys(inited).forEach(k => { if (VIEWS[k]?.reload) VIEWS[k].reload(); });
         route();
       } catch (e) { console.warn("reload failed", e); }
@@ -177,7 +177,8 @@ const APP = (() => {
   }
 
   async function start() {
-    buildNav(); CINEMA.init();
+    buildNav(); CINEMA.init(); I18N.init();
+    U.$$("canvas.flagwave").forEach(c => FLAG.mount(c, c.id === "footFlag" ? { pole: true } : { amp: 0.09, speed: 0.8 }));
     U.$$("[data-unit]").forEach(b => b.onclick = () => setUnit(b.dataset.unit)); setUnit(U.unit());
     U.$("#themeBtn").onclick = () => setTheme(isDark() ? "light" : "dark");
     for (let tries = 0; ; tries++) {
