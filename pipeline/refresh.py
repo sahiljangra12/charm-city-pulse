@@ -35,6 +35,9 @@ DEADLINE = time.time() + BUDGET_S
 DEAD_HOSTS = set()
 
 
+def safe(url): return re.sub(r"key=[^&]+", "key=***", url)   # never print the Census key into public logs
+
+
 def fetch(url, tries=3, timeout=90, data=None):
     if OFFLINE: raise RuntimeError("offline")
     host = urllib.parse.urlsplit(url).netloc
@@ -52,7 +55,7 @@ def fetch(url, tries=3, timeout=90, data=None):
             if "timed out" in str(e).lower() or isinstance(e, TimeoutError):
                 DEAD_HOSTS.add(host); log("host timed out, skipping it for the rest of this build:", host); break
             time.sleep(2 * (k + 1))
-    raise RuntimeError(f"{url[:120]}: {err}")
+    raise RuntimeError(f"{safe(url)[:120]}: {safe(str(err))}")
 
 
 def fjson(url, **kw):
@@ -60,7 +63,7 @@ def fjson(url, **kw):
     try:
         return json.loads(b)
     except json.JSONDecodeError:
-        raise RuntimeError(f"non-JSON from {url[:90]}: {b[:160]!r}")
+        raise RuntimeError(f"non-JSON from {safe(url)[:90]}: {b[:160]!r}")
 def cache_put(name, obj): json.dump(obj, open(os.path.join(CACHE, name), "w"), separators=(",", ":"))
 def cache_get(name):
     p = os.path.join(CACHE, name)
