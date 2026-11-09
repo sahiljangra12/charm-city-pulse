@@ -85,6 +85,30 @@ def water_notices(page, today):
     return [n for n in out if not (n["kind"] == "boil" and any(d >= date.fromisoformat(n["posted"]) for d in lifted))]
 
 
+DOT = "https://www.baltimorecity.gov/transportation/news-media"
+
+
+def snow_notices(page, today):
+    """A snow emergency announced by the Department of Transportation or the Mayor's Office in the last 4 days,
+    unless a later post says it was lifted. Cars must be off snow emergency routes while it is in effect."""
+    posts = []
+    for row in ROW.findall(page):
+        href = re.search(r'href="([^"]+)"', row); title = re.search(r'<h2[^>]*>(.*?)</h2>', row, re.S)
+        lede = re.search(r'article_card__lede">(.*?)</div>', row, re.S); posted = re.search(r'<time datetime="(\d{4}-\d{2}-\d{2})', row)
+        if not (href and title and posted): continue
+        t, l = text(title.group(1)), text(lede.group(1)) if lede else ""
+        w = (t + " " + l).lower()
+        if "snow emergency" not in w and "snow emergency plan" not in w: continue
+        p = date.fromisoformat(posted.group(1))
+        url = href.group(1) if href.group(1).startswith("http") else "https://www.baltimorecity.gov" + href.group(1)
+        ended = bool(re.search(r"\b(lift|lifted|end|ended|ends|rescind|cancel|deactivat|expire)", t.lower()))
+        posts.append({"title": t, "summary": l[:300], "url": url, "posted": p.isoformat(), "ended": ended})
+    posts.sort(key=lambda x: x["posted"], reverse=True)
+    latest = posts[0] if posts else None
+    active = bool(latest and not latest["ended"] and (today - date.fromisoformat(latest["posted"])).days <= 4)
+    return {"active": active, "latest": latest}
+
+
 # ---------- low-cost air sensors (OpenAQ). Needs a free OpenAQ key in the OPENAQ_API_KEY secret; skipped without one.
 SENSORS_OUT = os.path.join(os.path.dirname(OUT), "sensors.json")
 def sensors():
@@ -138,10 +162,16 @@ def main():
         out["water"] = water_notices(page, today); out["water_source"] = DPW
     except Exception as e:
         print("[city-alerts] Public Works:", e, "- keeping the previous water notices")
+    try:
+        page = fetch(DOT)
+        if "views-row" not in page: raise RuntimeError("page layout changed")
+        out["snow"] = snow_notices(page, today); out["snow_source"] = DOT
+    except Exception as e:
+        print("[city-alerts] Transportation:", e, "- keeping the previous snow emergency status")
     if {k: v for k, v in old.items() if k != "changed"} != {k: v for k, v in out.items() if k != "changed"}:
         out["changed"] = datetime.now(timezone.utc).isoformat(timespec="minutes")
         json.dump(out, open(OUT, "w"), indent=1)
-        print("[city-alerts] updated:", [a["title"] for a in out.get("active", [])] or "no Code Blue/Red", "| water:", [w["title"] for w in out.get("water", [])] or "none")
+        print("[city-alerts] updated:", [a["title"] for a in out.get("active", [])] or "no Code Blue/Red", "| water:", [w["title"] for w in out.get("water", [])] or "none", "| snow emergency:", (out.get("snow") or {}).get("active"))
     else:
         print("[city-alerts] unchanged")
     try: sensors()

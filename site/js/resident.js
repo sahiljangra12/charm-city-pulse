@@ -150,8 +150,15 @@ const RES = (() => {
     const w = near(warm), wk = new Set(w.map(x => addrKey(x.address))), c = near(cool).filter(x => !wk.has(addrKey(x.address)));
     return s === "winter" ? w.slice(0, 3) : s === "summer" ? near(cool).slice(0, 3) : [...w.slice(0, 2), ...c.slice(0, 2)];
   }
+  // "Open now" only when the center is actually operating: warming centers in their season, cooling centers on Code Red days
+  function centerOpen(x) {
+    if (x.kind === "warm") { const W = D().centers.winter.season, t = new Date().toISOString().slice(0, 10);
+      if (t < W.start) return `<span class="openb">${I("clock", 14)}Opens for the season ${new Date(W.start + "T12:00").toLocaleDateString(LOC(), { month: "long", day: "numeric" })}</span>`;
+      if (t > W.end) return ""; return CITY.openBadge(CITY.openNow(x.hours)); }
+    return LIVE.cityAlert("red") ? CITY.openBadge(CITY.openNow(x.hours)) : "";
+  }
   const placeCard = x => `<div class="place">${x.kind === "warm" ? tile("flame", "var(--s3)") : tile("snow", "var(--link)")}
-    <div><b>${U.esc(x.name)}</b><small>${U.esc(x.address.replace(/, Baltimore, MD \d+/, ""))}${x.hours ? ", " + U.esc(x.hours) : ""}</small><small>${x.kind === "warm" ? "Warming center, open on cold days Nov 15 to Mar 15" : "Cooling center, open on Code Red heat days"}${x.serves && x.serves !== "All" ? ". " + U.esc(x.serves) : ""}</small></div>
+    <div><b>${U.esc(x.name)}</b><small>${U.esc(x.address.replace(/, Baltimore, MD \d+/, ""))}${x.hours ? ", " + U.esc(x.hours) : ""}</small><small>${x.kind === "warm" ? "Warming center, open on cold days Nov 15 to Mar 15" : "Cooling center, open on Code Red heat days"}${x.serves && x.serves !== "All" ? ". " + U.esc(x.serves) : ""}</small>${centerOpen(x)}</div>
     <div class="go"><span class="tnum">${U.dist(x.d)}</span>${dirBtn(x.lat, x.lon, x.name)}</div></div>`;
   function numbersTable(p) {
     const ind = D().ind; let html = `<table class="numbers"><thead><tr><th>Measure</th><th class="n">Here</th><th class="n">City middle</th><th>Source year</th></tr></thead><tbody>`;
@@ -194,7 +201,7 @@ const RES = (() => {
       let top3 = worst.filter(k => lv(k) >= 3).slice(0, 3); top3 = [...top3, ...["heat", "trees", "health"].filter(k => !top3.includes(k))].slice(0, 3);
       const unsure = Object.keys(THEMES).some(k => p["u_" + k]);
       const J = (k, t) => `<a href="#place/${id}/${k}">${t}</a>`;
-      body.innerHTML = `<nav class="jumpbar" aria-label="On this page"><span>On this page</span>${J("sec-summary", "Summary")}${J("sec-help", "Closest help")}${J("sec-food", "Food")}${J("sec-transit", "Buses")}${J("sec-trends", "Changes")}${J("sec-numbers", "All numbers")}</nav>
+      body.innerHTML = `<nav class="jumpbar" aria-label="On this page"><span>On this page</span>${J("sec-summary", "Summary")}${J("sec-help", "Closest help")}${J("sec-services", "Trash & services")}${J("sec-food", "Food")}${J("sec-transit", "Buses")}${J("sec-trends", "Changes")}${J("sec-numbers", "All numbers")}</nav>
         <div class="area-hero" id="sec-summary">
         <div class="card"><span class="muted" style="font-size:.92rem">Your neighborhood</span><div class="area-title">${U.esc(p.csa)}</div>
           <p class="summary">${U.esc(sum.join(" and "))}.</p>${floodBox}</div>
@@ -206,6 +213,8 @@ const RES = (() => {
         <div class="section-h" id="sec-help"><h2>Closest help</h2><a href="#help">All places and phone numbers</a></div>
         <div class="place-list stagger">${cards}${MORE.leadCard(p, null)}</div>
         <div id="pReport"></div>
+        <div class="section-h" id="sec-services"><div><h2>City services here</h2><p class="sub">Trash and recycling day, bulk pickup, sweeping, snow routes, your council member and useful places.</p></div></div>
+        <div id="pServices"><div class="skeleton" style="height:90px"></div></div>
         <div class="section-h" id="sec-food"><div><h2>Food help nearby</h2><p class="sub">Free food sites and stores that take SNAP (EBT).</p></div><a href="#help/sec-food">More food help</a></div>
         <div class="place-list" id="pFood"><div class="skeleton" style="height:70px"></div></div>
         <div class="section-h" id="sec-transit"><div><h2>Buses and trains nearby</h2><p class="sub">The next scheduled times at the closest stops.</p></div></div>
@@ -215,7 +224,7 @@ const RES = (() => {
         <details class="more" id="sec-numbers"><summary>${tile("chart", "var(--ink)", 20).replace('class="tile"', 'class="tile sm"')}<span>See the numbers<br><small style="font-weight:500">Every measure behind these comparisons, with margins of error and source years</small></span>${I("chev", 20).replace('class="ic"', 'class="ic chev"')}</summary><div class="inner"><div class="card" style="overflow-x:auto">${numbersTable(p)}</div></div></details>
         <div class="report-actions"><button class="btn small" data-print>Print or save as PDF</button><button class="btn small alt" data-share>Copy link to this report</button></div>
         <p class="note print-only">Charm City Pulse report for ${U.esc(p.csa)} (census tract ${U.esc(p.name.replace("Tract ", ""))}), data build ${new Date(D().meta.built).toLocaleDateString(LOC(), { dateStyle: "long" })}. ${location.origin}${location.pathname}#place/${id}</p>`;
-      MORE.foodSection(U.$("#pFood"), here[0], here[1]); MORE.transitSection(U.$("#pTransit"), here[0], here[1]); MORE.trendsSection(U.$("#pTrends"), p.csa);
+      CITY.section(U.$("#pServices"), here[0], here[1], !!pt); MORE.foodSection(U.$("#pFood"), here[0], here[1]); MORE.transitSection(U.$("#pTransit"), here[0], here[1]); MORE.trendsSection(U.$("#pTrends"), p.csa);
       MORE.file("trends.json").then(T => { const lc = MORE.leadCard(p, T.csa[p.csa]); const old = body.querySelector(".place.lead"); if (old) old.outerHTML = lc; else if (lc) body.querySelector(".place-list").insertAdjacentHTML("beforeend", lc); }).catch(() => {});
       body.querySelector("[data-print]").onclick = () => { body.querySelectorAll("details.more").forEach(d => d.open = true); window.print(); };
       body.querySelector("[data-share]").onclick = () => SHARE.link(`${location.origin}${location.pathname}#place/${id}`, `${p.csa}: heat, flood risk and help nearby`);
@@ -236,7 +245,7 @@ const RES = (() => {
     ["parks", "Parks & pools", "tree", "#1e9e5a", ["parks", "pools", "rec"]],
     ["fountains", "Water fountains", "fountain", "#1d8fc9", ["fountains"]],
     ["transit", "Rail & bike lanes", "train", "#6b4c9a", ["transit", "bike"]],
-    ["food", "Markets & gardens", "basket", "#b8382b", ["markets", "gardens"]],
+    ["food", "Markets & gardens", "basket", "#b8382b", ["markets", "citygardens"]],
     ["ev", "EV chargers", "plug", "#b98500", ["ev"]],
     ["recycling", "Recycling", "recycle", "#3f7f8c", ["recycling"]],
     ["flood", "Flood zones", "waves", "#2f78c4", ["flood"]],
@@ -246,6 +255,14 @@ const RES = (() => {
     ["stops", "Bus & rail stops", "bus", "#6b4c9a", ["stops"]],
     ["harbor", "Harbor water", "waves", "#1d6fb8", ["harbor"]],
     ["sensors", "Air sensors", "wind", "#24804f", ["sensors"]],
+    ["snow", "Snow emergency routes", "car", "#d6283b", ["snowroutes"]],
+    ["codeblue", "Code Blue shelters", "bed", "#1d4f91", ["codeblue"]],
+    ["trash", "Trash days", "trash", "#5a6b78", ["trashzones"]],
+    ["libs", "Libraries & free Wi-Fi", "book", "#8a5a2b", ["libraries", "wifi"]],
+    ["dropoff", "Trash drop-off", "recycle", "#3f7f8c", ["dropoff"]],
+    ["seniors", "Senior centers", "users", "#c77700", ["seniors"]],
+    ["council", "Council districts", "users", "#6b4c9a", ["council"]],
+    ["sweep", "Alley sweeping", "broom", "#3f7f8c", ["sweepzones"]],
   ];
   const SHADES = [["t_heat", "Summer heat"], ["t_trees", "Tree shade"], ["hvi", "Heat vulnerability"], ["t_health", "Health risks"], ["t_social", "Money and jobs"], ["t_energy", "Housing and energy bills"], ["t_mobility", "Getting around and food"], ["none", "Nothing"]];
   let map, shade, loaded = {};
@@ -255,7 +272,7 @@ const RES = (() => {
     U.$("#mapColor").onchange = e => paint(e.target.value);
     shade = L.geoJSON(D().tracts, { interactive: false }).addTo(map); paint("t_heat");
     const chip = ([k, t, ic, col]) => `<button class="chipbtn" data-g="${k}" aria-pressed="false" style="--c:${col}">${I(ic, 18)}${t}</button>`;
-    const SETS = [["Stay safe", ["centers", "flood", "air", "sensors", "streams"]], ["Everyday places", ["foodhelp", "parks", "fountains", "food", "recycling", "harbor"]], ["Getting around", ["stops", "transit", "ev"]]];
+    const SETS = [["Stay safe", ["centers", "codeblue", "snow", "flood", "air", "sensors", "streams"]], ["Everyday places", ["foodhelp", "libs", "parks", "fountains", "food", "seniors", "harbor"]], ["City services", ["trash", "dropoff", "recycling", "sweep", "council"]], ["Getting around", ["stops", "transit", "ev"]]];
     U.$("#mapChips").innerHTML = SETS.map(([t, ks]) => `<div class="chipset"><span class="chipset-t">${t}</span><div class="chips-in">${ks.map(k => GROUPS.find(g => g[0] === k)).filter(Boolean).map(chip).join("")}</div></div>`).join("");
     U.$$("#mapChips .chipbtn").forEach(b => b.onclick = () => toggleGroup(b));
     MORE.sensors().then(s => { if (!s.length) U.$('[data-g="sensors"]')?.remove(); });   // only offer the button when sensors are reporting
@@ -282,6 +299,8 @@ const RES = (() => {
       catch { msgEl.textContent = `${LAYERS.DEF[k].label} didn't load. Try again in a minute.`; b.setAttribute("aria-pressed", "false"); }
       b.classList.remove("busy");
     }
+    if (turnOn && g[0] === "snow") msgEl.textContent = LIVE.snowEmergency() ? "A snow emergency is in effect: no parking on the red routes." : "Red streets are snow emergency routes. When a snow emergency is declared, cars parked there get a $52 ticket and can be towed.";
+    if (turnOn && g[0] === "trash") msgEl.textContent = "Colors show the trash day. Tap an area for its trash and recycling days.";
     if (turnOn && g[0] === "flood") msgEl.textContent = "Blue areas are FEMA flood zones. Tap any spot to check it.";
     if (turnOn && g[0] === "stops") { msgEl.textContent = "Zoom in to see bus and rail stops. Tap one for its next scheduled times."; if (map.getZoom() < 15) map.setZoom(15); }
   }
@@ -316,6 +335,21 @@ const RES = (() => {
       `<p class="note">This is general information, not legal advice. For help with a landlord or utility dispute, call 211 or Maryland Legal Aid at 1-888-465-2468.</p>`;
   }
 
+  // Eviction, rent, lead, rats and vacants. Sources: Maryland Legal Aid (Access to Counsel in Evictions),
+  // Baltimore City Health Department lead program, DPW Rat Rubout. Checked Nov 2026.
+  function homeHelp() {
+    const card = (ic, col, t, d, links, tel) => `<div class="place">${tile(ic, col)}<div><b>${t}</b><small>${d}</small>${links ? `<small>${links}</small>` : ""}</div>${tel ? `<div class="go"><a class="round call" href="tel:${tel[0]}" aria-label="Call ${U.esc(tel[1])}" title="Call ${U.esc(tel[1])}">${I("phone", 20)}</a></div>` : ""}</div>`;
+    const a = (u, t) => `<a href="${u}" target="_blank" rel="noopener">${t}</a>`;
+    const m = new Date().getMonth() + 1, pollen = m >= 3 && m <= 10;
+    return [
+      card("hands", "var(--s4)", "Facing eviction? You may get a free lawyer", "Maryland's Access to Counsel in Evictions program gives free lawyers to many renters: low-income households, people with vouchers or in public housing, and anyone 60 or older. Call before your court date. On the day, arrive 30 minutes early: you can talk to a lawyer at the courthouse before your hearing.", `Maryland Legal Aid 1-888-465-2468 · ${a("http://intake.mdlab.org", "Apply online")} · Court Help Center (410) 260-1392`, ["18884652468", "Maryland Legal Aid"]),
+      card("wallet", "var(--accent)", "Behind on rent?", "Rent help programs open and close during the year. 211 knows which ones are taking applications right now, and Baltimore's Community Action Partnership centers help with rent, utility bills and food.", `${a("https://211md.org", "211 Maryland")} · Community Action Partnership 410-396-5555`, ["211", "211 Maryland"]),
+      card("alert", "var(--s3)", "Lead paint: test young children", "Homes built before 1978 can have lead paint, and most of Baltimore's homes are that old. Maryland requires a blood lead test for every child at 12 and 24 months: ask your child's doctor. No doctor? Call Baltimore Health Care Access at 410-649-0500 (English and Spanish).", `City lead program (443) 984-2470 · ${a("https://www.baltimorecity.gov/health/our-work/lead-poisoning-prevention/childhood-lead-poisoning-prevention", "Lead poisoning prevention")}`, ["4439842470", "the lead program"]),
+      card("alert", "var(--ink-2)", "Rats", "Call 311 and ask for Rat Rubout. The crew checks for burrows and baits them. To enter a back yard, they need a signed right of entry form. Keep trash in a can with a tight lid, never put out loose bags, and pick up pet food and waste daily.", a("https://publicworks.baltimorecity.gov/node/4991", "Rat Rubout"), ["311", "311"]),
+      card("building", "var(--ink-2)", "Vacant house or lot next door", "Report open doors or windows, a collapsing roof, or a trash-filled lot to 311 so the city can secure or clean it.", a("https://balt311.baltimorecity.gov/citizen/s/", "Report on 311 online"), ["311", "311"]),
+      pollen ? card("sprout", "#5e9e2f", "Allergy season", "Pollen is highest on dry, windy mornings. Keep windows closed on high-pollen days, shower after time outside, and check the daily count.", a("https://www.pollen.com/forecast/current/pollen/21202", "Today's pollen forecast for Baltimore")) : "",
+    ].join("") + `<p class="note">General information, not legal advice. Last checked November 2026.</p>`;
+  }
   // Whether the city has declared a Code Blue (cold) or Code Red (heat) right now
   function codeStatus() {
     const c = F("city").value; if (!c) return "";
@@ -345,15 +379,19 @@ const RES = (() => {
     U.$("#helpPlaces").innerHTML = list.slice(0, 4).map(placeCard).join("") + (list.length > 4 ? `<div class="more-places" hidden>${list.slice(4).map(placeCard).join("")}</div><button class="btn small alt showmore" data-more>Show ${list.length - 4} more places</button>` : "") + `<p class="note">Centers open only when the city activates them. Call 311 to check. For overnight shelters, call the Shelter Hotline first.</p>`;
     U.$("[data-near]").onclick = e => { e.preventDefault(); navigator.geolocation && navigator.geolocation.getCurrentPosition(p => { userLoc = { lat: p.coords.latitude, lon: p.coords.longitude, label: "your location" }; U.store.set("loc", userLoc); helpShow(); }, () => U.toast("Location is off. Search your address on My block instead.")); };
     U.$("[data-more]")?.addEventListener("click", e => { U.$(".more-places").hidden = false; e.currentTarget.remove(); });
+    U.$("#helpShelterWrap").hidden = s === "summer"; if (s !== "summer") CITY.shelters(U.$("#helpShelters"), here[1], here[0]);
     U.$("#helpWaterNotices").innerHTML = MORE.waterBars() || `<p class="note">No boil-water advisories or water main notices from Public Works right now.</p>`;
     U.$("#glossary").innerHTML = MORE.glossary();
     U.$("#helpRights").innerHTML = rights();
+    U.$("#helpHome").innerHTML = homeHelp();
     const mo = new Date().getMonth() + 1; if (mo >= 10 || mo <= 4) U.$("#helpRights").insertAdjacentHTML("beforeend", MORE.report("heat"));
     MORE.foodSection(U.$("#helpFood"), here[1], here[0]); MORE.harborSection(U.$("#helpHarbor"));
     const P = [["tree", "var(--s0)", "TreeBaltimore", "A free street tree, planted and watered for you.", "https://www.treebaltimore.org"],
       ["bolt", "var(--accent)", "Energy bill help (OHEP)", "Help with electric and gas bills and past-due balances.", "https://dhs.maryland.gov/office-of-home-energy-programs/"],
       ["hospital", "var(--s4)", "Baltimore City Health Department", "Code Red heat and Code Blue cold alerts, clinics.", "https://health.baltimorecity.gov"],
       ["bed", "var(--s3)", "Winter shelter updates", "When winter shelters open, from the Mayor's Office of Homeless Services.", "https://www.baltimorecity.gov/homeless/winter-shelter"],
+      ["bolt", "var(--accent)", "BGE power outages", "Report an outage at 1-877-778-2222, or see the outage map. Gas smell: 1-800-685-0123.", "https://www.bge.com/outages/outage-map"],
+      ["trash", "var(--ink-2)", "Bulk trash pickup", "Up to 3 big items a month, free. Call 311 at least 4 working days before your Saturday.", "https://www.baltimorecity.gov/publicworks/trash-recycling/bulk-trash-pickup-and-large-item-removal"],
       ["waves", "var(--link)", "FEMA flood maps", "The official flood map for any address.", "https://msc.fema.gov/portal/home"],
       ["bus", "#6b4c9a", "Maryland Transit", "Buses, Light RailLink, Metro and MARC trip planner.", "https://www.mta.maryland.gov"],
       ["doc", "var(--ink-2)", "Report a problem (311)", "Street flooding, empty tree pits, dumping, no heat.", "https://311.baltimorecity.gov"]];

@@ -111,6 +111,7 @@ const LIVE = (() => {
     const today = new Date().toLocaleDateString("en-CA", { timeZone: TZ });   // YYYY-MM-DD in Baltimore
     j.active = (j.active || []).filter(a => a.until >= today); return j; }));
   const cityAlert = kind => (feeds.city.value?.active || []).find(a => a.kind === kind) || null;
+  const snowEmergency = () => { const s = feeds.city.value?.snow; return s?.active ? s.latest : null; };
 
   // ---------- FEMA flood ----------
   const NFHL = "https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer";
@@ -239,5 +240,5 @@ const LIVE = (() => {
   const WMO = { 0: "Clear", 1: "Mostly clear", 2: "Partly cloudy", 3: "Overcast", 45: "Fog", 48: "Freezing fog", 51: "Light drizzle", 53: "Drizzle", 55: "Heavy drizzle", 56: "Freezing drizzle", 57: "Freezing drizzle", 61: "Light rain", 63: "Rain", 65: "Heavy rain", 66: "Freezing rain", 67: "Freezing rain", 71: "Light snow", 73: "Snow", 75: "Heavy snow", 77: "Snow grains", 80: "Showers", 81: "Showers", 82: "Heavy showers", 85: "Snow showers", 86: "Snow showers", 95: "Thunderstorms", 96: "Thunderstorms with hail", 99: "Thunderstorms with hail" };
   const sky = c => c === 0 || c === 1 ? "clear" : c <= 3 ? "cloudy" : c <= 48 ? "fog" : c <= 67 || (c >= 80 && c <= 82) ? "rain" : c <= 77 || c === 85 || c === 86 ? "snow" : "storm";
 
-  return { cityAlert, CENTER, BBOX, SOURCES, status, feeds, PCODES, OSM, osm, NFHL, floodLayer: () => floodLayer, floodAt, suggest, geocode, aqiCat, feelsCat, uvCat, season, WMO, sky };
+  return { cityAlert, snowEmergency, CENTER, BBOX, SOURCES, status, feeds, PCODES, OSM, osm, NFHL, floodLayer: () => floodLayer, floodAt, suggest, geocode, aqiCat, feelsCat, uvCat, season, WMO, sky };
 })();

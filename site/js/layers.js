@@ -23,6 +23,7 @@ const LAYERS = (() => {
     stops:     { label: "Bus and rail stops", icon: "bus", color: "#6b4c9a" },
     harbor:    { label: "Harbor water quality", icon: "waves", color: "#1d6fb8" },
     sensors:   { label: "Neighborhood air sensors", icon: "wind", color: "#24804f" },
+    ...CITY.DEF,
   };
   const dot = (lat, lon, color, r = 7) => L.circleMarker([lat, lon], { radius: r, color: "#fff", weight: 2, fillColor: color, fillOpacity: 1 });
   const pinMk = (lat, lon, d) => L.marker([lat, lon], { icon: L.divIcon({ className: "", html: `<div class="mpin" style="--c:${d.color}">${I(d.icon, 15)}</div>`, iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -12] }) });
@@ -33,6 +34,7 @@ const LAYERS = (() => {
   /** returns a Leaflet layer; `opts.pins` uses icon pins; `opts.onCount(n)` reports features */
   async function load(key, opts = {}) {
     const d = DEF[key], C = D().centers, mk = (lat, lon) => opts.pins ? pinMk(lat, lon, d) : dot(lat, lon, d.color);
+    if (key in CITY.DEF) { const lay = await CITY.layer(key, (lat, lon, dd) => opts.pins ? pinMk(lat, lon, dd) : dot(lat, lon, dd.color)); opts.onCount?.(lay.getLayers().length); return lay; }
     if (key === "cool") { opts.onCount?.(C.cooling.length); return L.layerGroup(C.cooling.map(c => mk(c.lat, c.lon).bindPopup(`<h4>${U.esc(c.name)}</h4>${U.esc(c.address)}<br><small>${U.esc(c.hours || "")}</small><br><small>Opens on Code Red heat days. Call 311 to confirm.</small><br>${dir(c.lat, c.lon)}`))); }
     if (key === "warm") { const s = C.winter.sites.filter(x => x.lat != null); opts.onCount?.(s.length); return L.layerGroup(s.map(x => mk(x.lat, x.lon).bindPopup(`<h4>${U.esc(x.name)}</h4>${U.esc(x.address)}<br><small>${U.esc(x.hours)}${x.serves && x.serves !== "All" ? ", " + U.esc(x.serves) : ""}</small><br><small>Nov 15 to Mar 15, on cold days. Shelter Hotline 443-984-9540.</small><br>${dir(x.lat, x.lon)}`))); }
     if (key === "foodsites" || key === "snap") {

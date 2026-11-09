@@ -119,17 +119,21 @@
 <!-- ======================= HELP ======================= -->
 <section class="view" id="v-help">
   <div class="pagehead"><h1>Get help</h1><p id="helpIntro"></p></div>
-  <nav class="jumpbar" aria-label="On this page"><span>On this page</span><a href="#help/sec-call">Call now</a><a href="#help/sec-places">Warm and cool places</a><a href="#help/sec-food">Food</a><a href="#help/sec-rights">Your rights</a><a href="#help/sec-programs">Programs</a><a href="#help/sec-water">Water</a><a href="#help/sec-words">Words explained</a></nav>
+  <nav class="jumpbar" aria-label="On this page"><span>On this page</span><a href="#help/sec-call">Call now</a><a href="#help/sec-places">Warm and cool places</a><a href="#help/sec-food">Food</a><a href="#help/sec-rights">Your rights</a><a href="#help/sec-home">Rent and home problems</a><a href="#help/sec-programs">Programs</a><a href="#help/sec-water">Water</a><a href="#help/sec-words">Words explained</a></nav>
   <div id="helpStatus"></div>
   <div class="section-h" id="sec-call"><div><h2>Call now</h2><p class="sub">Tap a green button to call. In an emergency, always call 911.</p></div></div>
   <div class="callgrid" id="helpCalls"></div>
   <div class="section-h" id="sec-places"><div><h2 id="helpPlacesTitle">Places near you</h2><p class="sub" id="helpPlacesSub">Warming and cooling centers, closest first.</p></div><a href="#" data-near>Use my location</a></div>
   <div class="place-list" id="helpPlaces"></div>
+  <div id="helpShelterWrap"><div class="section-h"><div><h3>Overnight shelters (Code Blue)</h3><p class="sub">Open when it's dangerously cold. Closest first, with posted hours.</p></div></div>
+  <div class="place-list" id="helpShelters"></div></div>
   <div class="place-list" id="helpNeighbor" style="margin-top:18px"></div>
   <div class="section-h" id="sec-food"><div><h2>Food help</h2><p class="sub">Free food sites, stores that take SNAP (EBT), and where to find a pantry.</p></div></div>
   <div class="place-list" id="helpFood"><div class="skeleton" style="height:70px"></div></div>
   <div class="section-h" id="sec-rights"><div><h2 id="rightsTitle">Your rights</h2><p class="sub">What landlords and BGE must do, and how to get help paying bills.</p></div></div>
   <div class="rights" id="helpRights"></div>
+  <div class="section-h" id="sec-home"><div><h2>Rent and home problems</h2><p class="sub">Facing eviction, behind on rent, lead paint, rats or a vacant house next door.</p></div></div>
+  <div class="place-list" id="helpHome"></div>
   <div class="section-h" id="sec-programs"><div><h2>Programs that can help</h2><p class="sub">Free trees, energy bill help, flood maps, transit and more.</p></div></div>
   <div class="place-list" id="helpPrograms"></div>
   <div class="section-h" id="sec-water"><div><h2>Water</h2><p class="sub">Tap water notices from the city and harbor water quality.</p></div></div>
@@ -297,6 +301,7 @@ try { if ((localStorage.getItem("ccp.lang") || ((navigator.language || "").toLow
 <script src="js/fx.js?v=__BUILD__"></script>
 <script src="js/layers.js?v=__BUILD__"></script>
 <script src="js/more.js?v=__BUILD__"></script>
+<script src="js/city.js?v=__BUILD__"></script>
 <script src="js/resident.js?v=__BUILD__"></script>
 <script src="js/details.js?v=__BUILD__"></script>
 <script src="js/priority.js?v=__BUILD__"></script>

@@ -15,6 +15,8 @@ const MORE = (() => {
     heat: ["home", "No heat at home?", "Housing Inspection - Utility Systems"],
     flood: ["waves", "Street flooding?", "Flooded Street"],
     basement: ["droplet", "Water in your basement?", "Water in Basement"],
+    rats: ["alert", "Rats or burrows?", "Rat Rubout"],
+    vacant: ["building", "Open or unsafe vacant house?", "Vacant Building"],
   };
   function report(kind) {
     const [ic, q, type] = SR[kind];
@@ -132,9 +134,10 @@ const MORE = (() => {
 
   // ---------- water notices and harbor water quality ----------
   function waterBars() {
-    const w = LIVE.feeds.city.value?.water || []; if (!w.length) return "";
+    const sn = LIVE.snowEmergency(), snowBar = sn ? `<div class="codebar water boil">${tile("car", "#fff")}<div><b>Snow emergency in effect</b><span>No parking on snow emergency routes: $52 ticket and towing. <a href="#map">See the routes</a> · <a href="${U.esc(sn.url)}" target="_blank" rel="noopener">City announcement</a></span></div></div>` : "";
+    const w = LIVE.feeds.city.value?.water || []; if (!w.length) return snowBar;
     const LBL = { boil: "Boil-water advisory", main: "Water main break", outage: "Water service interruption", supply: "Water supply notice" };
-    return w.map(n => `<div class="codebar water ${n.kind}">${tile(n.kind === "boil" ? "alert" : "droplet", "#fff")}<div><b>${LBL[n.kind]}: ${U.esc(n.title)}</b><span>${n.kind === "boil" ? "Boil tap water for 1 minute before drinking or cooking, or use bottled water, until the city lifts the advisory. " : ""}Posted ${new Date(n.posted + "T12:00").toLocaleDateString(LOC(), { month: "long", day: "numeric" })}. <a href="${U.esc(n.url)}" target="_blank" rel="noopener">Department of Public Works notice</a></span></div></div>`).join("");
+    return w.map(n => `<div class="codebar water ${n.kind}">${tile(n.kind === "boil" ? "alert" : "droplet", "#fff")}<div><b>${LBL[n.kind]}: ${U.esc(n.title)}</b><span>${n.kind === "boil" ? "Boil tap water for 1 minute before drinking or cooking, or use bottled water, until the city lifts the advisory. " : ""}Posted ${new Date(n.posted + "T12:00").toLocaleDateString(LOC(), { month: "long", day: "numeric" })}. <a href="${U.esc(n.url)}" target="_blank" rel="noopener">Department of Public Works notice</a></span></div></div>`).join("") + snowBar;
   }
   async function harborSection(el) {
     try {

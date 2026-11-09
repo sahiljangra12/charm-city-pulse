@@ -1,6 +1,13 @@
 /* One consistent line-icon set (24px grid, 1.8 stroke, round caps). Use I("name") or I("name", 20). */
 const I = (() => {
   const P = {
+    book: '<path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H19v15H5.5A1.5 1.5 0 0 0 4 19.5z"/><path d="M4 19.5A1.5 1.5 0 0 0 5.5 21H19v-3"/><path d="M8 7h7"/>',
+    wifi: '<path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.2" r="1.1"/>',
+    car: '<path d="M5 16.5V12l2-5h10l2 5v4.5"/><path d="M3.5 12h17v4.5h-17z"/><circle cx="7.5" cy="18.5" r="1.5"/><circle cx="16.5" cy="18.5" r="1.5"/>',
+    trash: '<path d="M4 6.5h16"/><path d="M9 6.5V4h6v2.5"/><path d="M6 6.5 7 21h10l1-14.5"/><path d="M10 10.5v7M14 10.5v7"/>',
+    broom: '<path d="M20 3 11.5 11.5"/><path d="M11.5 11.5c-2.5-1-5 .5-6 3L3 21l6.5-2.5c2.5-1 4-3.5 3-6z"/><path d="M6 17l2-2"/>',
+    users: '<circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.3A5 5 0 0 1 21 19"/>',
+    clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
     pin: '<path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
     home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
     map: '<path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/>',
