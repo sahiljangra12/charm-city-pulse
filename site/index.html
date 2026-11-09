@@ -175,6 +175,14 @@
   <p class="note" id="bTrendNote"></p>
   <div class="tablewrap"><table id="bTrends" class="btable trends-table"></table></div>
   <p class="note">Each cell shows the change between the first and latest year available, following the trend line where there are four or more years. Red means the change made things harder (for example more heat, less tree canopy, more poverty); green means it eased. Heat: Baltimore Heat Atlas (Landsat summers 2019–2025); satellite surface temperatures depend on which clear summer days were captured each year, so read the heat trend as a signal to look closer, not a precise warming rate. Others: Baltimore Neighborhood Indicators Alliance, Vital Signs.</p>
+  <div class="section-h"><div><h2>By City Council district</h2><p class="sub">The same scores for each of the 14 districts, with how many residents live far from help.</p></div></div>
+  <div id="bDistricts"><div class="skeleton" style="height:120px"></div></div>
+  <div class="section-h"><div><h2>Where need is high and help is far</h2><p class="sub">Neighborhoods with high priority scores and a long trip to the nearest center open this season.</p></div></div>
+  <div id="bEquity"></div>
+  <div class="section-h no-print"><div><h2>What if we opened a center here?</h2><p class="sub">Tap the map to test a site and see how many residents it would bring within a mile.</p></div></div>
+  <div id="bWhatif" class="no-print"></div>
+  <div class="section-h"><div><h2>Change maps</h2><p class="sub">Where things got harder or easier over time.</p></div></div>
+  <div id="bChange"></div>
   <div class="grid g2" style="margin-top:22px">
     <div class="card"><h3>How to read this</h3><ul><li><b>Overall priority</b> is the average of the heat, low-shade, health and social-vulnerability scores, so it highlights places where several pressures stack up.</li><li>These describe neighborhoods, not individual people, and don't prove cause.</li><li>Census figures are survey estimates with margins of error; the full numbers are in Explore and Download.</li></ul></div>
     <div class="card"><h3>Sources in this brief</h3><ul class="small" id="bSources"></ul><p class="note">Charm City Pulse is an independent project by Sahil, Johns Hopkins University. Live version: <span class="mono">sahiljangra12.github.io/charm-city-pulse/#brief</span></p></div>
@@ -236,6 +244,18 @@
   <p class="note">More numbers, places and your rights are on the <a href="#help">Get help</a> page. <button class="linkbtn" data-speak aria-pressed="false"><span>Read aloud</span></button></p>
 </section>
 
+<section class="view" id="v-nb">
+  <div class="pagehead no-print"><h1>Neighborhood brief</h1><p>One printable page per neighborhood, for meetings and community groups.</p></div>
+  <div class="controls no-print"><label for="nbPick" class="muted" style="font-weight:600">Neighborhood</label><select id="nbPick"></select><button class="btn small" onclick="window.print()">Print or save as PDF</button><a class="btn small alt" href="#brief">Back to the City brief</a></div>
+  <div class="card nb" id="nbBody"></div>
+</section>
+
+<section class="view" id="v-methods">
+  <div class="pagehead"><h1>Methods</h1><p>How every score on this site is calculated, in plain words, with the data behind it.</p></div>
+  <nav class="subnav" data-sub></nav>
+  <div id="methodsBody" class="methods"></div>
+</section>
+
 <section class="view" id="v-status">
   <div class="pagehead"><h1>Data health</h1><p>Is every number on this site fresh? This page checks each source and says so in plain words.</p></div>
   <nav class="subnav" data-sub></nav>
@@ -252,6 +272,20 @@
     <div class="card"><h3>Indicator dictionary</h3><p class="muted">Label, unit, direction, source and year for every field.</p><a class="btn alt" href="data/catalog.json" download>Download JSON</a></div>
     <div class="card"><h3>Build record</h3><p class="muted">When each source was last pulled, and from where.</p><a class="btn alt" href="data/meta.json" download>Download JSON</a></div>
   </div>
+  <div class="card" style="margin-top:16px"><h3>Use the data in your own tools</h3><p>Every file is plain JSON or GeoJSON at a stable web address, open to any app or website (no key needed), and rebuilt every morning. Please credit Charm City Pulse and the original sources.</p>
+    <table class="numbers api"><tbody>
+      <tr><td><code>data/tracts.geojson</code></td><td>Census tract boundaries with every indicator, rank and score</td></tr>
+      <tr><td><code>data/csa.json</code></td><td>The 55 neighborhoods (Community Statistical Areas) with every indicator</td></tr>
+      <tr><td><code>data/catalog.json</code></td><td>What each field means: label, unit, direction, source, year</td></tr>
+      <tr><td><code>data/trends.json</code></td><td>Year-by-year neighborhood history (heat, trees, poverty, vacancy, life expectancy, lead)</td></tr>
+      <tr><td><code>data/centers.json</code></td><td>Cooling and warming centers with hours</td></tr>
+      <tr><td><code>data/services.json</code></td><td>Libraries, free Wi-Fi, gardens, drop-off and senior centers, Code Blue shelters</td></tr>
+      <tr><td><code>data/services/*.geojson</code></td><td>Trash days, sweeping areas, snow emergency routes, council districts</td></tr>
+      <tr><td><code>data/food.json</code></td><td>Food distribution sites and SNAP stores</td></tr>
+      <tr><td><code>data/city_alerts.json</code></td><td>Code Blue, Code Red, snow emergency and water notices (checked hourly)</td></tr>
+      <tr><td><code>data/meta.json</code>, <code>data/health.json</code></td><td>When each source was last pulled, and whether the last build worked</td></tr>
+    </tbody></table>
+    <p class="note">Example: <code>fetch("https://sahiljangra12.github.io/charm-city-pulse/data/csa.json")</code>. Methods are on the <a href="#methods">Methods</a> page; code is on <a href="https://github.com/sahiljangra12/charm-city-pulse" target="_blank" rel="noopener">GitHub</a>.</p></div>
   <div class="card" style="margin-top:16px"><h3>Cite this app</h3><p class="mono" id="cite"></p></div>
 </section>
 
@@ -322,6 +356,7 @@ try { if ((localStorage.getItem("ccp.lang") || ((navigator.language || "").toLow
 <script src="js/refs.js?v=__BUILD__"></script>
 <script src="js/brief.js?v=__BUILD__"></script>
 <script src="js/health.js?v=__BUILD__"></script>
+<script src="js/officials.js?v=__BUILD__"></script>
 <script src="js/cinema.js?v=__BUILD__"></script>
 <script src="js/flag.js?v=__BUILD__"></script>
 <script src="js/ease.js?v=__BUILD__"></script>

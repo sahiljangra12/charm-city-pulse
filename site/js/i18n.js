@@ -8,7 +8,7 @@ const I18N = (() => {
   try { lang = localStorage.getItem("ccp.lang") || (navigator.language || "").toLowerCase().startsWith("es") && "es" || "en"; } catch {}
   const es = () => lang === "es";
   const SKIP = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "TEXTAREA", "CODE"]);
-  const ENGLISH_ONLY = "#v-explore,#v-compare,#v-correlate,#v-live,#v-download,#v-refs,#v-about,#v-brief,#v-status,[data-no-i18n],.leaflet-control-attribution";
+  const ENGLISH_ONLY = "#v-explore,#v-compare,#v-correlate,#v-live,#v-download,#v-refs,#v-about,#v-brief,#v-status,#v-nb,#v-methods,[data-no-i18n],.leaflet-control-attribution";
   const miss = new Set();
   const NUM = /\d+(?:[.,]\d+)*/g;
 

@@ -78,7 +78,7 @@ const BRIEF = (() => {
       .map(k => `<li><span>${U.esc(ind[k].label)}</span><b>${U.fmt(r[k], ind[k].decimals, ind[k].unit)}</b></li>`).join("");
     return `<tr class="bdetail"><td colspan="99"><div class="bdetail-in"><ul class="bfacts">${facts}</ul>
       <p class="note">Scores are city ranks from 0 to 100 among residential census tracts, where higher means harder. ${x.farPop ? `About ${Math.round(x.farPop).toLocaleString()} residents here live more than a mile from the nearest center open this season.` : "Every part of this neighborhood is within about a mile of a center open this season."}</p>
-      <a class="btn small alt" href="#compare">Compare with another neighborhood</a></div></td></tr>`;
+      <a class="btn small" href="#nb/${encodeURIComponent(name)}">One-page brief</a> <a class="btn small alt" href="#compare">Compare with another neighborhood</a></div></td></tr>`;
   }
 
   let rowsCache = null;
@@ -88,7 +88,7 @@ const BRIEF = (() => {
     U.$("#bFigures").innerHTML = figures(rows, centers);
     U.$("#bTable").innerHTML = table(rows);
     U.$("#bSeason").textContent = `Nearest center is the straight-line distance from the neighborhood's population-weighted center to the closest of ${centers.list.length} ${centers.label} (${centers.when}).`;
-    trendsTable(rows);
+    trendsTable(rows); OFF.briefExtras();
     const src = m.sources;
     U.$("#bSources").innerHTML = ["acs", "places", "heat", "svi", "trees", centers.kind === "warming" ? "winter" : "cooling"].filter(k => src[k])
       .map(k => `<li>${U.esc(src[k].by)}. <i>${U.esc(src[k].name)}</i>, ${U.esc(src[k].vintage || "")}.</li>`).join("");

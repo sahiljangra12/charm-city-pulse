@@ -76,8 +76,8 @@ const CINEMA = (() => {
   }
 
   // ---------- page banners ----------
-  const BANNER = { guide: "sunrise", brief: "harbor", plan: "plan", place: "block", map: "places", help: "help", explore: "data", compare: "harbor", correlate: "water", live: "hero_night", status: "hero_night", download: "sunrise", refs: "harbor", about: "hero_day" };
-  const EYEBROW = { guide: "Start here", brief: "For city and state staff", plan: "Plan", place: "My block", map: "Map", help: "Help", explore: "Data", compare: "Data", correlate: "Data", live: "Data", status: "Data", download: "Data", refs: "Sources", about: "About" };
+  const BANNER = { guide: "sunrise", brief: "harbor", plan: "plan", place: "block", map: "places", help: "help", explore: "data", compare: "harbor", correlate: "water", live: "hero_night", status: "hero_night", methods: "data", download: "sunrise", refs: "harbor", about: "hero_day" };
+  const EYEBROW = { guide: "Start here", brief: "For city and state staff", plan: "Plan", place: "My block", map: "Map", help: "Help", explore: "Data", compare: "Data", correlate: "Data", live: "Data", status: "Data", methods: "Data", download: "Data", refs: "Sources", about: "About" };
   function banners() {
     Object.entries(BANNER).forEach(([v, img]) => {
       const ph = U.$(`#v-${v} .pagehead`); if (!ph || ph.classList.contains("banner")) return;
@@ -111,7 +111,7 @@ const CINEMA = (() => {
   function menu() {
     const m = U.$("#menu"), b = U.$("#menuBtn");
     const main = [["now", "Get help now"], ["today", "Today"], ["plan", "Plan my day"], ["place", "My block"], ["map", "Map"], ["help", "Get help"], ["guide", "How it works"]];
-    const data = [["brief", "City brief"], ["explore", "Explore"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["status", "Data health"], ["download", "Download"], ["refs", "Sources"], ["about", "About"]];
+    const data = [["brief", "City brief"], ["explore", "Explore"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["status", "Data health"], ["methods", "Methods"], ["download", "Download"], ["refs", "Sources"], ["about", "About"]];
     U.$("#menuNav").innerHTML = `<div class="menu-main">${main.map(([k, t], i) => `<a href="#${k}" style="--i:${i}">${t}</a>`).join("")}</div>
       <div class="menu-sub"><span class="eyebrow">For researchers and officials</span>${data.map(([k, t], i) => `<a href="#${k}" style="--i:${i + 7}">${t}</a>`).join("")}</div>
       <div class="menu-foot" style="--i:14"><button class="xbtn" id="menuAlerts">${I("bell", 16)}<span>Get alerts</span></button><button class="xbtn" data-easy aria-pressed="false">${I("search", 16)}<span>Easy reading</span></button><button class="xbtn" data-speak aria-pressed="false">${I("volume", 16)}<span>Read aloud</span></button><a class="xbtn call" href="tel:311">${I("phone", 16)}<span>Call 311</span></a></div>`;

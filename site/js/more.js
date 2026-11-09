@@ -121,7 +121,7 @@ const MORE = (() => {
     const d = b - a, worse = d * (meta.direction || 1) > 0;
     const fmtV = x => key === "heat" ? U.tC(x, 1) : U.fmt(x, meta.unit === "years" ? 1 : 1, meta.unit === "%" ? "%" : "");
     const fmtD = key === "heat" ? U.tC(Math.abs(d), 1, true) : `${U.fmt(Math.abs(d), 1)}${meta.unit === "%" ? " points" : meta.unit === "years" ? " years" : ""}`;
-    return { y0: ys[0], y1: ys[ys.length - 1], fit: ys.length >= 4, a: fmtV(a), b: fmtV(b), d: Math.abs(d) < 1e-9 ? "no change" : (d > 0 ? "up " : "down ") + fmtD, worse: Math.abs(d) < 1e-9 ? null : worse };
+    return { raw: d, y0: ys[0], y1: ys[ys.length - 1], fit: ys.length >= 4, a: fmtV(a), b: fmtV(b), d: Math.abs(d) < 1e-9 ? "no change" : (d > 0 ? "up " : "down ") + fmtD, worse: Math.abs(d) < 1e-9 ? null : worse };
   }
   async function trendsSection(el, csaName) {
     try {

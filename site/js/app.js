@@ -1,8 +1,8 @@
 /* Core: data, routing, navigation, units, theme, maps, address search, live data-release watcher */
 const APP = (() => {
   const TABS = [["today", "Today", "sun"], ["plan", "Plan", "calendar"], ["place", "My block", "pin"], ["map", "Map", "map"], ["help", "Help", "phone"]];
-  const DATA = [["brief", "City brief"], ["explore", "Explore"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["status", "Data health"], ["download", "Download"], ["refs", "Sources"], ["about", "About"]];
-  const ALL = [...TABS.map(t => t[0]), ...DATA.map(t => t[0]), "guide", "now"];
+  const DATA = [["brief", "City brief"], ["explore", "Explore"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["status", "Data health"], ["methods", "Methods"], ["download", "Download"], ["refs", "Sources"], ["about", "About"]];
+  const ALL = [...TABS.map(t => t[0]), ...DATA.map(t => t[0]), "guide", "now", "nb"];
   const VIEWS = {}; const inited = {};
   const A = { data: null, maps: [], view: null };
 
@@ -196,7 +196,7 @@ const APP = (() => {
       }
     }
     stamp();
-    Object.assign(VIEWS, RES.views, PLAN.views, RSC.views, REFS.views, BRIEF.views, HEALTH.views, EASE.views);
+    Object.assign(VIEWS, RES.views, PLAN.views, RSC.views, REFS.views, BRIEF.views, HEALTH.views, EASE.views, OFF.views);
     ALERTS.init(); segThumbs(); parallax();
     route.first = true;
     addEventListener("hashchange", () => {

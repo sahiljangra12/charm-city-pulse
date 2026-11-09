@@ -418,3 +418,19 @@ details.howto ul{margin:8px 0 2px;padding-left:20px;line-height:1.55}
 /* accessibility: readable error text, focusable scrolling tables */
 .status.err{color:#ff8a92}
 .tablewrap:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* officials */
+.kpis.small .kpi b{font-size:1.6rem}
+.whatif-out{margin-top:10px}
+.nb .nb-head{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--accent);padding-bottom:10px;margin-bottom:12px}
+.nb h2{margin:2px 0 4px}.nb h3{margin:16px 0 6px;font-size:1rem}.nb-prio{display:grid;gap:4px;min-width:220px}
+.nb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:20px}
+.nb .numbers td.worse{color:#ff8f73}.nb .numbers td.better{color:#5fd39a}
+.nb-list{margin:0;padding-left:18px;line-height:1.55}
+.methods .card{margin-bottom:14px}.methods ol.steps{line-height:1.6;padding-left:20px}
+table.api td{vertical-align:top}table.api code{white-space:nowrap}
+@media print{.no-print{display:none!important}.nb{border:0;box-shadow:none}.nb .numbers td.worse{color:#b3261e}.nb .numbers td.better{color:#17703f}}
+table.api code{white-space:normal;word-break:break-all}table.api{width:100%}
+.methods,.methods a,.nb{overflow-wrap:anywhere}
+.nb .numbers{width:100%}.nb .numbers td{white-space:normal}.nb .numbers td.n{white-space:nowrap}
+@media (max-width:520px){.nb .numbers td.muted{display:none}.nb-prio{min-width:0}}
