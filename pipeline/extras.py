@@ -143,6 +143,12 @@ SERIES = {   # key: (BNIA service, field prefix, label, unit, direction: +1 mean
     "life_exp": ("Lifexp", "lifexp", "Life expectancy", "years", -1),
     "lead": ("Ebll", "ebll", "Children tested with elevated blood lead", "%", 1),
 }
+# Neighborhoods (Community Statistical Areas) renamed between the 2010 and 2020 boundaries; older BNIA series use 2010 names
+RENAMED = {"Claremont/Armistead": "Orchard Ridge/Armistead", "Greenmount East": "Oliver/Johnston Square", "Harford/Echodale": "Hamilton Hills",
+           "Lauraville": "Greater Lauraville", "Medfield/Hampden/Woodberry/Remington": "Hampden/Remington",
+           "Orangeville/East Highlandtown": "Greektown/Bayview", "Washington Village/Pigtown": "Pigtown/Carroll Park"}
+
+
 def trends():
     out = {"updated": NOW.isoformat(timespec="minutes"), "series": {}, "csa": {}}
     # heat from the Baltimore Heat Atlas: population-weighted per neighborhood, each summer
@@ -164,7 +170,7 @@ def trends():
         try:
             j = jget(BNIA.format(svc, "false"))
             for f in j.get("features", []):
-                a = f["attributes"]; csa = a.get("CSA2010") or a.get("CSA2020")
+                a = f["attributes"]; csa = a.get("CSA2020") or RENAMED.get(a.get("CSA2010"), a.get("CSA2010"))
                 vals = {}
                 for k, v in a.items():
                     m = re.fullmatch(pre + r"(\d\d)", k)
