@@ -99,7 +99,8 @@ const BRIEF = (() => {
     const keys = MORE.TREND_ORDER.filter(k => T.series[k]);
     const key = S.rank, list = rows.filter(x => x.score(key) != null).sort((a, b) => b.score(key) - a.score(key)).slice(0, S.n || 99);
     let up = 0, n = 0;
-    Object.values(T.csa).forEach(c => { if (c.heat) { const ch = MORE.change("heat", c.heat, T.series.heat); if (ch) { n++; if (ch.worse) up++; } } });
+    const real = new Set(D().csa.map(r => r.name));
+    Object.entries(T.csa).filter(([n]) => real.has(n)).map(([, c]) => c).forEach(c => { if (c.heat) { const ch = MORE.change("heat", c.heat, T.series.heat); if (ch) { n++; if (ch.worse) up++; } } });
     U.$("#bTrendNote").textContent = n ? `Summer surface heat rose in ${up} of ${n} neighborhoods between ${Object.keys(Object.values(T.csa).find(c => c.heat).heat).sort()[0]} and the latest summer. Listed in the same order as the table above.` : "";
     U.$("#bTrends").innerHTML = `<thead><tr><th>Neighborhood</th>${keys.map(k => `<th>${U.esc(T.series[k].label)}</th>`).join("")}</tr></thead><tbody>` +
       list.map(x => { const c = T.csa[x.r.name] || {};
