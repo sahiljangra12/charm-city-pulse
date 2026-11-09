@@ -13,7 +13,7 @@ const RSC = (() => {
     if (!i.uncertainty) return null; const u = p[i.key + (i.uncertainty === "moe90" ? "_moe" : "_se")], v = p[i.key];
     if (u == null || !v) return null; return (i.uncertainty === "moe90" ? u / 1.645 : u) / Math.abs(v);
   }
-  const uLab = i => i.uncertainty === "se" ? "SE" : "MOE (90%)";
+  const uLab = i => i.uncertainty === "se" ? "± standard error" : "± margin of error";
   const uKey = i => i.key + (i.uncertainty === "se" ? "_se" : "_moe");
 
   // ---------------- EXPLORER ----------------
@@ -39,7 +39,7 @@ const RSC = (() => {
     if (p.nonres) return `<b>${U.esc(p.name)}</b><br>${U.esc(p.nonres)}`;
     if (S.geo === "csa") { const c = D().csaByName[p.csa]; if (!c) return U.esc(p.csa || "—"); return `<b>${U.esc(c.name)}</b> (neighborhood)<br>${U.esc(i.label)}: <b>${U.fmt(c[S.key], i.decimals, i.unit)}</b><br>City percentile: ${U.fmt(c["pc_" + S.key], 0)}`; }
     const c = cv(p, i);
-    return `<b>${U.esc(p.csa)}</b> · ${U.esc(p.name)}<br>${U.esc(i.label)}: <b>${U.fmt(p[S.key], i.decimals, i.unit)}</b>${p[uKey(i)] != null ? ` (${uLab(i)} ${U.fmt(p[uKey(i)], i.decimals)})` : ""}${c != null && c > .3 ? '<br><span class="flag">Low reliability (CV > 30%)</span>' : ""}<br>City percentile (burden): ${U.fmt(p["pc_" + S.key], 0)}`;
+    return `<b>${U.esc(p.csa)}</b> · ${U.esc(p.name)}<br>${U.esc(i.label)}: <b>${U.fmt(p[S.key], i.decimals, i.unit)}</b>${p[uKey(i)] != null ? ` (${uLab(i)} ${U.fmt(p[uKey(i)], i.decimals)})` : ""}${c != null && c > .3 ? '<br><span class="flag">Rough estimate: large margin of error</span>' : ""}<br>City rank (100 = hardest): ${U.fmt(p["pc_" + S.key], 0)}`;
   }
   function exRender() {
     const i = D().ind[S.key], rows = rowsFor();
@@ -57,7 +57,7 @@ const RSC = (() => {
     U.$("#exStats").innerHTML = st.map(([k, v]) => `<div><div class="kicker" style="margin:0">${k}</div><b style="font-family:var(--display);font-size:1.25rem">${k === "Areas" ? v : U.fmt(v, i.decimals, i.unit)}</b></div>`).join("");
     const flagged = rows.filter(r => r.cv != null && r.cv > .3).length;
     U.$("#exMoe").innerHTML = (i.direction > 0 ? "Higher values mean more burden. " : i.direction < 0 ? "Higher values are better. " : "Context variable with no better or worse direction. ") +
-      (i.uncertainty && rows.some(r => r.moe != null) ? `${flagged} of ${rows.length} areas have a coefficient of variation above 30% (marked in the table). ` : i.uncertainty ? "No margin of error is available at this geography. " : "") +
+      (i.uncertainty && rows.some(r => r.moe != null) ? `${flagged} of ${rows.length} areas are rough estimates with a large margin of error (marked ⓘ in the table). ` : i.uncertainty ? "No margin of error is available at this geography. " : "") +
       (S.geo === "csa" && i.source === "acs" ? (i.key === "median_income" ? `Neighborhood median income: ${D().csa[0]?.median_income_method || "approximate"}. ` : D().csa[0]?.[i.key + "_moe"] != null ? "Neighborhood shares are recomputed from pooled tract counts. " : "Neighborhood values are population-weighted averages of tracts. ") : "") +
       (i.level === "csa" && S.geo === "tract" ? "This measure exists only at neighborhood level." : "") + ` ${D().meta.nonres ? Object.keys(D().meta.nonres).length + " non-residential tracts are excluded." : ""}`;
     const lo = Math.min(...vals), hi = Math.max(...vals), nb = 20, w = (hi - lo) / nb || 1;
@@ -76,7 +76,7 @@ const RSC = (() => {
     const { col, dir } = S.sort; rows.sort((a, b) => { const x = a[col], y = b[col]; if (x == null) return 1; if (y == null) return -1; return (typeof x === "string" ? x.localeCompare(y) : x - y) * dir; });
     const th = (c, t, num) => `<th data-col="${c}" class="${num ? "num" : ""}">${t}${S.sort.col === c ? (S.sort.dir > 0 ? " ▲" : " ▼") : ""}</th>`;
     const showU = !!i.uncertainty;
-    U.$("#exTable").innerHTML = `<thead><tr>${th("name", S.geo === "csa" ? "Neighborhood" : "Tract")}${S.geo === "tract" ? th("csa", "Neighborhood") : ""}${th("v", U.esc(i.label), 1)}${showU ? th("moe", uLab(i), 1) : ""}${th("pc", "Percentile", 1)}${th("pop", "Population", 1)}</tr></thead><tbody>` +
+    U.$("#exTable").innerHTML = `<thead><tr>${th("name", S.geo === "csa" ? "Neighborhood" : "Tract")}${S.geo === "tract" ? th("csa", "Neighborhood") : ""}${th("v", U.esc(i.label), 1)}${showU ? th("moe", uLab(i), 1) : ""}${th("pc", "City rank", 1)}${th("pop", "Population", 1)}</tr></thead><tbody>` +
       rows.map(r => `<tr data-id="${U.esc(r.id)}"><td>${U.esc(r.name)}</td>${S.geo === "tract" ? `<td>${U.esc(r.csa)}</td>` : ""}<td class="num">${U.fmt(r.v, i.decimals, i.unit)}${r.cv > .3 ? ` <span class="flag" title="Low reliability: the margin of error is large compared with the estimate (coefficient of variation above 30%)" aria-label="Low reliability estimate">${I("info", 15)}</span>` : ""}</td>${showU ? `<td class="num">${U.fmt(r.moe, i.decimals)}</td>` : ""}<td class="num">${U.fmt(r.pc, 0)}</td><td class="num">${U.fmt(r.pop, 0)}</td></tr>`).join("") + "</tbody>";
     U.$$("#exTable th").forEach(h => h.onclick = () => { const c = h.dataset.col; S.sort = { col: c, dir: S.sort.col === c ? -S.sort.dir : (c === "name" || c === "csa" ? 1 : -1) }; exTable(); });
     U.$$("#exTable tbody tr").forEach(tr => tr.onclick = () => {

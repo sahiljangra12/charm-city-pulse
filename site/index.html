@@ -59,6 +59,7 @@
     </div>
     <a class="scrollcue" href="#prioAnchor" aria-label="Scroll to what matters right now"><span>Scroll</span><i></i></a>
   </div>
+  <div class="helpnow-bar"><a class="helpnow" href="#now"><i data-icon="alert"></i><span><b>Need help right now?</b> Shelter, food, a warm place, 911</span></a><button class="xbtn" data-speak aria-pressed="false"><i data-icon="volume"></i><span>Read aloud</span></button></div>
   <div id="hWelcome"></div>
   <div id="prioAnchor"></div>
   <div class="section-h prio-h"><div><h2>What matters right now</h2><p class="sub" id="hPrioSub">Checking the forecast, air and warnings</p></div><span class="livetag"><span class="livedot"></span>Live</span></div>
@@ -102,6 +103,7 @@
 <section class="view" id="v-place">
   <div class="pagehead"><h1>Check your block</h1><p>Type an address, use your location, or tap the map to see summer heat, flood risk and the nearest help.</p></div>
   <form class="search" data-geo autocomplete="off"></form>
+  <div id="pSaved"></div>
   <p class="note" id="pMsg"></p>
   <div id="pBody"></div>
   <div class="mapbox short" id="pMap" style="margin-top:18px"></div>
@@ -119,7 +121,7 @@
 <!-- ======================= HELP ======================= -->
 <section class="view" id="v-help">
   <div class="pagehead"><h1>Get help</h1><p id="helpIntro"></p></div>
-  <nav class="jumpbar" aria-label="On this page"><span>On this page</span><a href="#help/sec-call">Call now</a><a href="#help/sec-places">Warm and cool places</a><a href="#help/sec-food">Food</a><a href="#help/sec-rights">Your rights</a><a href="#help/sec-home">Rent and home problems</a><a href="#help/sec-programs">Programs</a><a href="#help/sec-water">Water</a><a href="#help/sec-words">Words explained</a></nav>
+  <nav class="jumpbar" aria-label="On this page"><span>On this page</span><a href="#help/sec-call">Call now</a><a href="#help/sec-places">Warm and cool places</a><a href="#help/sec-food">Food</a><a href="#help/sec-rights">Your rights</a><a href="#help/sec-home">Rent and home problems</a><a href="#help/sec-programs">Programs</a><a href="#help/sec-water">Water</a><a href="#help/sec-words">Words explained</a><button class="linkbtn" data-speak aria-pressed="false"><span>Read aloud</span></button></nav>
   <div id="helpStatus"></div>
   <div class="section-h" id="sec-call"><div><h2>Call now</h2><p class="sub">Tap a green button to call. In an emergency, always call 911.</p></div></div>
   <div class="callgrid" id="helpCalls"></div>
@@ -181,8 +183,9 @@
 
 <!-- ======================= DATA ======================= -->
 <section class="view" id="v-explore">
-  <div class="pagehead"><h1>Explore the data</h1><p>Every indicator behind the app, for every census tract and neighborhood.</p></div>
+  <div class="pagehead"><h1>Explore the data</h1><p>Pick one measure, like summer heat or asthma, and see it on a map and in a ranked list for every part of the city.</p></div>
   <nav class="subnav" data-sub></nav>
+  <details class="howto"><summary>How to read this page</summary><ul><li><b>Tracts</b> are small census areas of about 2,000 to 6,000 people. <b>Neighborhoods</b> are the city's 55 larger community areas.</li><li><b>City rank</b> (percentile) compares an area with the rest of Baltimore: 90 means it has it harder than 90% of the city on that measure.</li><li><b>±</b> is the margin of error. Survey numbers for small areas are estimates; the true value is very likely within that range.</li><li>The <b>ⓘ</b> icon marks estimates with a large margin of error compared with the number itself. Treat those as rough.</li><li>Click a column name to sort the table. Darker map colors mean harder conditions.</li></ul></details>
   <div class="controls">
     <select id="exInd" aria-label="Indicator"></select>
     <div class="seg sq" role="group" aria-label="Unit"><button data-ex="value" aria-pressed="true">Value</button><button data-ex="pc" aria-pressed="false">City rank</button></div>
@@ -199,16 +202,18 @@
 </section>
 
 <section class="view" id="v-compare">
-  <div class="pagehead"><h1>Compare two places</h1><p>Side by side on every indicator.</p></div>
+  <div class="pagehead"><h1>Compare two places</h1><p>Choose two neighborhoods or tracts and see where each one has it harder or easier.</p></div>
   <nav class="subnav" data-sub></nav>
+  <details class="howto"><summary>How to read this page</summary><ul><li>Each score runs from 0 to 100 and compares a place with the rest of Baltimore. Higher means harder.</li><li>On the chart, the shape that reaches farther out is the place with the bigger challenge on that topic.</li><li>The table below lists every measure, so you can see what drives each score.</li></ul></details>
   <div class="controls"><select id="cmpA" aria-label="First place"></select><span class="muted">and</span><select id="cmpB" aria-label="Second place"></select></div>
   <div class="grid g2" style="margin-bottom:16px"><div class="card"><div class="label">Scores (higher means harder)</div><div class="chartbox"><canvas id="cmpRadar"></canvas></div></div><div class="card" id="cmpNotes"></div></div>
   <div class="tablewrap"><table id="cmpTable"></table></div>
 </section>
 
 <section class="view" id="v-correlate">
-  <div class="pagehead"><h1>How things relate</h1><p>Plot any two indicators across Baltimore's census tracts.</p></div>
+  <div class="pagehead"><h1>How things relate</h1><p>Do hotter areas also have more asthma? Pick two measures and see whether they rise and fall together across the city.</p></div>
   <nav class="subnav" data-sub></nav>
+  <details class="howto"><summary>How to read this page</summary><ul><li>Each dot is one census tract. Across is the first measure, up is the second.</li><li>If the dots form a line going up to the right, places with more of one tend to have more of the other.</li><li><b>r</b> runs from −1 to 1. Near 0 means no clear link; near 1 or −1 means a strong one.</li><li>A link doesn't prove one thing causes the other. Both can come from something else, like income or the age of housing.</li><li>Redlining colors show the grades the federal government gave neighborhoods in 1937, which still shape the city today.</li></ul></details>
   <div class="controls"><label>Across <select id="cx"></select></label><label>Up <select id="cy"></select></label><label class="chk"><input type="checkbox" id="cHolc"> Color by 1937 redlining grade</label></div>
   <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))">
     <div class="card" style="grid-column:1/-1;min-width:0"><div class="chartbox tall"><canvas id="cChart"></canvas></div></div>
@@ -223,6 +228,12 @@
   <div class="section-h"><h2>Data releases in this build</h2></div><div class="tablewrap"><table id="releaseTable"></table></div>
   <div class="section-h"><h2>Stream gauges</h2></div><div class="tablewrap"><table id="gaugeTable"></table></div>
   <div class="section-h"><h2>Air-quality monitors</h2></div><div class="tablewrap"><table id="monitorTable"></table></div>
+</section>
+
+<section class="view" id="v-now">
+  <div class="pagehead"><h1>Get help now</h1><p>Tap a button to call or get directions. In an emergency, always call 911.</p></div>
+  <div class="nowlist" id="nowList"></div>
+  <p class="note">More numbers, places and your rights are on the <a href="#help">Get help</a> page. <button class="linkbtn" data-speak aria-pressed="false"><span>Read aloud</span></button></p>
 </section>
 
 <section class="view" id="v-status">
@@ -266,7 +277,7 @@
 </section>
 
 </main>
-<footer><div class="wrap footflag"><canvas class="flagwave" id="footFlag" width="150" height="100" aria-hidden="true"></canvas><p>Independent project by Sahil, Johns Hopkins University.</p></div><div class="wrap"><span>Charm City Pulse · Public data from the U.S. Census Bureau, CDC, EPA, NOAA's National Weather Service, USGS, FEMA, Open-Meteo, OpenStreetMap and Baltimore City.</span><a href="#guide">How it works</a><a href="#brief">City brief</a><a href="#explore">Data</a><a href="#refs">Sources</a><a href="#about">About</a><a href="privacy.html">Privacy</a><button class="linkbtn" data-easy aria-pressed="false">Easy reading</button><span id="buildStamp"></span></div></footer>
+<footer><div class="wrap footflag"><canvas class="flagwave" id="footFlag" width="150" height="100" aria-hidden="true"></canvas><p>Independent project by Sahil, Johns Hopkins University.</p></div><div class="wrap"><span>Charm City Pulse · Public data from the U.S. Census Bureau, CDC, EPA, NOAA's National Weather Service, USGS, FEMA, Open-Meteo, OpenStreetMap and Baltimore City.</span><a href="#guide">How it works</a><a href="#brief">City brief</a><a href="#explore">Data</a><a href="#refs">Sources</a><a href="#about">About</a><a href="privacy.html">Privacy</a><a href="flyer.html">Printable flyer</a><button class="linkbtn" data-mistake>Report a mistake</button><span data-langs></span><button class="linkbtn" data-easy aria-pressed="false">Easy reading</button><span id="buildStamp"></span></div></footer>
 
 <nav class="appbar" id="appbar" aria-label="App"></nav>
 
@@ -299,9 +310,9 @@ try { if ((localStorage.getItem("ccp.lang") || ((navigator.language || "").toLow
 <script src="js/i18n.js?v=__BUILD__"></script>
 <script src="js/live.js?v=__BUILD__"></script>
 <script src="js/fx.js?v=__BUILD__"></script>
+<script src="js/city.js?v=__BUILD__"></script>
 <script src="js/layers.js?v=__BUILD__"></script>
 <script src="js/more.js?v=__BUILD__"></script>
-<script src="js/city.js?v=__BUILD__"></script>
 <script src="js/resident.js?v=__BUILD__"></script>
 <script src="js/details.js?v=__BUILD__"></script>
 <script src="js/priority.js?v=__BUILD__"></script>
@@ -313,6 +324,7 @@ try { if ((localStorage.getItem("ccp.lang") || ((navigator.language || "").toLow
 <script src="js/health.js?v=__BUILD__"></script>
 <script src="js/cinema.js?v=__BUILD__"></script>
 <script src="js/flag.js?v=__BUILD__"></script>
+<script src="js/ease.js?v=__BUILD__"></script>
 <script src="js/app.js?v=__BUILD__"></script>
 </body>
 </html>

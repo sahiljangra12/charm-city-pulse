@@ -2,7 +2,7 @@
 const APP = (() => {
   const TABS = [["today", "Today", "sun"], ["plan", "Plan", "calendar"], ["place", "My block", "pin"], ["map", "Map", "map"], ["help", "Help", "phone"]];
   const DATA = [["brief", "City brief"], ["explore", "Explore"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["status", "Data health"], ["download", "Download"], ["refs", "Sources"], ["about", "About"]];
-  const ALL = [...TABS.map(t => t[0]), ...DATA.map(t => t[0]), "guide"];
+  const ALL = [...TABS.map(t => t[0]), ...DATA.map(t => t[0]), "guide", "now"];
   const VIEWS = {}; const inited = {};
   const A = { data: null, maps: [], view: null };
 
@@ -180,7 +180,7 @@ const APP = (() => {
   }
 
   async function start() {
-    buildNav(); CINEMA.init(); I18N.init();
+    buildNav(); CINEMA.init(); I18N.init(); EASE.init();
     MORE.easy(); document.addEventListener("click", e => { const b = e.target.closest("[data-easy]"); if (b) MORE.easy(!document.documentElement.classList.contains("easy")); });
     U.$$("canvas.flagwave").forEach(c => FLAG.mount(c, c.id === "footFlag" ? { pole: true } : { amp: 0.09, speed: 0.8 }));
     U.$$("[data-unit]").forEach(b => b.onclick = () => setUnit(b.dataset.unit)); setUnit(U.unit());
@@ -194,7 +194,7 @@ const APP = (() => {
       }
     }
     stamp();
-    Object.assign(VIEWS, RES.views, PLAN.views, RSC.views, REFS.views, BRIEF.views, HEALTH.views);
+    Object.assign(VIEWS, RES.views, PLAN.views, RSC.views, REFS.views, BRIEF.views, HEALTH.views, EASE.views);
     ALERTS.init(); segThumbs(); parallax();
     route.first = true;
     addEventListener("hashchange", () => {

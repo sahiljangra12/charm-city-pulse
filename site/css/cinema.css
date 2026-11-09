@@ -392,3 +392,25 @@ html.easy .hero .why,html.easy .banner-in p{opacity:1!important;color:#fff!impor
 .openb .ic{width:14px;height:14px}
 .place.svc b{line-height:1.3}
 .place.warnrow{border-color:var(--s4);background:color-mix(in srgb,var(--s4) 8%,var(--surface))}
+
+/* plain-language helpers */
+details.howto{margin:0 0 16px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+details.howto summary{cursor:pointer;font-weight:600}
+details.howto ul{margin:8px 0 2px;padding-left:20px;line-height:1.55}
+
+/* help now + ease */
+.helpnow-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:14px 0 4px}
+.helpnow{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:14px;background:var(--red,#c62828);color:#fff;text-decoration:none;font-size:1rem;flex:1 1 280px}
+.helpnow .ic{width:22px;height:22px;flex:none}.helpnow b{margin-right:4px}
+.nowlist{display:grid;gap:12px;margin:8px 0 18px}
+.nowbtn{display:flex;align-items:center;gap:16px;padding:18px;border-radius:18px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-decoration:none;min-height:84px}
+.nowbtn b{display:block;font-size:1.22rem;line-height:1.25}.nowbtn small{display:block;color:var(--ink-2);font-size:.98rem;margin-top:3px}
+.nowbtn > span:nth-child(2){flex:1}.nowbtn.urgent{border-color:var(--red,#c62828);background:color-mix(in srgb,var(--red,#c62828) 9%,var(--surface))}
+.nowbtn .tile{width:52px;height:52px;flex:none}
+.saved{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}.savewrap{display:inline-flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chipbtn.small{padding:5px 11px;font-size:.88rem}
+.langmenu{display:inline-block;position:relative}.langmenu summary{cursor:pointer;display:inline-flex;gap:6px;align-items:center;list-style:none}
+.langmenu summary::-webkit-details-marker{display:none}
+.langmenu > div{position:absolute;bottom:130%;left:0;z-index:30;min-width:230px;display:grid;gap:2px;padding:8px;border-radius:12px;background:var(--surface);border:1px solid var(--line);box-shadow:0 8px 28px rgba(0,0,0,.18)}
+.langmenu a{padding:6px 8px;border-radius:8px}.langmenu small{padding:6px 8px;color:var(--ink-2)}
+@media print{.helpnow-bar,[data-speak]{display:none!important}}

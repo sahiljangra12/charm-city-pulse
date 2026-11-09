@@ -49,6 +49,14 @@ const ALERTS = (() => {
     if (!enabled()) return; const P = prefs();
     const AL = LIVE.feeds.alerts.value || [];
     if (P.nws) AL.forEach(a => once("nws:" + (a.id || a.event + a.onset), a.event, a.headline || "Active for Baltimore. Open Charm City Pulse for details."));
+    const C = LIVE.feeds.city.value;
+    if (C) {
+      const blue = LIVE.cityAlert("blue"), red = LIVE.cityAlert("red"), sn = LIVE.snowEmergency();
+      if (P.cold && blue) once("codeblue:" + blue.posted, "Code Blue in Baltimore", "Extreme cold alert. Shelters are open: Shelter Hotline 443-984-9540.");
+      if (P.heat && red) once("codered:" + red.posted, "Code Red in Baltimore", "Extreme heat alert. Cooling centers are open. Call 311 for the closest one.");
+      if (P.nws && sn) once("snow:" + sn.posted, "Snow emergency declared", "Move cars off snow emergency routes: $52 ticket and towing.");
+      if (P.nws) (C.water || []).filter(n => n.kind === "boil").forEach(n => once("boil:" + n.posted, "Boil-water advisory", n.title));
+    }
     const aq = RES.aqiNow().aqi;
     if (P.air && aq != null && aq > 100) once("air", "Air is " + LIVE.aqiCat(aq).t.toLowerCase(), LIVE.aqiCat(aq).tip);
     const c = LIVE.feeds.weather.value?.current;
@@ -67,7 +75,7 @@ const ALERTS = (() => {
     sh.addEventListener("touchmove", e => { if (y0 == null) return; const dy = e.touches[0].clientY - y0; if (dy > 0) sh.style.transform = `translate(-50%,${dy}px)`; }, { passive: true });
     sh.addEventListener("touchend", e => { if (y0 == null) return; const dy = e.changedTouches[0].clientY - y0; sh.style.transform = ""; y0 = null; if (dy > 110) close(); });
     sync();
-    ["alerts", "weather", "air", "airnow"].forEach(k => LIVE.feeds[k].on(check));
+    ["alerts", "weather", "air", "airnow", "city"].forEach(k => LIVE.feeds[k].on(check));
   }
   return { init, open };
 })();

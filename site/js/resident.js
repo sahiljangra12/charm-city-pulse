@@ -181,7 +181,7 @@ const RES = (() => {
     const body = U.$("#pBody"), m = U.$("#pMsg"); m.style.color = "";
     if (!id && userLoc) id = APP.tractAt(userLoc.lat, userLoc.lon);
     if (!id || !D().byId[id]) {
-      m.textContent = "";
+      m.textContent = ""; EASE.savedBar(U.$("#pSaved"), null);
       body.innerHTML = `<div class="myarea" style="margin-top:6px"><div style="display:flex;gap:14px;align-items:center">${tile("locate", "var(--link)")}<div><b>No address yet</b><br><span class="muted">Search above, tap the map below, or let your phone find you.</span></div></div><button class="btn" id="pLocate">Use my location</button></div>`;
       U.$("#pLocate").onclick = () => U.$("#v-place [data-locate]").click(); return;
     }
@@ -189,6 +189,7 @@ const RES = (() => {
     const pt = pending || (userLoc && APP.tractAt(userLoc.lat, userLoc.lon) === id ? userLoc : null); pending = null;
     const c = APP.centroid(f), here = pt ? [pt.lat, pt.lon] : [c[1], c[0]];
     m.textContent = pt && pt.label ? "Showing " + pt.label : "";
+    EASE.savedBar(U.$("#pSaved"), pt);
     const cards = centersNear(here[0], here[1]).map(placeCard).join("");
     const floodBox = `<div class="flood" id="pFlood">${tile("waves", "var(--link)")}<div><b>Checking flood risk</b></div></div>`;
     if (p.nonres) {
@@ -201,7 +202,7 @@ const RES = (() => {
       let top3 = worst.filter(k => lv(k) >= 3).slice(0, 3); top3 = [...top3, ...["heat", "trees", "health"].filter(k => !top3.includes(k))].slice(0, 3);
       const unsure = Object.keys(THEMES).some(k => p["u_" + k]);
       const J = (k, t) => `<a href="#place/${id}/${k}">${t}</a>`;
-      body.innerHTML = `<nav class="jumpbar" aria-label="On this page"><span>On this page</span>${J("sec-summary", "Summary")}${J("sec-help", "Closest help")}${J("sec-services", "Trash & services")}${J("sec-food", "Food")}${J("sec-transit", "Buses")}${J("sec-trends", "Changes")}${J("sec-numbers", "All numbers")}</nav>
+      body.innerHTML = `<nav class="jumpbar" aria-label="On this page"><span>On this page</span>${J("sec-summary", "Summary")}${J("sec-help", "Closest help")}${J("sec-services", "Trash & services")}${J("sec-food", "Food")}${J("sec-transit", "Buses")}${J("sec-trends", "Changes")}${J("sec-numbers", "All numbers")}<button class="linkbtn" data-speak aria-pressed="false"><span>Read aloud</span></button></nav>
         <div class="area-hero" id="sec-summary">
         <div class="card"><span class="muted" style="font-size:.92rem">Your neighborhood</span><div class="area-title">${U.esc(p.csa)}</div>
           <p class="summary">${U.esc(sum.join(" and "))}.</p>${floodBox}</div>
@@ -404,5 +405,5 @@ const RES = (() => {
     map: { init: mapInit, reload() { shade.clearLayers(); shade.addData(D().tracts); paint(U.$("#mapColor").value); } },
     help: { show: helpShow },
     guide: { show: () => { U.$("#guideList").innerHTML = MORE.guide(); } },
-  }, short, aqiNow, level, THEMES, tile };
+  }, short, aqiNow, level, THEMES, tile, pick };
 })();
