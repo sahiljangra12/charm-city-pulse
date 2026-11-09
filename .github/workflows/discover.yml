@@ -1,0 +1,10 @@
+name: Discover data sources (one-off)
+on: workflow_dispatch
+permissions: { contents: read }
+jobs:
+  d:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 pipeline/discover.py
