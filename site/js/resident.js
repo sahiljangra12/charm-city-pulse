@@ -258,6 +258,7 @@ const RES = (() => {
     const SETS = [["Stay safe", ["centers", "flood", "air", "sensors", "streams"]], ["Everyday places", ["foodhelp", "parks", "fountains", "food", "recycling", "harbor"]], ["Getting around", ["stops", "transit", "ev"]]];
     U.$("#mapChips").innerHTML = SETS.map(([t, ks]) => `<div class="chipset"><span class="chipset-t">${t}</span><div class="chips-in">${ks.map(k => GROUPS.find(g => g[0] === k)).filter(Boolean).map(chip).join("")}</div></div>`).join("");
     U.$$("#mapChips .chipbtn").forEach(b => b.onclick = () => toggleGroup(b));
+    MORE.sensors().then(s => { if (!s.length) U.$('[data-g="sensors"]')?.remove(); });   // only offer the button when sensors are reporting
     map.on("click", e => mapClick(e.latlng));
     toggleGroup(U.$('[data-g="centers"]'));
   }
