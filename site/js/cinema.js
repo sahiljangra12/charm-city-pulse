@@ -76,8 +76,8 @@ const CINEMA = (() => {
   }
 
   // ---------- page banners ----------
-  const BANNER = { brief: "harbor", plan: "plan", place: "block", map: "places", help: "help", explore: "data", compare: "harbor", correlate: "water", live: "hero_night", download: "sunrise", refs: "harbor", about: "hero_day" };
-  const EYEBROW = { brief: "For city and state staff", plan: "Plan", place: "My block", map: "Map", help: "Help", explore: "Data", compare: "Data", correlate: "Data", live: "Data", download: "Data", refs: "Sources", about: "About" };
+  const BANNER = { guide: "sunrise", brief: "harbor", plan: "plan", place: "block", map: "places", help: "help", explore: "data", compare: "harbor", correlate: "water", live: "hero_night", download: "sunrise", refs: "harbor", about: "hero_day" };
+  const EYEBROW = { guide: "Start here", brief: "For city and state staff", plan: "Plan", place: "My block", map: "Map", help: "Help", explore: "Data", compare: "Data", correlate: "Data", live: "Data", download: "Data", refs: "Sources", about: "About" };
   function banners() {
     Object.entries(BANNER).forEach(([v, img]) => {
       const ph = U.$(`#v-${v} .pagehead`); if (!ph || ph.classList.contains("banner")) return;
@@ -110,10 +110,10 @@ const CINEMA = (() => {
   // ---------- full-screen menu ----------
   function menu() {
     const m = U.$("#menu"), b = U.$("#menuBtn");
-    const main = [["today", "Today"], ["plan", "Plan my day"], ["place", "My block"], ["map", "Map"], ["help", "Get help"]];
+    const main = [["today", "Today"], ["plan", "Plan my day"], ["place", "My block"], ["map", "Map"], ["help", "Get help"], ["guide", "How it works"]];
     const data = [["brief", "City brief"], ["explore", "Explore"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["download", "Download"], ["refs", "Sources"], ["about", "About"]];
     U.$("#menuNav").innerHTML = `<div class="menu-main">${main.map(([k, t], i) => `<a href="#${k}" style="--i:${i}">${t}</a>`).join("")}</div>
-      <div class="menu-sub"><span class="eyebrow">Data</span>${data.map(([k, t], i) => `<a href="#${k}" style="--i:${i + 5}">${t}</a>`).join("")}</div>
+      <div class="menu-sub"><span class="eyebrow">For researchers and officials</span>${data.map(([k, t], i) => `<a href="#${k}" style="--i:${i + 6}">${t}</a>`).join("")}</div>
       <div class="menu-foot" style="--i:12"><button class="xbtn" id="menuAlerts">${I("bell", 16)}<span>Get alerts</span></button><button class="xbtn" data-easy aria-pressed="false">${I("search", 16)}<span>Easy reading</span></button><a class="xbtn call" href="tel:311">${I("phone", 16)}<span>Call 311</span></a></div>`;
     const set = on => { m.classList.toggle("on", on); document.body.classList.toggle("menu-open", on); b.setAttribute("aria-expanded", String(on)); m.setAttribute("aria-hidden", String(!on)); b.setAttribute("aria-label", on ? "Close menu" : "Open menu"); };
     b.onclick = () => set(!m.classList.contains("on"));

@@ -2,7 +2,7 @@
 const APP = (() => {
   const TABS = [["today", "Today", "sun"], ["plan", "Plan", "calendar"], ["place", "My block", "pin"], ["map", "Map", "map"], ["help", "Help", "phone"]];
   const DATA = [["brief", "City brief"], ["explore", "Explore"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["download", "Download"], ["refs", "Sources"], ["about", "About"]];
-  const ALL = [...TABS.map(t => t[0]), ...DATA.map(t => t[0])];
+  const ALL = [...TABS.map(t => t[0]), ...DATA.map(t => t[0]), "guide"];
   const VIEWS = {}; const inited = {};
   const A = { data: null, maps: [], view: null };
 
@@ -118,7 +118,10 @@ const APP = (() => {
     FX.reveal(U.$("#v-" + name));
     U.$$("#v-" + name + " .place-list, #v-" + name + " .facts, #v-" + name + " .todo, #v-" + name + " .meters, #v-" + name + " .actions, #v-" + name + " .grid.g3, #v-" + name + " .grid.g2").forEach(el => { el.classList.remove("stagger"); void el.offsetWidth; el.classList.add("stagger"); });
     setTimeout(() => A.maps.forEach(m => m.invalidateSize()), 80);
-    if (!route.first) window.scrollTo(0, 0); route.first = false;
+    const sec = rest.find(x => /^sec-/.test(x));
+    if (sec) setTimeout(() => { const el = document.getElementById(sec); if (el) el.scrollIntoView({ behavior: FX.reduce ? "auto" : "smooth", block: "start" }); }, 260);
+    else if (!route.first) window.scrollTo(0, 0);
+    route.first = false;
   }
   const isData = n => DATA.some(d => d[0] === n);
   function buildNav() {

@@ -158,5 +158,34 @@ const MORE = (() => {
     U.$$("[data-easy]").forEach(b => { b.setAttribute("aria-pressed", String(!!on)); });
   }
 
-  return { nonzero, upcoming, MODE, report, neighborText, neighborCard, foodSection, foodNear, transitSection, stopsNear, leadCard, trendsSection, latest, change, spark, waterBars, harborSection, sensors, easy, file, TREND_ORDER };
+  // ---------- plain-language meanings ----------
+  const WORDS = [
+    ["Code Blue", "An extreme-cold alert from the Baltimore City Health Department, usually when the wind chill is expected to drop below 13°F. All emergency shelters open."],
+    ["Code Red", "An extreme-heat alert from the Baltimore City Health Department. Cooling centers open."],
+    ["Wind chill", "How cold it feels on your skin when wind is added to the temperature."],
+    ["Heat index", "How hot it feels when humidity is added to the temperature. Above 103°F is dangerous."],
+    ["Air quality (AQI)", "A 0 to 500 score for how clean the air is. Under 50 is good; over 100 is unhealthy for sensitive people, such as those with asthma."],
+    ["Flood zone", "An area FEMA's maps show has at least a 1% chance of flooding in any year. Heavy rain can still flood streets and basements outside these zones."],
+    ["Warming and cooling centers", "Public buildings, often libraries and senior centers, that open to anyone during very cold or very hot weather."],
+    ["SNAP (EBT)", "Federal food benefits, also called food stamps, used with an EBT card at stores that accept them."],
+    ["WIC", "A program that gives healthy food to pregnant women, new mothers and children under 5."],
+    ["311", "Baltimore's number for city services and non-emergency problems, such as no heat, flooding, trash or potholes."],
+    ["211", "A free, 24/7 helpline for food, rent, utility and other help, in any language."],
+    ["Neighborhood", "On this site, one of Baltimore's 55 Community Statistical Areas: groups of census tracts used for city statistics."],
+  ];
+  const glossary = () => WORDS.map(([w, d]) => `<div><dt>${w}</dt><dd>${d}</dd></div>`).join("");
+
+  // ---------- "How it works" ----------
+  const GUIDE = [
+    ["sun", "#today", "Today", "Is it safe to be outside right now?", "A one-line answer from live weather, air quality and alerts, what matters most right now, and the forecast for the next hours and the week."],
+    ["calendar", "#plan", "Plan my day", "When is the best time to go out?", "Pick a walk, run, bike ride, kids playing outside, yard work or a market trip. It finds the best hours in the next two days and can add them to your calendar."],
+    ["pin", "#place", "My block", "How does my block compare?", "Type an address to see its summer heat, tree shade, flood risk, lead risk, the closest warm or cool place, food help, the next buses, and how the neighborhood is changing."],
+    ["map", "#map", "Map", "Where is the nearest…?", "Turn on what you need: warming and cooling centers, flood zones, air monitors, parks, water fountains, food help, bus stops and more. Tap any spot to check it."],
+    ["phone", "#help", "Get help", "Who do I call, and what are my rights?", "Phone numbers with a call button, warm and cool places near you, food help, your rights about heat and utility shut-offs, programs, and water notices."],
+    ["bell", "#alerts", "Alerts", "Can it tell me when something's wrong?", "Sign up for BMORE Alert texts from the city, or turn on notifications on this device for warnings, bad air and dangerous heat or cold."],
+    ["chart", "#brief", "City brief and Data", "For officials and researchers", "A printable summary of which neighborhoods need help most, plus every number behind the site, free to download."],
+  ];
+  const guide = () => GUIDE.map(([ic, href, t, q, d]) => `<a class="guide-item" href="${href}">${tile(ic, "var(--accent)")}<div><b>${t}</b><span class="q">${q}</span><p>${d}</p></div>${I("chev", 18)}</a>`).join("");
+
+  return { glossary, guide, nonzero, upcoming, MODE, report, neighborText, neighborCard, foodSection, foodNear, transitSection, stopsNear, leadCard, trendsSection, latest, change, spark, waterBars, harborSection, sensors, easy, file, TREND_ORDER };
 })();

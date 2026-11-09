@@ -34,7 +34,7 @@ const ALERTS = (() => {
     else { sync(); U.toast("Notifications weren't allowed. You can still sign up for BMORE Alert texts and emails."); }
   }
   async function notify(title, body, tag) {
-    const opts = { body, tag, icon: "icon.svg", badge: "icon.svg", renotify: false };
+    const opts = { body, tag, icon: "img/icon-192.png", badge: "img/favicon-32.png", renotify: false };
     try { const reg = await navigator.serviceWorker?.getRegistration(); if (reg) { reg.showNotification(title, opts); return; } } catch {}
     try { new Notification(title, opts); } catch {}
   }

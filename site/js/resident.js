@@ -94,17 +94,34 @@ const RES = (() => {
     const s = LIVE.season();
     const place = s === "winter" ? ["flame", "var(--s3)", "Find a warm place", "Warming centers and shelters near you"] : s === "summer" ? ["snow", "var(--link)", "Find a cool place", "Cooling centers near you on hot days"] : ["home", "var(--s3)", "Warm or cool places", "Warming centers open from November 15"];
     const A = [
-      ["#place", "pin", "var(--accent)", "Check my block", "Heat, flood risk and help nearby", "primary"],
-      ["#plan", "calendar", "var(--s0)", "Plan my day", "Best time for a walk, run or ride"],
-      ["#map", "map", "var(--link)", "Find places", "Parks, pools, fountains, markets"],
-      ["#help", "phone", "#30c45a", "Get help", "Hotlines, " + (s === "summer" ? "cooling" : "warming") + " centers, programs"],
+      ["#help/sec-places", place[0], place[1], place[2], place[3]],
+      ["#place", "pin", "var(--accent)", "Check my block", "Heat, flood risk and help near your address"],
+      ["#plan", "calendar", "var(--s0)", "Plan my day", "The best hours for a walk, run or ride"],
+      ["#help/sec-food", "basket", "#b8382b", "Food help", "Free food, pantries and stores that take SNAP"],
+      ["#place/sec-transit", "bus", "#6b4c9a", "Buses near me", "Next scheduled buses and trains"],
+      ["https://balt311.baltimorecity.gov/citizen/s/", "doc", "var(--link)", "Report a problem", "No heat, flooding, trash: tell 311"],
+      ["#alerts", "bell", "var(--s3)", "Get alerts", "Texts or phone alerts for bad weather"],
+      ["#map", "map", "#1e9e5a", "See the map", "Parks, fountains, centers, flood zones"],
     ];
-    const el = U.$("#hActions"); el.classList.add("stagger");
+    const el = U.$("#hActions"); el.classList.add("stagger", "eight");
     el.innerHTML = A.map(([h, ic, col, t, d, cls]) => `<a class="action ${cls || ""}" href="${h}"${h.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>${cls ? `<span class="tile">${I(ic)}</span>` : tile(ic, col)}<b>${t}</b><span>${d}</span></a>`).join("");
+  }
+  document.addEventListener("click", e => { const a = e.target.closest('a[href="#alerts"]'); if (a) { e.preventDefault(); ALERTS.open(); } });
+  // first-visit welcome: what this site is and where to start
+  function drawWelcome() {
+    const el = U.$("#hWelcome"); if (!el) return;
+    if (U.store.get("welcomed", false)) { el.innerHTML = ""; return; }
+    el.innerHTML = `<div class="welcome"><button class="iconbtn close-x" data-close aria-label="Close">${I("x", 18)}</button>
+      <span class="eyebrow">New here?</span><h2>A free guide to Baltimore's weather, air and help</h2>
+      <ul><li>${I("sun", 20)}<span><b>Today</b> tells you if it's safe to be outside right now.</span></li>
+        <li>${I("pin", 20)}<span><b>My block</b> shows heat, flood risk, food and buses near your address.</span></li>
+        <li>${I("phone", 20)}<span><b>Help</b> has phone numbers, warm and cool places, and your rights.</span></li></ul>
+      <div class="cta"><a class="btn" href="#place">Start with my block</a><a class="btn alt" href="#guide">How it works</a><button class="btn alt" data-close>Got it</button></div></div>`;
+    el.querySelectorAll("[data-close]").forEach(b => b.onclick = () => { U.store.set("welcomed", true); el.innerHTML = ""; });
   }
   let homeWired = false;
   function homeShow(args = []) {
-    drawActions(); drawMyArea(); CINEMA.features();
+    drawActions(); drawWelcome(); drawMyArea(); CINEMA.features();
     if (args[0] === "details") setTimeout(() => { const d = U.$("#detailsBox"); d.open = true; d.dispatchEvent(new Event("toggle")); d.scrollIntoView({ behavior: "smooth", block: "start" }); }, 120);
     if (homeWired) { drawHome(); DETAILS.redraw(); return; } homeWired = true;
     DETAILS.init();
@@ -153,6 +170,7 @@ const RES = (() => {
     pMap.on("click", e => pick(e.latlng.lat, e.latlng.lng, "Spot on the map"));
   }
   function placeShow([id]) {
+    if (id && /^sec-/.test(id)) id = null;
     const body = U.$("#pBody"), m = U.$("#pMsg"); m.style.color = "";
     if (!id && userLoc) id = APP.tractAt(userLoc.lat, userLoc.lon);
     if (!id || !D().byId[id]) {
@@ -175,7 +193,9 @@ const RES = (() => {
       const worst = Object.keys(THEMES).filter(k => lv(k) >= 0).sort((a, b) => (p["t_" + b] ?? 0) - (p["t_" + a] ?? 0));
       let top3 = worst.filter(k => lv(k) >= 3).slice(0, 3); top3 = [...top3, ...["heat", "trees", "health"].filter(k => !top3.includes(k))].slice(0, 3);
       const unsure = Object.keys(THEMES).some(k => p["u_" + k]);
-      body.innerHTML = `<div class="area-hero">
+      const J = (k, t) => `<a href="#place/${id}/${k}">${t}</a>`;
+      body.innerHTML = `<nav class="jumpbar" aria-label="On this page"><span>On this page</span>${J("sec-summary", "Summary")}${J("sec-help", "Closest help")}${J("sec-food", "Food")}${J("sec-transit", "Buses")}${J("sec-trends", "Changes")}${J("sec-numbers", "All numbers")}</nav>
+        <div class="area-hero" id="sec-summary">
         <div class="card"><span class="muted" style="font-size:.92rem">Your neighborhood</span><div class="area-title">${U.esc(p.csa)}</div>
           <p class="summary">${U.esc(sum.join(" and "))}.</p>${floodBox}</div>
         <div class="card"><h3 style="margin-bottom:2px">Compared with the rest of Baltimore</h3><p class="note" style="margin-top:0">Fewer bars is easier, more bars is harder.</p><div class="meters">${Object.entries(THEMES).map(([k, t]) => { const l = lv(k);
@@ -183,16 +203,16 @@ const RES = (() => {
           ${unsure ? `<p class="note">Some of these come from survey estimates that can be off for small areas.</p>` : ""}</div></div>
         <div class="section-h"><h2>What you can do</h2></div>
         <ul class="todo stagger">${top3.map(k => { const [ic, t, d, href] = ACTIONS[k]; return `<li>${tile(ic, "var(--link)")}<div><b>${href ? `<a href="${href}"${href.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>${t}</a>` : t}</b><span>${d}</span></div></li>`; }).join("")}</ul>
-        <div class="section-h"><h2>Closest help</h2><a href="#help">All places and phone numbers</a></div>
+        <div class="section-h" id="sec-help"><h2>Closest help</h2><a href="#help">All places and phone numbers</a></div>
         <div class="place-list stagger">${cards}${MORE.leadCard(p, null)}</div>
         <div id="pReport"></div>
-        <div class="section-h"><h2>Food help nearby</h2><a href="#help">More food help</a></div>
+        <div class="section-h" id="sec-food"><div><h2>Food help nearby</h2><p class="sub">Free food sites and stores that take SNAP (EBT).</p></div><a href="#help/sec-food">More food help</a></div>
         <div class="place-list" id="pFood"><div class="skeleton" style="height:70px"></div></div>
-        <div class="section-h"><h2>Buses and trains nearby</h2></div>
+        <div class="section-h" id="sec-transit"><div><h2>Buses and trains nearby</h2><p class="sub">The next scheduled times at the closest stops.</p></div></div>
         <div class="place-list" id="pTransit"><div class="skeleton" style="height:70px"></div></div>
-        <div class="section-h"><h2>How this neighborhood is changing</h2></div>
+        <div class="section-h" id="sec-trends"><div><h2>How this neighborhood is changing</h2><p class="sub">Red means things got harder; green means they eased.</p></div></div>
         <div id="pTrends"></div>
-        <details class="more"><summary>${tile("chart", "var(--ink)", 20).replace('class="tile"', 'class="tile sm"')}<span>See the numbers<br><small style="font-weight:500">Every measure behind these comparisons, with margins of error and source years</small></span>${I("chev", 20).replace('class="ic"', 'class="ic chev"')}</summary><div class="inner"><div class="card" style="overflow-x:auto">${numbersTable(p)}</div></div></details>
+        <details class="more" id="sec-numbers"><summary>${tile("chart", "var(--ink)", 20).replace('class="tile"', 'class="tile sm"')}<span>See the numbers<br><small style="font-weight:500">Every measure behind these comparisons, with margins of error and source years</small></span>${I("chev", 20).replace('class="ic"', 'class="ic chev"')}</summary><div class="inner"><div class="card" style="overflow-x:auto">${numbersTable(p)}</div></div></details>
         <div class="report-actions"><button class="btn small" data-print>Print or save as PDF</button><button class="btn small alt" data-share>Copy link to this report</button></div>
         <p class="note print-only">Charm City Pulse report for ${U.esc(p.csa)} (census tract ${U.esc(p.name.replace("Tract ", ""))}), data build ${new Date(D().meta.built).toLocaleDateString(LOC(), { dateStyle: "long" })}. ${location.origin}${location.pathname}#place/${id}</p>`;
       MORE.foodSection(U.$("#pFood"), here[0], here[1]); MORE.transitSection(U.$("#pTransit"), here[0], here[1]); MORE.trendsSection(U.$("#pTrends"), p.csa);
@@ -234,7 +254,9 @@ const RES = (() => {
     U.$("#mapColor").innerHTML = SHADES.map(([k, t]) => `<option value="${k}">${t}</option>`).join("");
     U.$("#mapColor").onchange = e => paint(e.target.value);
     shade = L.geoJSON(D().tracts, { interactive: false }).addTo(map); paint("t_heat");
-    U.$("#mapChips").innerHTML = GROUPS.map(([k, t, ic, col]) => `<button class="chipbtn" data-g="${k}" aria-pressed="false" style="--c:${col}">${I(ic, 18)}${t}</button>`).join("");
+    const chip = ([k, t, ic, col]) => `<button class="chipbtn" data-g="${k}" aria-pressed="false" style="--c:${col}">${I(ic, 18)}${t}</button>`;
+    const SETS = [["Stay safe", ["centers", "flood", "air", "sensors", "streams"]], ["Everyday places", ["foodhelp", "parks", "fountains", "food", "recycling", "harbor"]], ["Getting around", ["stops", "transit", "ev"]]];
+    U.$("#mapChips").innerHTML = SETS.map(([t, ks]) => `<div class="chipset"><span class="chipset-t">${t}</span><div class="chips-in">${ks.map(k => GROUPS.find(g => g[0] === k)).filter(Boolean).map(chip).join("")}</div></div>`).join("");
     U.$$("#mapChips .chipbtn").forEach(b => b.onclick = () => toggleGroup(b));
     map.on("click", e => mapClick(e.latlng));
     toggleGroup(U.$('[data-g="centers"]'));
@@ -318,8 +340,12 @@ const RES = (() => {
     const cool = C.cooling.map(x => ({ ...x, kind: "cool" })), warm = W.sites.filter(x => x.lat != null).map(x => ({ ...x, kind: "warm" }));
     const wk = new Set(warm.map(x => addrKey(x.address)));
     const list = (s === "summer" ? cool : s === "winter" ? warm : [...warm.filter(x => x.type === "Warming center"), ...cool.filter(x => !wk.has(addrKey(x.address)))]).map(x => ({ ...x, d: U.km(here, [x.lon, x.lat]) })).sort((a, b) => a.d - b.d).slice(0, 8);
-    U.$("#helpPlaces").innerHTML = list.map(placeCard).join("") + `<p class="note">Centers open only when the city activates them. Call 311 to check. For overnight shelters, call the Shelter Hotline first.</p>`;
+    U.$("#helpPlacesSub").textContent = s === "winter" ? "Warming centers and shelters, closest first." : s === "summer" ? "Cooling centers, closest first." : "Warming and cooling centers, closest first.";
+    U.$("#helpPlaces").innerHTML = list.slice(0, 4).map(placeCard).join("") + (list.length > 4 ? `<div class="more-places" hidden>${list.slice(4).map(placeCard).join("")}</div><button class="btn small alt showmore" data-more>Show ${list.length - 4} more places</button>` : "") + `<p class="note">Centers open only when the city activates them. Call 311 to check. For overnight shelters, call the Shelter Hotline first.</p>`;
     U.$("[data-near]").onclick = e => { e.preventDefault(); navigator.geolocation && navigator.geolocation.getCurrentPosition(p => { userLoc = { lat: p.coords.latitude, lon: p.coords.longitude, label: "your location" }; U.store.set("loc", userLoc); helpShow(); }, () => U.toast("Location is off. Search your address on My block instead.")); };
+    U.$("[data-more]")?.addEventListener("click", e => { U.$(".more-places").hidden = false; e.currentTarget.remove(); });
+    U.$("#helpWaterNotices").innerHTML = MORE.waterBars() || `<p class="note">No boil-water advisories or water main notices from Public Works right now.</p>`;
+    U.$("#glossary").innerHTML = MORE.glossary();
     U.$("#helpRights").innerHTML = rights();
     const mo = new Date().getMonth() + 1; if (mo >= 10 || mo <= 4) U.$("#helpRights").insertAdjacentHTML("beforeend", MORE.report("heat"));
     MORE.foodSection(U.$("#helpFood"), here[1], here[0]); MORE.harborSection(U.$("#helpHarbor"));
@@ -338,5 +364,6 @@ const RES = (() => {
     place: { init: placeInit, show: placeShow },
     map: { init: mapInit, reload() { shade.clearLayers(); shade.addData(D().tracts); paint(U.$("#mapColor").value); } },
     help: { show: helpShow },
+    guide: { show: () => { U.$("#guideList").innerHTML = MORE.guide(); } },
   }, short, aqiNow, level, THEMES, tile };
 })();
