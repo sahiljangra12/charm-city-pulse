@@ -13,6 +13,8 @@ Sahil, Johns Hopkins University, 2026.
 - **Map:** layers for scores, cooling and warming centers, FEMA flood zones, live gauges and air monitors, city parks, pools and recreation centers, and OpenStreetMap amenities. Click anywhere for that spot's flood zone and scores.
 - **Find help:** a seasonal list of centers, hotlines and programs.
 
+**City brief** (`#brief`): a one-page summary for city and state staff. It ranks all 55 neighborhoods by combined heat, missing shade, health sensitivity and social vulnerability (or any one of them), shows how far each is from the nearest warming or cooling center open this season, and headlines the key citywide figures. It prints cleanly or saves as a PDF, has its own link, and the table downloads as CSV. Every neighborhood report under My block can also be printed or shared by link.
+
 **Researcher mode:** an explorer for 54 indicators across tracts or neighborhoods (CSAs), with margins of error and reliability flags. It also has place comparison with a radar chart, a correlation tool with a redlining overlay, a live-feed and release status page, and CSV and GeoJSON downloads.
 
 **References:** data sources and their vintages are written automatically by each build, alongside the literature and software used.
@@ -30,6 +32,10 @@ Sahil, Johns Hopkins University, 2026.
 | Heat, land cover, heat vulnerability index | per study release | Baltimore Heat Atlas |
 
 When a new daily build is published, open pages pick it up without reloading. If an upstream source fails, the build keeps the last good copy from `pipeline/cache/`, then falls back to the frozen research inputs in `pipeline/base/`.
+
+A slow server can't stall the build: the network phase has a 13-minute budget, and once a host times out every later request to it is skipped for that run and served from cache. If the daily build ever falls more than 36 hours behind, the site says so in the footer, on the Data pages and in Live feeds.
+
+For the Census Bureau API, add a free key (https://api.census.gov/data/key_signup.html) as the repository secret `CENSUS_API_KEY`. Without it the build uses Census Reporter, which serves the same ACS release.
 
 ## Data fixes compared with v1
 - The jail complex tract and a zero-population tract are shown hatched and excluded from rankings.

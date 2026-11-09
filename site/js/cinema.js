@@ -8,9 +8,10 @@ const CINEMA = (() => {
   // ---------- photos: self-hosted copies, with Wikimedia as a fallback ----------
   function setImg(img) {
     const k = img.dataset.img; if (!k || img.dataset.set) return; img.dataset.set = 1;
-    img.decoding = "async"; img.sizes = "100vw";
-    img.srcset = `img/${k}-m.jpg 1100w, img/${k}.jpg 2000w`; img.src = `img/${k}.jpg`;
-    img.addEventListener("load", () => img.classList.add("ok"), { once: true });
+    img.decoding = "async";
+    if (!img.getAttribute("srcset")) { img.sizes = "100vw"; img.srcset = `img/${k}-m.jpg 1100w, img/${k}.jpg 2000w`; img.src = `img/${k}.jpg`; }
+    if (img.complete && img.naturalWidth) img.classList.add("ok");
+    else img.addEventListener("load", () => img.classList.add("ok"), { once: true });
     img.addEventListener("error", async () => { await ready; const c = CREDITS.find(x => x.key === k); if (!c || img.dataset.fb) return; img.dataset.fb = 1;
       img.removeAttribute("srcset"); img.src = commons(c.title, innerWidth > 1100 ? 2000 : 1100); });
   }
@@ -48,15 +49,15 @@ const CINEMA = (() => {
   const FEAT = [
     { key: "block", img: "block", eyebrow: "My block", title: "How does your block compare?", href: "#place", btn: "Check my block" },
     { key: "plan", img: "plan", eyebrow: "Plan", title: "Pick the best hours for your day", href: "#plan", btn: "Plan my day", right: true },
-    { key: "places", img: "places", eyebrow: "Map", title: "Parks, pools and places to cool off", href: "#map", btn: "Open the map" },
+    { key: "places", img: "places", eyebrow: "Map", title: () => LIVE.season() === "summer" ? "Parks, pools and places to cool off" : LIVE.season() === "winter" || new Date().getMonth() + 1 >= 9 ? "Warm places, parks and help nearby" : "Parks, trails and places nearby", href: "#map", btn: "Open the map" },
     { key: "help", img: "help", eyebrow: "Help", title: "Help is one tap away", href: "#help", btn: "Get help", tel: ["311", "Call 311"], right: true },
-    { key: "data", img: "data", eyebrow: "Open data", title: "Every number, open to everyone", href: "#explore", btn: "Explore the data", btn2: ["#refs", "Sources"] },
+    { key: "data", img: "data", eyebrow: "Open data", title: "Every number, open to everyone", href: "#explore", btn: "Explore the data", btn2: ["#brief", "City brief"] },
   ];
   function featText(k) {
     const loc = U.store.get("loc", null), id = loc && APP.data && APP.tractAt(loc.lat, loc.lon), p = id ? APP.data.byId[id].properties : null;
     if (k === "block") return p && !p.nonres ? `${p.csa}: ${RES.THEMES.heat.words[RES.level(p.t_heat)].toLowerCase()} in summer, with ${RES.THEMES.trees.words[RES.level(p.t_trees)].toLowerCase()}. See flood risk and the nearest help.` : "Summer heat, tree shade, flood risk and the nearest cooling or warming center for any Baltimore address.";
     if (k === "plan") { let w = null; try { w = PRIO.build().find(x => x.icon === "walk"); } catch {} return (w ? w.title + ". " : "") + "Walks, runs, bike rides, kids outside, yard work and gardening, scored hour by hour."; }
-    if (k === "places") return "Water fountains, rail stations, bike lanes, farmers markets, community gardens, EV chargers and flood zones on one live map.";
+    if (k === "places") return LIVE.season() === "summer" ? "Water fountains, pools, rail stations, bike lanes, farmers markets, community gardens, EV chargers and flood zones on one live map." : "Warming centers and shelters, parks, rail stations, bike lanes, markets, EV chargers and flood zones on one live map.";
     if (k === "help") return LIVE.season() === "winter" ? "Warming centers, shelter hotlines and help with heating bills, with a green call button for each." : "311, 211, shelter hotlines, cooling and warming centers, and help with energy bills, with a green call button for each.";
     if (k === "data") return "Census, CDC, EPA, NOAA, USGS and FEMA data for every neighborhood, rebuilt every morning and free to download.";
   }
@@ -66,7 +67,7 @@ const CINEMA = (() => {
       box.dataset.built = 1;
       box.innerHTML = FEAT.map(f => `<section class="feature bleed${f.right ? " right" : ""}" data-f="${f.key}">
         <div class="feature-bg"><img data-img="${f.img}" alt="" loading="lazy"></div>
-        <div class="feature-in" data-rv><span class="eyebrow">${f.eyebrow}</span><h2>${f.title}</h2><p data-ft></p>
+        <div class="feature-in" data-rv><span class="eyebrow">${f.eyebrow}</span><h2 data-fh>${typeof f.title === "function" ? f.title() : f.title}</h2><p data-ft></p>
           <div class="cta"><a class="xbtn" href="${f.href}"><span>${f.btn}</span></a>${f.tel ? `<a class="xbtn call" href="tel:${f.tel[0]}">${I("phone", 16)}<span>${f.tel[1]}</span></a>` : ""}${f.btn2 ? `<a class="xbtn ghost" href="${f.btn2[0]}"><span>${f.btn2[1]}</span></a>` : ""}</div></div>
       </section>`).join("");
       loadImgs(box); watch(box);
@@ -75,13 +76,13 @@ const CINEMA = (() => {
   }
 
   // ---------- page banners ----------
-  const BANNER = { plan: "plan", place: "block", map: "places", help: "help", explore: "data", compare: "harbor", correlate: "water", live: "hero_night", download: "sunrise", refs: "harbor", about: "hero_day" };
-  const EYEBROW = { plan: "Plan", place: "My block", map: "Map", help: "Help", explore: "Data", compare: "Data", correlate: "Data", live: "Data", download: "Data", refs: "Sources", about: "About" };
+  const BANNER = { brief: "harbor", plan: "plan", place: "block", map: "places", help: "help", explore: "data", compare: "harbor", correlate: "water", live: "hero_night", download: "sunrise", refs: "harbor", about: "hero_day" };
+  const EYEBROW = { brief: "For city and state staff", plan: "Plan", place: "My block", map: "Map", help: "Help", explore: "Data", compare: "Data", correlate: "Data", live: "Data", download: "Data", refs: "Sources", about: "About" };
   function banners() {
     Object.entries(BANNER).forEach(([v, img]) => {
       const ph = U.$(`#v-${v} .pagehead`); if (!ph || ph.classList.contains("banner")) return;
       ph.classList.add("banner", "bleed");
-      ph.insertAdjacentHTML("afterbegin", `<div class="banner-bg"><img data-img="${img}" alt=""></div>`);
+      ph.insertAdjacentHTML("afterbegin", `<div class="banner-bg"><img data-img="${img}" alt="" loading="lazy"></div>`);
       const h1 = ph.querySelector("h1"); h1.insertAdjacentHTML("beforebegin", `<span class="eyebrow">${EYEBROW[v]}</span>`);
       const inner = document.createElement("div"); inner.className = "banner-in"; [...ph.children].filter(c => !c.classList.contains("banner-bg")).forEach(c => inner.appendChild(c)); ph.appendChild(inner);
     });
@@ -110,7 +111,7 @@ const CINEMA = (() => {
   function menu() {
     const m = U.$("#menu"), b = U.$("#menuBtn");
     const main = [["today", "Today"], ["plan", "Plan my day"], ["place", "My block"], ["map", "Map"], ["help", "Get help"]];
-    const data = [["explore", "Explore"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["download", "Download"], ["refs", "Sources"], ["about", "About"]];
+    const data = [["brief", "City brief"], ["explore", "Explore"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["download", "Download"], ["refs", "Sources"], ["about", "About"]];
     U.$("#menuNav").innerHTML = `<div class="menu-main">${main.map(([k, t], i) => `<a href="#${k}" style="--i:${i}">${t}</a>`).join("")}</div>
       <div class="menu-sub"><span class="eyebrow">Data</span>${data.map(([k, t], i) => `<a href="#${k}" style="--i:${i + 5}">${t}</a>`).join("")}</div>
       <div class="menu-foot" style="--i:12"><button class="xbtn" id="menuAlerts">${I("bell", 16)}<span>Get alerts</span></button><a class="xbtn call" href="tel:311">${I("phone", 16)}<span>Call 311</span></a></div>`;

@@ -156,11 +156,13 @@ const RSC = (() => {
   // ---------------- LIVE ----------------
   let liveWired = false;
   function liveShow() {
-    const stat = s => { const st = LIVE.status[s.id], f = LIVE.feeds[s.id];
+    const stat = s => { const st = LIVE.status[s.id];
+      if (s.id === "meta") { const h = U.buildAgeH(D().meta); return h > U.STALE_H ? `<span class="status cached">● Behind schedule</span>` : `<span class="status live">● Up to date</span>`; }
       if (!st) return '<span class="muted">Not requested yet</span>'; return st.ok ? `<span class="status live">● Live</span>` : `<span class="status err" title="${U.esc(st.err)}">Error, retrying</span>`; };
+    const when = s => s.id === "meta" ? "built " + U.timeAgo(D().meta.built) : (LIVE.status[s.id] ? U.timeAgo(LIVE.status[s.id].at) : "—");
     const draw = () => {
       U.$("#liveTable").innerHTML = `<thead><tr><th>Feed</th><th>Provider</th><th>Status</th><th>Last update</th><th>Refresh</th></tr></thead><tbody>` + LIVE.SOURCES.map(s => {
-        const st = LIVE.status[s.id]; return `<tr><td>${U.esc(s.name)}</td><td><a href="${s.url}" target="_blank" rel="noopener">${U.esc(s.by)}</a></td><td>${stat(s)}</td><td>${st ? U.timeAgo(st.at) : "—"}</td><td>${s.every ? "every " + s.every + " min" : "on request"}</td></tr>`; }).join("") + "</tbody>";
+        const st = LIVE.status[s.id]; return `<tr><td>${U.esc(s.name)}</td><td><a href="${s.url}" target="_blank" rel="noopener">${U.esc(s.by)}</a></td><td>${stat(s)}</td><td>${when(s)}</td><td>${s.id === "meta" ? "rebuilt daily, checked every 15 min" : s.every ? "every " + s.every + " min" : "on request"}</td></tr>`; }).join("") + "</tbody>";
       const src = D().meta.sources;
       U.$("#releaseTable").innerHTML = `<thead><tr><th>Dataset</th><th>Publisher</th><th>Vintage</th><th>Status</th><th>Pulled</th></tr></thead><tbody>` + Object.values(src).map(s => {
         const cls = /live/.test(s.status) ? "live" : /cached|frozen/.test(s.status) ? "cached" : "";

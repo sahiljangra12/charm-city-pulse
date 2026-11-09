@@ -1,7 +1,7 @@
 /* Core: data, routing, navigation, units, theme, maps, address search, live data-release watcher */
 const APP = (() => {
   const TABS = [["today", "Today", "sun"], ["plan", "Plan", "calendar"], ["place", "My block", "pin"], ["map", "Map", "map"], ["help", "Help", "phone"]];
-  const DATA = [["explore", "Explore"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["download", "Download"], ["refs", "Sources"], ["about", "About"]];
+  const DATA = [["brief", "City brief"], ["explore", "Explore"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["download", "Download"], ["refs", "Sources"], ["about", "About"]];
   const ALL = [...TABS.map(t => t[0]), ...DATA.map(t => t[0])];
   const VIEWS = {}; const inited = {};
   const A = { data: null, maps: [], view: null };
@@ -45,12 +45,21 @@ const APP = (() => {
     return a ? [x / (3 * a), y / (3 * a)] : ring[0];
   }
 
+  // ---------- build stamp: says plainly when the neighborhood data is behind schedule ----------
+  function stamp() {
+    const m = A.data.meta, h = U.buildAgeH(m), stale = h > U.STALE_H;
+    const el = U.$("#buildStamp"); el.textContent = "Data build " + new Date(m.built).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }) + (stale ? ` (${Math.round(h / 24)} days old)` : "");
+    el.classList.toggle("stale", stale);
+    U.$$(".stale-note").forEach(n => n.remove());
+    if (stale) U.$$("section.view [data-sub]").forEach(v => v.insertAdjacentHTML("afterend", `<p class="stale-note">The neighborhood data was last rebuilt ${Math.round(h / 24)} days ago, so it is behind its daily schedule. Live weather, air, alerts and river readings are not affected.</p>`));
+  }
+
   // ---------- live data-release watcher: new daily build => hot reload ----------
   function watchReleases() {
     LIVE.feeds.meta.on(async m => {
       if (!m || !A.data || m.built === A.data.meta.built) return;
       try {
-        await load(m.built); U.toast("New neighborhood data published " + new Date(m.built).toLocaleDateString("en-US") + ". The page has been updated.");
+        await load(m.built); stamp(); U.toast("New neighborhood data published " + new Date(m.built).toLocaleDateString("en-US") + ". The page has been updated.");
         Object.keys(inited).forEach(k => { if (VIEWS[k]?.reload) VIEWS[k].reload(); });
         route();
       } catch (e) { console.warn("reload failed", e); }
@@ -179,8 +188,8 @@ const APP = (() => {
         await new Promise(r => setTimeout(r, Math.min(30000, 3000 * (tries + 1))));
       }
     }
-    U.$("#buildStamp").textContent = "Data build " + new Date(A.data.meta.built).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" });
-    Object.assign(VIEWS, RES.views, PLAN.views, RSC.views, REFS.views);
+    stamp();
+    Object.assign(VIEWS, RES.views, PLAN.views, RSC.views, REFS.views, BRIEF.views);
     ALERTS.init(); segThumbs(); parallax();
     route.first = true;
     addEventListener("hashchange", () => {

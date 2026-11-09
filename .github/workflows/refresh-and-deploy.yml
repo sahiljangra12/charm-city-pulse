@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: "17 9 * * *"      # daily, 5:17 am Baltimore (EDT)
+    - cron: "17 9 * * *"      # daily at 09:17 UTC (4:17 am EST / 5:17 am EDT); GitHub often starts it hours late
   workflow_dispatch:
 
 permissions:
@@ -17,7 +17,7 @@ concurrency:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -25,15 +25,18 @@ jobs:
           python-version: "3.12"
       - name: Probe live endpoints (diagnostic)
         continue-on-error: true
+        timeout-minutes: 3
         run: python pipeline/probe.py 2>&1 | tee pipeline/cache/probe.txt
       - name: Rebuild data from the newest public releases
         env:
           CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
+        timeout-minutes: 18
         run: |
           set -o pipefail
           python pipeline/refresh.py 2>&1 | tee pipeline/cache/refresh_log.txt
       - name: Fetch background photos (Wikimedia Commons, once)
         continue-on-error: true
+        timeout-minutes: 3
         run: python pipeline/images.py
       - name: Commit refreshed data to main
         run: |

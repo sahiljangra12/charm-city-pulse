@@ -93,8 +93,10 @@ const U = (() => {
   }
   const csvCell = v => v == null ? "" : /[",\n]/.test(String(v)) ? '"' + String(v).replace(/"/g, '""') + '"' : String(v);
   const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const STALE_H = 36;   // a daily build older than this means the refresh is failing
+  const buildAgeH = m => (Date.now() - new Date(m.built)) / 36e5;
   function timeAgo(d) { const s = Math.round((Date.now() - new Date(d)) / 1000); if (s < 45) return "just now"; const m = Math.round(s / 60); return m < 60 ? m + " min ago" : m < 1440 ? Math.round(m / 60) + " h ago" : Math.round(m / 1440) + " d ago"; }
   function toast(msg, ms = 3800) { let t = $("#toast"); if (!t) { t = document.createElement("div"); t.id = "toast"; t.className = "toast"; t.setAttribute("role", "status"); document.body.appendChild(t); } t.textContent = msg; requestAnimationFrame(() => t.classList.add("on")); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), ms); }
   const debounce = (fn, ms) => { let h; return (...a) => { clearTimeout(h); h = setTimeout(() => fn(...a), ms); }; };
-  return { $, $$, esc, store, getJSON, unit, cToF, fToC, tF, tC, fmt, unitLabel, heatIndex, windChill, mean, quantile, wmean, pearson, spearman, pval, inGeom, km, dist, RAMP, RAMP_SEQ, RAMP_GREEN, band, breaks, classify, download, csvCell, cssVar, timeAgo, toast, debounce };
+  return { $, $$, esc, store, getJSON, unit, cToF, fToC, tF, tC, fmt, unitLabel, heatIndex, windChill, mean, quantile, wmean, pearson, spearman, pval, inGeom, km, dist, RAMP, RAMP_SEQ, RAMP_GREEN, band, breaks, classify, download, csvCell, cssVar, timeAgo, toast, debounce, STALE_H, buildAgeH };
 })();

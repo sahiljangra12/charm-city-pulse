@@ -223,3 +223,62 @@ footer a:hover{color:#fff}
 .best .when{font-family:var(--display);text-transform:uppercase;font-weight:700;letter-spacing:.01em}
 .best .tags span{background:rgba(255,255,255,.08);color:#fff;border-color:var(--line-2)}
 .best .btn.alt{color:#fff}
+
+/* ---------- city brief ---------- */
+.brief-bar{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;margin:6px 0 22px}
+.brief-actions,.report-actions{display:flex;flex-wrap:wrap;gap:10px}
+.report-actions{margin:22px 0 4px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:1px;background:var(--line-2);border:1px solid var(--line-2);margin-bottom:8px}
+.kpi{background:var(--bg);padding:20px 18px;display:flex;flex-direction:column;gap:6px}
+.kpi b{font:700 clamp(1.9rem,3.6vw,2.6rem)/1 var(--display);color:var(--accent);letter-spacing:-.01em}
+.kpi span{font-weight:600;line-height:1.3}
+.kpi small{color:var(--ink-2);font-size:.82rem;line-height:1.35}
+.btable th{white-space:nowrap}
+.btable th,.btable td{padding-left:10px;padding-right:10px}
+.btable td{vertical-align:middle}
+.btable tr[data-csa]{cursor:pointer}
+.btable tr[data-csa]:hover,.btable tr.on{background:var(--surface-2)}
+.btable tr[data-csa]:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.bscore{display:inline-flex;align-items:center;gap:6px;min-width:76px}
+.bscore i{display:block;height:8px;flex:0 0 auto;max-width:44px;border-radius:1px}
+.bscore{position:relative}.bscore::before{content:"";position:absolute;left:0;width:44px;height:8px;background:var(--surface-3);z-index:-1}
+.bscore{isolation:isolate}
+.bscore i{width:calc(var(--w,0) * 1px)}
+.bscore b{font-variant-numeric:tabular-nums;font-weight:600;font-size:.9rem;min-width:2ch;margin-left:auto}
+.bdetail td{background:var(--surface-2);padding:0!important}
+.bdetail-in{padding:16px 18px}
+.bfacts{list-style:none;margin:0 0 6px;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:6px 22px}
+.bfacts li{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:6px 0;font-size:.92rem}
+.bfacts li b{white-space:nowrap}
+ul.small{font-size:.92rem;padding-left:18px}
+.stale-note{margin:0 0 18px;padding:12px 16px;border-left:3px solid var(--s2);background:color-mix(in srgb,var(--s2) 12%,transparent);font-size:.94rem}
+#buildStamp.stale{color:var(--s2)}
+.print-only{display:none}
+
+/* ---------- printing: the brief and neighborhood reports print as plain, readable pages ---------- */
+@media print{
+  @page{margin:14mm}
+  :root,:root[data-theme="dark"]{--bg:#fff;--surface:#fff;--surface-2:#f2f2f0;--surface-3:#e4e4e0;--ink:#111;--ink-2:#444;--ink-3:#666;--line:#ccc;--line-2:#bbb;--accent:#8a6400}
+  html,:root,:root[data-theme="dark"]{color-scheme:light!important}
+  html,body{background:#fff!important;color:#111!important}
+  .area-hero{grid-template-columns:1fr!important}
+  header.top,.appbar,.menu,.sheet,.sheet-back,footer,.subnav,.scrollcue,.brief-actions,.report-actions,.controls,#bAll,.toast,.banner-bg,.mapbox,form.search,#pMsg,.leaflet-container,.stale-note{display:none!important}
+  section.view{animation:none!important}
+  .pagehead.banner{min-height:0!important;margin:0 0 12px!important;background:none!important;color:#111!important}
+  .pagehead.banner::before{display:none}
+  .banner-in{padding:0!important;animation:none!important}
+  .banner-in h1{font-size:24pt!important;color:#111!important}
+  .banner-in p,.banner-in .eyebrow{color:#333!important}
+  .card,.tablewrap,.kpis,.kpi,.place,.myarea,.flood,details.more>summary{background:#fff!important;color:#111!important;border-color:#ccc!important;box-shadow:none!important}
+  .kpi,.place,.meterrow,.todo li,tr{break-inside:avoid}
+  .tablewrap{overflow:visible!important;max-height:none!important}
+  table{font-size:9pt}
+  .btable th,.btable td{padding:4px 6px!important}
+  .bscore{min-width:0}.bscore::before,.bscore i{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  a{color:#111!important;text-decoration:none}
+  .print-only{display:block}
+  .stagger>*,.rv,[data-rv]{opacity:1!important;transform:none!important}
+}
+.btable th.sorted{color:var(--accent)}
+.btable td:nth-child(2){min-width:150px}
+

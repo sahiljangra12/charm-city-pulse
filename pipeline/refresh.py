@@ -28,16 +28,30 @@ SOURCES = {}   # key -> metadata shown in the app's References / Live data pages
 def log(*a): print("[refresh]", *a, flush=True)
 
 
+# A slow or dead server must never stop the build: once a host times out, every later call to it
+# fails fast and its data comes from cache; and the whole network phase has one overall budget.
+BUDGET_S = int(os.environ.get("BUILD_BUDGET_S", "780"))   # 13 min, well inside the 30-min job limit
+DEADLINE = time.time() + BUDGET_S
+DEAD_HOSTS = set()
+
+
 def fetch(url, tries=3, timeout=90, data=None):
     if OFFLINE: raise RuntimeError("offline")
+    host = urllib.parse.urlsplit(url).netloc
+    if host in DEAD_HOSTS: raise RuntimeError(f"{host} skipped (timed out earlier in this build)")
     err = None
     for k in range(tries):
+        left = DEADLINE - time.time()
+        if left < 5: raise RuntimeError(f"build time budget used; skipping {host}")
         try:
             req = urllib.request.Request(url, data=data, headers=UA)
-            with urllib.request.urlopen(req, timeout=timeout) as r:
+            with urllib.request.urlopen(req, timeout=min(timeout, left)) as r:
                 return r.read()
         except Exception as e:
-            err = e; time.sleep(2 * (k + 1))
+            err = e
+            if "timed out" in str(e).lower() or isinstance(e, TimeoutError):
+                DEAD_HOSTS.add(host); log("host timed out, skipping it for the rest of this build:", host); break
+            time.sleep(2 * (k + 1))
     raise RuntimeError(f"{url[:120]}: {err}")
 
 
@@ -140,7 +154,8 @@ def acs_download():
 
 
 def acs_censusbureau():
-    key = os.environ.get("CENSUS_API_KEY", "")
+    key = os.environ.get("CENSUS_API_KEY", "").strip()
+    if not key: raise RuntimeError("CENSUS_API_KEY secret is not set; using Census Reporter instead")
     year0 = NOW.year - 1
     for y in range(year0, year0 - 4, -1):
         base = f"https://api.census.gov/data/{y}/acs/acs5"
@@ -517,9 +532,12 @@ for n, fname, keep in [(4, "parks.geojson", {"NAME": "name", "ACRES": "acres"}),
         json.dump(g, open(os.path.join(OUT, fname), "w"), separators=(",", ":")); layers_ok[fname] = len(g["features"])
     except Exception as e:
         log("city layer", n, e)
+for n_, fname in [(4, "parks.geojson"), (2, "pools.geojson"), (1, "rec_centers.geojson")]:
+    if fname not in layers_ok and os.path.exists(os.path.join(OUT, fname)): layers_ok[fname] = "kept previous"
 if layers_ok:
+    fresh = any(isinstance(v, int) for v in layers_ok.values())
     src("parks", name="Parks, pools and recreation centers (BCRP)", by="Baltimore City Department of Recreation & Parks", vintage="current city layer",
-        url="https://geodata.baltimorecity.gov/egis/rest/services/CityView/BCRPServices/FeatureServer", status="live", counts=layers_ok)
+        url="https://geodata.baltimorecity.gov/egis/rest/services/CityView/BCRPServices/FeatureServer", status="live" if fresh else "cached (city server unreachable)", counts=layers_ok)
 
 # --------------------------------------------------------------------------- OpenStreetMap layers (daily snapshot)
 BB = "(39.197,-76.712,39.372,-76.529)"
@@ -571,7 +589,7 @@ for key, q in (OSMQ.items() if OSM_REFRESH else []):
         if os.path.exists(os.path.join(OUT, f"osm_{key}.geojson")): osm_ok[key] = "kept previous"
 if osm_ok:
     src("osm", name="Drinking fountains, transit stations, bike lanes, EV chargers, gardens, recycling and markets", by="OpenStreetMap contributors (Overpass API)",
-        vintage="daily snapshot", url="https://www.openstreetmap.org/copyright", status="live", counts=osm_ok)
+        vintage="daily snapshot", url="https://www.openstreetmap.org/copyright", status="live" if any(isinstance(v, int) for v in osm_ok.values()) else "cached", counts=osm_ok)
 
 # --------------------------------------------------------------------------- write
 def rnd(v, d):
@@ -602,7 +620,7 @@ json.dump({
 }, open(os.path.join(OUT, "catalog.json"), "w"), indent=1)
 json.dump({"cooling": cool, "winter": winter}, open(os.path.join(OUT, "centers.json"), "w"), indent=1)
 json.dump(json.load(open(os.path.join(BASE, "research.json"))), open(os.path.join(OUT, "research.json"), "w"), indent=1)
-meta = {"built": NOW.isoformat(timespec="seconds"), "sources": SOURCES,
+meta = {"built": NOW.isoformat(timespec="seconds"), "sources": SOURCES, "skipped_hosts": sorted(DEAD_HOSTS),
         "tracts": len(IDS), "residential_tracts": len(IDS) - len(NONRES), "csas": len(CSA), "nonres": NONRES}
 json.dump(meta, open(os.path.join(OUT, "meta.json"), "w"), indent=1)
 log("done:", len(IDS), "tracts,", len(CSA), "CSAs; sources:", {k: v["status"] for k, v in SOURCES.items()})
