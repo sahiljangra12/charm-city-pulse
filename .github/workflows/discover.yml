@@ -7,4 +7,9 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - run: python3 pipeline/discover.py
+      - run: |
+          python3 pipeline/services.py
+          ls -la site/data/services site/data/services.json
+          python3 -c "import json;d=json.load(open('site/data/services.json'));print(d['status']);[print(k, json.dumps(d[k][:2])[:400]) for k in ['libraries','wifi','gardens','dropoff','seniors','codeblue']]"
+          python3 -c "import json;d=json.load(open('site/data/services/trash.geojson'));print(sorted({(f['properties']['trash'],f['properties']['recycling']) for f in d['features']}))"
+          python3 -c "import json;d=json.load(open('site/data/services/snow.geojson'));print(d['features'][0]['geometry']['coordinates'][0][:2], sorted({f['properties']['street'] for f in d['features']})[:40])"
