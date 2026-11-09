@@ -97,9 +97,9 @@ const CITY = (() => {
     const alley = A.sweep.find(s => s.kind === "alley"), street = A.sweep.find(s => s.kind === "street");
     if (alley || street) rows.push(`<div class="place svc">${tile("broom", "#3f7f8c")}<div><b>${alley ? `Alley sweeping: ${U.esc(alley.note)}` : "Street sweeping"}</b><small>${street ? U.esc(street.note.replace(/^[A-Za-z ]+:\s*/, "")) + "." : ""} Move your car when the posted sweeping signs say so, or you can get a ticket.</small><small>${ext("https://www.baltimorecity.gov/publicworks/city-cleaning-services/mechanical-street-sweeping", "Sweeping schedule")}</small></div></div>`);
     if (A.snow) {
-      const on = A.snow.m <= (exact ? 35 : 0), live = LIVE.snowEmergency?.();
-      rows.push(`<div class="place svc ${on && live ? "warnrow" : ""}">${tile("car", on ? "var(--s4)" : "var(--link)")}<div><b>${on ? `Your street is a snow emergency route (${U.esc(A.snow.street)})` : `Nearest snow emergency route: ${U.esc(A.snow.street)}, ${U.dist(A.snow.m / 1000)} away`}</b>
-        <small>${on ? "When the city declares a snow emergency, you can't park here: cars get a $52 ticket and can be towed." : "When the city declares a snow emergency, cars can't park on these routes ($52 ticket, and towing). Look for black-and-white signs high on the pole."}
+      const on = A.snow.m <= (exact ? 35 : 0), close = !on && A.snow.m < 160, live = LIVE.snowEmergency?.();
+      rows.push(`<div class="place svc ${on && live ? "warnrow" : ""}">${tile("car", on ? "var(--s4)" : "var(--link)")}<div><b>${on ? `Your street is a snow emergency route (${U.esc(A.snow.street)})` : close ? `A snow emergency route is right nearby: ${U.esc(A.snow.street)}` : `Nearest snow emergency route: ${U.esc(A.snow.street)}, ${U.dist(A.snow.m / 1000)} away`}</b>
+        <small>${close ? "Check the signs on your block to see if your own street is one. " : ""}${on ? "When the city declares a snow emergency, you can't park here: cars get a $52 ticket and can be towed." : "When the city declares a snow emergency, cars can't park on these routes ($52 ticket, and towing). Look for black-and-white signs high on the pole."}
         ${live ? " <strong>A snow emergency is in effect now.</strong>" : ""}</small>${exact ? "" : `<small class="muted">Search your exact address to check your own street.</small>`}
         <small>${ext("https://www.baltimorecity.gov/transportation/snow-center/parking-during-snow-emergency", "Snow parking rules")} · Towed? Call 410-396-9958.</small></div></div>`);
     }

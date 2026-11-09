@@ -76,8 +76,8 @@ const CINEMA = (() => {
   }
 
   // ---------- page banners ----------
-  const BANNER = { guide: "sunrise", brief: "harbor", plan: "plan", place: "block", map: "places", help: "help", explore: "data", compare: "harbor", correlate: "water", live: "hero_night", status: "hero_night", methods: "data", download: "sunrise", refs: "harbor", about: "hero_day" };
-  const EYEBROW = { guide: "Start here", brief: "For city and state staff", plan: "Plan", place: "My block", map: "Map", help: "Help", explore: "Data", compare: "Data", correlate: "Data", live: "Data", status: "Data", methods: "Data", download: "Data", refs: "Sources", about: "About" };
+  const BANNER = { now: "help", nb: "data", guide: "sunrise", brief: "harbor", plan: "plan", place: "block", map: "places", help: "help", explore: "data", compare: "harbor", correlate: "water", live: "hero_night", status: "hero_night", methods: "data", download: "sunrise", refs: "harbor", about: "hero_day" };
+  const EYEBROW = { now: "Help", nb: "For city and state staff", guide: "Start here", brief: "For city and state staff", plan: "Plan", place: "My block", map: "Map", help: "Help", explore: "Data", compare: "Data", correlate: "Data", live: "Data", status: "Data", methods: "Data", download: "Data", refs: "Sources", about: "About" };
   function banners() {
     Object.entries(BANNER).forEach(([v, img]) => {
       const ph = U.$(`#v-${v} .pagehead`); if (!ph || ph.classList.contains("banner")) return;
