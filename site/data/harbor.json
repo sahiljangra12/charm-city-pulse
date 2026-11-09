@@ -1,0 +1,48 @@
+{
+ "updated": "2026-11-09T12:17+00:00",
+ "source": "Waterfront Partnership of Baltimore, Healthy Harbor water quality monitoring",
+ "url": "https://www.waterfrontpartnership.org/water-quality-monitoring",
+ "season": "May to September",
+ "sites": [
+  {
+   "name": "Fells Point",
+   "date": "2026-09-30",
+   "status": "Passing",
+   "count": 10,
+   "lat": 39.28022,
+   "lon": -76.59372
+  },
+  {
+   "name": "Canton Waterfront Park",
+   "date": "2026-09-30",
+   "status": "Passing",
+   "count": 10,
+   "lat": 39.27654,
+   "lon": -76.57272
+  },
+  {
+   "name": "Mr. Trash Wheel",
+   "date": "2026-09-30",
+   "status": "Passing",
+   "count": 10,
+   "lat": 39.28329,
+   "lon": -76.60364
+  },
+  {
+   "name": "Downtown Sailing Center",
+   "date": "2026-09-30",
+   "status": "Passing",
+   "count": 10,
+   "lat": 39.27453,
+   "lon": -76.59982
+  },
+  {
+   "name": "Inner Harbor",
+   "date": "2026-09-30",
+   "status": "Passing",
+   "count": 86,
+   "lat": 39.28244,
+   "lon": -76.60926
+  }
+ ]
+}
