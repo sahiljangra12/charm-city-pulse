@@ -1,4 +1,8 @@
-[refresh] Census Bureau API: CENSUS_API_KEY secret is not set; using Census Reporter instead
+[refresh] ACS 2025 not usable: non-JSON from https://api.census.gov/data/2025/acs/acs5?get=group(B01001)&for=tract:*&in=state:24&in=cou: b'<html style="font-size: 14px;">\n\n<head>\n    <title>Invalid Key</title>\n    <link rel="icon" type="image/x-ic
+[refresh] ACS 2024 not usable: non-JSON from https://api.census.gov/data/2024/acs/acs5?get=group(B01001)&for=tract:*&in=state:24&in=cou: b'<html style="font-size: 14px;">\n\n<head>\n    <title>Invalid Key</title>\n    <link rel="icon" type="image/x-ic
+[refresh] ACS 2023 not usable: non-JSON from https://api.census.gov/data/2023/acs/acs5?get=group(B01001)&for=tract:*&in=state:24&in=cou: b'<html style="font-size: 14px;">\n\n<head>\n    <title>Invalid Key</title>\n    <link rel="icon" type="image/x-ic
+[refresh] ACS 2022 not usable: non-JSON from https://api.census.gov/data/2022/acs/acs5?get=group(B01001)&for=tract:*&in=state:24&in=cou: b'<html style="font-size: 14px;">\n\n<head>\n    <title>Invalid Key</title>\n    <link rel="icon" type="image/x-ic
+[refresh] Census Bureau API: no ACS 5-year vintage reachable
 [refresh] Census Reporter ACS 2024 5-year ['B01001', 'B01003', 'B03002', 'B11007'] 199 tracts
 [refresh] Census Reporter ACS 2024 5-year ['B15003', 'B17001', 'B18101', 'B19001'] 199 tracts
 [refresh] Census Reporter ACS 2024 5-year ['B19013', 'B23025', 'B25003', 'B25014'] 199 tracts
@@ -6,5 +10,13 @@
 [refresh] Census Reporter ACS 2024 5-year ['B28002', 'C16002'] 199 tracts
 [refresh] PLACES newest release in catalog: (2025, 'cwsq-ngmh', 'PLACES: Local Data for Better Health, Census Tract Data, 2025 release')
 [refresh] PLACES 2025 cwsq-ngmh 198 tracts
-[refresh] OSM: keeping this morning's snapshot (code-only run)
-[refresh] done: 199 tracts, 55 CSAs; sources: {'acs': 'live via Census Reporter', 'places': 'live', 'heat': 'research release', 'svi': 'research release', 'holc': 'historical', 'trees': 'research release', 'census2020': 'fixed', 'cooling': 'live', 'winter': 'verified 2026-10-26', 'parks': 'live', 'osm': 'cached'}
+[refresh] OSM fountains 28
+[refresh] OSM transit 38
+[refresh] OSM bike 2378
+[refresh] host timed out, skipping it for the rest of this build: overpass.kumi.systems
+[refresh] host timed out, skipping it for the rest of this build: overpass.private.coffee
+[refresh] OSM ev failed: https://overpass.private.coffee/api/interpreter: The read operation timed out
+[refresh] OSM gardens failed: time budget used
+[refresh] OSM recycling failed: time budget used
+[refresh] OSM markets failed: time budget used
+[refresh] done: 199 tracts, 55 CSAs; sources: {'acs': 'live via Census Reporter', 'places': 'live', 'heat': 'research release', 'svi': 'research release', 'holc': 'historical', 'trees': 'research release', 'census2020': 'fixed', 'cooling': 'live', 'winter': 'verified 2026-10-26', 'parks': 'live', 'osm': 'live'}
