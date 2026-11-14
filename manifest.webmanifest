@@ -1,0 +1,95 @@
+{
+ "id": "./",
+ "name": "Charm City Pulse",
+ "short_name": "CC Pulse",
+ "description": "Free help for Baltimore residents: warm and cool places, Code Blue and Code Red alerts, trash day, food help, buses, flood risk and your rights. English and Spanish.",
+ "lang": "en-US",
+ "dir": "ltr",
+ "start_url": "./#today",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "any",
+ "background_color": "#000000",
+ "theme_color": "#000000",
+ "categories": [
+  "utilities",
+  "weather",
+  "lifestyle",
+  "government"
+ ],
+ "icons": [
+  {
+   "src": "img/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "img/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "img/icon-maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ],
+ "screenshots": [
+  {
+   "src": "img/shots/phone-today.png",
+   "sizes": "540x960",
+   "type": "image/png",
+   "form_factor": "narrow",
+   "label": "Today: what matters right now"
+  },
+  {
+   "src": "img/shots/phone-help.png",
+   "sizes": "540x960",
+   "type": "image/png",
+   "form_factor": "narrow",
+   "label": "Get help: numbers and places"
+  },
+  {
+   "src": "img/shots/desktop-map.png",
+   "sizes": "1280x720",
+   "type": "image/png",
+   "form_factor": "wide",
+   "label": "Map of city services"
+  }
+ ],
+ "shortcuts": [
+  {
+   "name": "Get help now",
+   "url": "./#now",
+   "icons": [
+    {
+     "src": "img/icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "My block",
+   "url": "./#place",
+   "icons": [
+    {
+     "src": "img/icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "Map",
+   "url": "./#map",
+   "icons": [
+    {
+     "src": "img/icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  }
+ ]
+}

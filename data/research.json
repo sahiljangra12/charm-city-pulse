@@ -1,0 +1,36 @@
+{
+ "heat": {
+  "lst_range": [
+   35.7,
+   47.5
+  ],
+  "night_range": [
+   18.9,
+   23.0
+  ],
+  "veryhigh_n": 40,
+  "veryhigh_pop": 78314,
+  "holc_lst_by_grade": {
+   "A": 40.67,
+   "B": 40.16,
+   "C": 43.8,
+   "D": 44.66
+  },
+  "holc_tree_by_grade": {
+   "A": 44.1,
+   "B": 47.3,
+   "C": 18.0,
+   "D": 7.9
+  },
+  "n_cooling_centers": 29
+ },
+ "trees": {
+  "per_tree_c": -0.026123641562313414,
+  "lo": -0.047218509261758676,
+  "hi": -0.005028773862868149,
+  "young_trees": 5959,
+  "vacant_sites": 44469,
+  "neighborhoods": 277,
+  "scenes": 111
+ }
+}
