@@ -2,9 +2,5 @@
 [refresh] ACS 2024 ok: 199 tracts, 18 tables
 [refresh] PLACES newest release in catalog: (2025, 'cwsq-ngmh', 'PLACES: Local Data for Better Health, Census Tract Data, 2025 release')
 [refresh] PLACES 2025 cwsq-ngmh 198 tracts
-[refresh] host timed out, skipping it for the rest of this build: geodata.baltimorecity.gov
-[refresh] city layer 4 https://geodata.baltimorecity.gov/egis/rest/services/CityView/BCRPServices/FeatureServer/4/query?where=1%3D1&outFields=*: <urlopen error timed out>
-[refresh] city layer 2 geodata.baltimorecity.gov skipped (timed out earlier in this build)
-[refresh] city layer 1 geodata.baltimorecity.gov skipped (timed out earlier in this build)
 [refresh] OSM: keeping this morning's snapshot (code-only run)
-[refresh] done: 199 tracts, 55 CSAs; sources: {'acs': 'live', 'places': 'live', 'heat': 'research release', 'svi': 'research release', 'holc': 'historical', 'trees': 'research release', 'census2020': 'fixed', 'cooling': 'live', 'winter': 'verified 2026-10-26', 'parks': 'cached (city server unreachable)', 'osm': 'cached'}
+[refresh] done: 199 tracts, 55 CSAs; sources: {'acs': 'live', 'places': 'live', 'heat': 'research release', 'svi': 'research release', 'holc': 'historical', 'trees': 'research release', 'census2020': 'fixed', 'cooling': 'live', 'winter': 'verified 2026-10-26', 'parks': 'live', 'osm': 'cached'}
