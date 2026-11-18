@@ -1,5 +1,5 @@
-"""One-off probe: where did the Recreation & Parks layers move?"""
-import json, urllib.request, urllib.parse, re
+"""One-off probe: fields of the new Recreation & Parks layers."""
+import json, urllib.request
 
 
 def j(u, t=30):
@@ -10,24 +10,13 @@ def j(u, t=30):
         return {"_err": str(e)[:120]}
 
 
-print("geodata:", j("https://geodata.baltimorecity.gov/egis/rest/services/CityView/BCRPServices/FeatureServer?f=json", 25).get("_err", "OK"))
-B = "https://baltegis.baltimorecity.gov"
-for folder in ["/server/rest/services/CityView", "/Legacy/rest/services/CityView", "/mapping/rest/services/CityView"]:
-    d = j(B + folder + "?f=json")
-    names = [s["name"].split("/")[-1] + ":" + s["type"] for s in d.get("services", [])]
-    print("FOLDER", folder, [n for n in names if re.search(r"BCRP|Park|Pool|Rec", n, re.I)], d.get("_err", ""))
-    for n in names:
-        if re.search(r"BCRP|Park|Pool|Rec", n, re.I):
-            nm, typ = n.split(":")
-            s = j(f"{B}{folder}/{nm}/{typ}?f=json")
-            for L in s.get("layers", []):
-                url = f"{B}{folder}/{nm}/{typ}/{L['id']}"
-                c = j(url + "/query?where=1%3D1&returnCountOnly=true&f=json")
-                f = j(url + "?f=json")
-                print("   ", url, "|", L["name"], "| count", c.get("count"), "|", [x["name"] for x in f.get("fields", [])][:12])
-for q in ["Baltimore parks BCRP", "Baltimore recreation centers", "Baltimore swimming pools"]:
-    r = j("https://www.arcgis.com/sharing/rest/search?" + urllib.parse.urlencode({"q": q + ' type:"Feature Service"', "num": 8, "f": "json"}))
-    print("Q", q)
-    for x in r.get("results", []):
-        if re.search("balt", str(x.get("owner")) + str(x.get("url")), re.I):
-            print("   ", x.get("owner"), "|", x.get("title"), "|", x.get("url"))
+A = "https://services1.arcgis.com/UWYHeuuJISiGmgXx/arcgis/rest/services"
+for svc in ["bcrpParks2023", "recreationCenter2023", "pool2023"]:
+    s = j(f"{A}/{svc}/FeatureServer?f=json")
+    for L in s.get("layers", []):
+        u = f"{A}/{svc}/FeatureServer/{L['id']}"
+        f = j(u + "?f=json"); c = j(u + "/query?where=1%3D1&returnCountOnly=true&f=json")
+        smp = j(u + "/query?where=1%3D1&outFields=*&returnGeometry=false&resultRecordCount=2&f=json")
+        print("LAYER", u, "|", L["name"], f.get("geometryType"), "| count", c.get("count"))
+        print("   fields:", [x["name"] for x in f.get("fields", [])][:25])
+        print("   sample:", json.dumps([x.get("attributes") for x in smp.get("features", [])])[:500])
