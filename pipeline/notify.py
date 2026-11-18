@@ -21,12 +21,21 @@ def gh(*args):
     return r.stdout
 
 
+BACKUPS = {"overpass.kumi.systems", "overpass.private.coffee"}   # spare OpenStreetMap mirrors, used only if the main one fails
+
+
 def issue(label, title, problems):
     gh("label", "create", label, "--color", "d73a4a", "--description", "Automatic alert from the data pipeline", "--force")
     open_ = json.loads(gh("issue", "list", "--label", label, "--state", "open", "--json", "number") or "[]")
     if problems:
         body = "\n".join(f"- {p}" for p in problems) + f"\n\nDetails: {RUN}\n\nThe live site keeps showing the last good version until this is fixed. This issue closes itself when the next run is healthy."
-        if open_: gh("issue", "comment", str(open_[0]["number"]), "--body", "Still happening:\n" + body)
+        if open_:
+            # comment only when the problem changes, so an ongoing issue doesn't send an email every 6 hours
+            n = str(open_[0]["number"])
+            last = json.loads(gh("issue", "view", n, "--json", "body,comments") or "{}")
+            prev = (last.get("comments") or [{}])[-1].get("body") or last.get("body") or ""
+            if all(p in prev for p in problems): print("[notify] unchanged, not commenting"); return
+            gh("issue", "comment", n, "--body", "The problem changed:\n" + body)
         else: gh("issue", "create", "--title", title, "--label", label, "--body", f"@{OWNER} the site needs a look.\n\n" + body)
         print("[notify] reported:", problems)
     else:
@@ -52,7 +61,12 @@ def main():
     try:
         m = get("data/meta.json"); h = age_h(m["built"])
         if h > 36: problems.append(f"Neighborhood data is {h / 24:.1f} days old (it should rebuild every morning)")
-        if m.get("skipped_hosts"): problems.append("These servers did not answer in the last build, so older copies were kept: " + ", ".join(m["skipped_hosts"]))
+        # A server that misses one build is normal (the site keeps its last copy). Only flag a main source that has
+        # been down for 5+ days in a row; backup mirrors never count.
+        since = m.get("skipped_since") or {}
+        today = datetime.now(timezone.utc).date()
+        long_down = sorted(h for h, d in since.items() if h not in BACKUPS and (today - datetime.fromisoformat(d).date()).days >= 5)
+        if long_down: problems.append("These servers have not answered for 5 or more days, so the site is showing older copies of their data: " + ", ".join(long_down))
     except Exception as e: problems.append(f"Could not read the live site's build record: {e}")
     try:
         s = get("data/sensors.json"); h = age_h(s["updated"])

@@ -518,8 +518,13 @@ src("winter", name="FY 2027 Winter Shelter & Code Purple Plan", by="Baltimore Ci
     url=winter["source_url"], status=f"verified {winter['verified']}")
 
 
-def city_layer(n, keep):
-    g = fjson(f"https://geodata.baltimorecity.gov/egis/rest/services/CityView/BCRPServices/FeatureServer/{n}/query?where=1%3D1&outFields=*&outSR=4326&geometryPrecision=5&f=geojson", timeout=120)
+# Recreation & Parks layers. The old CityView server (geodata.baltimorecity.gov) stopped answering in Nov 2026;
+# the department now publishes the same layers on the city's ArcGIS Online account.
+BCRP = "https://services1.arcgis.com/UWYHeuuJISiGmgXx/arcgis/rest/services"
+
+
+def city_layer(path, keep):
+    g = fjson(f"{BCRP}/{path}/query?where=1%3D1&outFields=*&outSR=4326&geometryPrecision=5&f=geojson", timeout=120)
     for f in g["features"]:
         pr = f["properties"]; f["properties"] = {k2: pr.get(k1) for k1, k2 in keep.items() if k1 in pr}
         f["properties"]["name"] = f["properties"].get("name") or next((str(v) for k, v in pr.items() if "name" in k.lower() and v), "")
@@ -527,20 +532,21 @@ def city_layer(n, keep):
 
 
 layers_ok = {}
-for n, fname, keep in [(4, "parks.geojson", {"NAME": "name", "ACRES": "acres"}), (2, "pools.geojson", {"NAME": "name", "ADDRESS": "address", "TYPE": "type"}),
-                       (1, "rec_centers.geojson", {"NAME": "name", "ADDRESS": "address"})]:
+for n, fname, keep in [("bcrpParks2023/FeatureServer/1", "parks.geojson", {"parkName": "name", "prkAcreage": "acres", "parkAddr": "address"}),
+                       ("pool2023/FeatureServer/0", "pools.geojson", {"poolName": "name", "ADDRESS": "address", "TYPE": "type", "status": "status"}),
+                       ("recreationCenter2023/FeatureServer/0", "rec_centers.geojson", {"NAME": "name", "ADDRESS": "address"})]:
     try:
         g = city_layer(n, keep)
         if len(g["features"]) < 3: raise RuntimeError("too few features")
         json.dump(g, open(os.path.join(OUT, fname), "w"), separators=(",", ":")); layers_ok[fname] = len(g["features"])
     except Exception as e:
         log("city layer", n, e)
-for n_, fname in [(4, "parks.geojson"), (2, "pools.geojson"), (1, "rec_centers.geojson")]:
+for fname in ["parks.geojson", "pools.geojson", "rec_centers.geojson"]:
     if fname not in layers_ok and os.path.exists(os.path.join(OUT, fname)): layers_ok[fname] = "kept previous"
 if layers_ok:
     fresh = any(isinstance(v, int) for v in layers_ok.values())
     src("parks", name="Parks, pools and recreation centers (BCRP)", by="Baltimore City Department of Recreation & Parks", vintage="current city layer",
-        url="https://geodata.baltimorecity.gov/egis/rest/services/CityView/BCRPServices/FeatureServer", status="live" if fresh else "cached (city server unreachable)", counts=layers_ok)
+        url="https://services1.arcgis.com/UWYHeuuJISiGmgXx/arcgis/rest/services/bcrpParks2023/FeatureServer", status="live" if fresh else "cached (city server unreachable)", counts=layers_ok)
 
 # --------------------------------------------------------------------------- OpenStreetMap layers (daily snapshot)
 BB = "(39.197,-76.712,39.372,-76.529)"
@@ -623,7 +629,10 @@ json.dump({
 }, open(os.path.join(OUT, "catalog.json"), "w"), indent=1)
 json.dump({"cooling": cool, "winter": winter}, open(os.path.join(OUT, "centers.json"), "w"), indent=1)
 json.dump(json.load(open(os.path.join(BASE, "research.json"))), open(os.path.join(OUT, "research.json"), "w"), indent=1)
-meta = {"built": NOW.isoformat(timespec="seconds"), "sources": SOURCES, "skipped_hosts": sorted(DEAD_HOSTS),
+_since = cache_get("skipped_since.json") or {}
+_since = {h: _since.get(h, NOW.date().isoformat()) for h in DEAD_HOSTS}
+cache_put("skipped_since.json", _since)
+meta = {"built": NOW.isoformat(timespec="seconds"), "sources": SOURCES, "skipped_hosts": sorted(DEAD_HOSTS), "skipped_since": _since,
         "tracts": len(IDS), "residential_tracts": len(IDS) - len(NONRES), "csas": len(CSA), "nonres": NONRES}
 json.dump(meta, open(os.path.join(OUT, "meta.json"), "w"), indent=1)
 log("done:", len(IDS), "tracts,", len(CSA), "CSAs; sources:", {k: v["status"] for k, v in SOURCES.items()})
