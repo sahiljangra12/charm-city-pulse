@@ -490,6 +490,23 @@ const ES_DICT = {
   "Water in Basement": "Water in Basement",
   "Flooded Street": "Flooded Street",
   "Rat Rubout": "Rat Rubout",
+  // ---------- simpler phone layout ----------
+  "Right now in Baltimore": "Ahora mismo en Baltimore",
+  "Weather: next # hours": "El tiempo: próximas # horas",
+  "Trash day, snow routes, flood risk": "Día de basura, rutas de nieve, riesgo de inundación",
+  "Food": "Comida",
+  "Free food and stores that take SNAP": "Comida gratis y tiendas que aceptan SNAP",
+  "Rent and bills": "Renta y facturas",
+  "Eviction help, rent, BGE, heat": "Ayuda con desalojos, renta, BGE, calefacción",
+  "Next bus": "Próximo autobús",
+  "Buses and trains near you": "Autobuses y trenes cerca de usted",
+  "No heat, flooding, trash, rats": "Sin calefacción, inundación, basura, ratas",
+  " This free site tells you if it's safe outside today and where to get help in Baltimore. Start by adding your address on ": " Este sitio gratuito le dice si es seguro salir hoy y dónde conseguir ayuda en Baltimore. Empiece agregando su dirección en ",
+  "Get help": "Pedir ayuda",
+  "More": "Más",
+  "How this area compares": "Cómo se compara esta zona",
+  "Heat, shade, health, money, housing and getting around, compared with the rest of Baltimore.": "Calor, sombra, salud, dinero, vivienda y transporte, comparados con el resto de Baltimore.",
+  "How it compares": "Cómo se compara",
 };
 
 /* Sentences built from parts. Each entry: [regex, (match, t) => Spanish]. t() translates a part. */
@@ -589,6 +606,7 @@ const ES_PATTERNS = [
   [/^Saved as (.+)\. It's on this device only\.$/, (m, t) => `Guardado como ${t(m[1])}. Solo en este dispositivo.`],
   [/^Remove "(.+)"$/, (m, t) => `Quitar "${t(m[1])}"`],
   [/^(.+?) · (.+)$/, (m, t) => { const a = t(m[1]); return a === m[1] ? null : `${a} · ${m[2]}`; }],
+  [/^Show (\d+) more$/, m => `Ver ${m[1]} más`],
 ];
 
 /* Reasons on the Plan hour bars: "cold (6°)", "unhealthy air (AQI 120)", "very strong sun (UV 9)", "windy (30 mph)", "80% rain chance", "dark" */

@@ -119,7 +119,7 @@ const APP = (() => {
     U.$$("#v-" + name + " .place-list, #v-" + name + " .facts, #v-" + name + " .todo, #v-" + name + " .meters, #v-" + name + " .actions, #v-" + name + " .grid.g3, #v-" + name + " .grid.g2").forEach(el => { el.classList.remove("stagger"); void el.offsetWidth; el.classList.add("stagger"); });
     setTimeout(() => A.maps.forEach(m => m.invalidateSize()), 80);
     const sec = rest.find(x => /^sec-/.test(x));
-    if (sec) setTimeout(() => { const el = document.getElementById(sec); if (el) el.scrollIntoView({ behavior: FX.reduce ? "auto" : "smooth", block: "start" }); }, 260);
+    if (sec) setTimeout(() => { const el = document.getElementById(sec); const f = el?.closest("details.fold"); if (f) f.open = true; if (el) (f || el).scrollIntoView({ behavior: FX.reduce ? "auto" : "smooth", block: "start" }); }, 260);
     else if (!route.first) window.scrollTo(0, 0);
     route.first = false;
     // keyboard users must be able to scroll wide tables: make each scroll box focusable and named
@@ -129,7 +129,10 @@ const APP = (() => {
   function buildNav() {
     const link = ([k, t, ic]) => `<a href="#${k}" data-tab="${k}">${I(ic, 20)}<span>${t}</span></a>`;
     U.$("#mainnav").innerHTML = TABS.map(link).join("") + link(["explore", "Data", "chart"]).replace('data-tab="explore"', 'data-tab="data"');
-    U.$("#appbar").innerHTML = TABS.map(link).join("");
+    // phone tab bar: the four things people use most, plus More (opens the full menu)
+    U.$("#appbar").innerHTML = [["today", "Today", "sun"], ["place", "My block", "pin"], ["help", "Get help", "phone"], ["map", "Map", "map"]].map(link).join("") +
+      `<a href="#more" data-more>${I("grid", 20)}<span>More</span></a>`;
+    U.$("#appbar [data-more]").addEventListener("click", e => { e.preventDefault(); U.$("#menuBtn")?.click(); });
     const sub = DATA.map(([k, t]) => `<a href="#${k}" data-s="${k}">${t}</a>`).join("");
     U.$$("[data-sub]").forEach(n => n.innerHTML = sub);
     U.$("#alertBtn").innerHTML = I("bell", 20); U.$("#dataBtn").innerHTML = I("chart", 20); U.$("#sheetClose").innerHTML = I("x", 20);

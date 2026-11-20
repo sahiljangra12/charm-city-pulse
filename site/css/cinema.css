@@ -434,3 +434,80 @@ table.api code{white-space:normal;word-break:break-all}table.api{width:100%}
 .methods,.methods a,.nb{overflow-wrap:anywhere}
 .nb .numbers{width:100%}.nb .numbers td{white-space:normal}.nb .numbers td.n{white-space:nowrap}
 @media (max-width:520px){.nb .numbers td.muted{display:none}.nb-prio{min-width:0}}
+
+/* =============== Simpler, phone-first layout (Nov 2026) =============== */
+/* Six big "What do you need?" buttons */
+.actions.six{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;border:0!important;background:none!important}
+.actions.six .action{border:1px solid var(--line)!important;border-radius:16px;background:var(--surface);min-height:120px;padding:16px!important;display:flex;flex-direction:column;gap:6px;text-decoration:none}
+.actions.six .action b{font-size:1.08rem}
+.actions.six .action span:not(.tile){font-size:.88rem;color:var(--ink-2);line-height:1.35}
+.actions.six .action:active{transform:scale(.98)}
+@media (max-width:700px){.actions.six{grid-template-columns:repeat(2,minmax(0,1fr))}.actions.six .action{min-height:112px;padding:14px!important}}
+
+/* One-line welcome */
+.welcome.slim{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;margin:12px 0 0;border-radius:14px}
+.welcome.slim p{margin:0;font-size:.95rem;line-height:1.45;flex:1}
+.welcome.slim .close-x{position:static;flex:none}
+
+/* "Show more" under the top alerts */
+.prios .showmore{justify-self:start;margin-top:4px}
+
+/* Tap-to-open sections */
+details.fold{border:1px solid var(--line);border-radius:16px;background:var(--surface);margin:12px 0;overflow:hidden}
+details.fold>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:4px 16px}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary .section-h{flex:1;margin:0!important;padding:12px 0!important;border:0!important}
+details.fold>summary .section-h h2{font-size:1.15rem;margin:0}
+details.fold>summary .section-h .sub{margin:4px 0 0;font-size:.88rem}
+details.fold>summary .section-h a{display:none}
+details.fold[open]>summary .section-h a{display:inline}
+details.fold .fold-chev{transition:transform .2s;flex:none;color:var(--ink-3)}
+details.fold .fold-chev .ic{transform:rotate(90deg)}
+details.fold[open] .fold-chev{transform:rotate(180deg)}
+details.fold>.fold-body{padding:0 14px 16px}
+@media print{details.fold{border:0}details.fold>.fold-body{display:block!important}.fold-chev{display:none}}
+
+@media (max-width:760px){
+  /* Hero: one screen-third, not the whole screen */
+  .hero{min-height:0!important}
+  .hero-in{padding:calc(var(--header-h) + 18px) 18px 22px!important}
+  .hero .temp{font-size:3rem!important;line-height:1!important;margin-bottom:10px!important;flex-wrap:wrap}
+  .hero .temp small{font-size:.7rem!important;letter-spacing:.14em!important;opacity:.85}
+  .hero .when{margin-bottom:10px!important;font-size:.68rem!important;letter-spacing:.16em!important}
+  .hero .answer{font-size:clamp(1.9rem,8.6vw,2.4rem)!important;margin-bottom:8px!important}
+  .hero .why{font-size:.98rem!important}
+  .hero .stats{margin-top:12px!important;gap:6px!important}
+  .hero .cta{display:none!important}
+  /* Help-now: one big red button; read-aloud lives in the menu */
+  .helpnow-bar{margin:14px 0 6px}
+  .helpnow-bar>[data-speak]{display:none}
+  .helpnow{padding:16px;font-size:1.02rem;border-radius:16px}
+  /* The long photo stories are for big screens */
+  #hFeatures{display:none}
+  /* Page banners: a strip, not half the screen */
+  .pagehead.banner{min-height:0!important}
+  .banner-in{padding:calc(var(--header-h) + 22px) 18px 18px!important}
+  .pagehead h1{font-size:clamp(1.9rem,9vw,2.5rem)!important}
+  /* Folded pages don't need the "On this page" bar */
+  #v-help>.jumpbar,#pBody>.jumpbar{display:none}
+  /* Bigger, easier tap targets */
+  .section-h h2{font-size:1.25rem}
+  .place{padding:14px!important}
+  .round.call,.round.dir{width:46px;height:46px}
+  main{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+}
+
+/* "Open now" labels read as one line of text */
+.openb{display:inline-block!important;width:auto;max-width:100%;white-space:normal;line-height:1.35}
+.openb .ic{vertical-align:-2px;margin-right:5px}
+.prio[hidden]{display:none!important}
+.need-h{margin-top:22px!important}
+.hero .temp small{opacity:1!important;text-shadow:0 1px 8px rgba(0,0,0,.8)}
+/* Phones: give names and addresses the full width */
+@media (max-width:480px){
+  .place>.tile{display:none}
+  .place{grid-template-columns:1fr auto!important;gap:10px!important}
+  .place .go{flex-direction:column;align-items:flex-end;gap:6px}
+}
+.area-hero{grid-template-columns:1fr!important}
+.openb .ic{display:inline-block!important;width:14px;height:14px}

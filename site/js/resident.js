@@ -95,15 +95,13 @@ const RES = (() => {
     const place = s === "winter" ? ["flame", "var(--s3)", "Find a warm place", "Warming centers and shelters near you"] : s === "summer" ? ["snow", "var(--link)", "Find a cool place", "Cooling centers near you on hot days"] : ["home", "var(--s3)", "Warm or cool places", "Warming centers open from November 15"];
     const A = [
       ["#help/sec-places", place[0], place[1], place[2], place[3]],
-      ["#place", "pin", "var(--accent)", "Check my block", "Heat, flood risk and help near your address"],
-      ["#plan", "calendar", "var(--s0)", "Plan my day", "The best hours for a walk, run or ride"],
-      ["#help/sec-food", "basket", "#b8382b", "Food help", "Free food, pantries and stores that take SNAP"],
-      ["#place/sec-transit", "bus", "#6b4c9a", "Buses near me", "Next scheduled buses and trains"],
-      ["https://balt311.baltimorecity.gov/citizen/s/", "doc", "var(--link)", "Report a problem", "No heat, flooding, trash: tell 311"],
-      ["#alerts", "bell", "var(--s3)", "Get alerts", "Texts or phone alerts for bad weather"],
-      ["#map", "map", "#1e9e5a", "See the map", "Parks, fountains, centers, flood zones"],
+      ["#place", "pin", "var(--accent)", "My block", "Trash day, snow routes, flood risk"],
+      ["#help/sec-food", "basket", "#b8382b", "Food", "Free food and stores that take SNAP"],
+      ["#help/sec-home", "home", "#6b4c9a", "Rent and bills", "Eviction help, rent, BGE, heat"],
+      ["#place/sec-transit", "bus", "#1d6fb8", "Next bus", "Buses and trains near you"],
+      ["tel:311", "phone", "var(--s0)", "Call 311", "No heat, flooding, trash, rats"],
     ];
-    const el = U.$("#hActions"); el.classList.add("stagger", "eight");
+    const el = U.$("#hActions"); el.classList.add("stagger", "six"); el.classList.remove("eight");
     el.innerHTML = A.map(([h, ic, col, t, d, cls]) => `<a class="action ${cls || ""}" href="${h}"${h.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>${cls ? `<span class="tile">${I(ic)}</span>` : tile(ic, col)}<b>${t}</b><span>${d}</span></a>`).join("");
   }
   document.addEventListener("click", e => { const a = e.target.closest('a[href="#alerts"]'); if (a) { e.preventDefault(); ALERTS.open(); } });
@@ -111,12 +109,7 @@ const RES = (() => {
   function drawWelcome() {
     const el = U.$("#hWelcome"); if (!el) return;
     if (U.store.get("welcomed", false)) { el.innerHTML = ""; return; }
-    el.innerHTML = `<div class="welcome"><button class="iconbtn close-x" data-close aria-label="Close">${I("x", 18)}</button>
-      <span class="eyebrow">New here?</span><h2>A free guide to Baltimore's weather, air and help</h2>
-      <ul><li>${I("sun", 20)}<span><b>Today</b> tells you if it's safe to be outside right now.</span></li>
-        <li>${I("pin", 20)}<span><b>My block</b> shows heat, flood risk, food and buses near your address.</span></li>
-        <li>${I("phone", 20)}<span><b>Help</b> has phone numbers, warm and cool places, and your rights.</span></li></ul>
-      <div class="cta"><a class="btn" href="#place">Start with my block</a><a class="btn alt" href="#guide">How it works</a><button class="btn alt" data-close>Got it</button></div></div>`;
+    el.innerHTML = `<div class="welcome slim"><p><b>New here?</b> This free site tells you if it's safe outside today and where to get help in Baltimore. Start by adding your address on <a href="#place">My block</a>.</p><button class="iconbtn close-x" data-close aria-label="Close">${I("x", 18)}</button></div>`;
     el.querySelectorAll("[data-close]").forEach(b => b.onclick = () => { U.store.set("welcomed", true); el.innerHTML = ""; });
   }
   let homeWired = false;
@@ -202,20 +195,22 @@ const RES = (() => {
       let top3 = worst.filter(k => lv(k) >= 3).slice(0, 3); top3 = [...top3, ...["heat", "trees", "health"].filter(k => !top3.includes(k))].slice(0, 3);
       const unsure = Object.keys(THEMES).some(k => p["u_" + k]);
       const J = (k, t) => `<a href="#place/${id}/${k}">${t}</a>`;
-      body.innerHTML = `<nav class="jumpbar" aria-label="On this page"><span>On this page</span>${J("sec-summary", "Summary")}${J("sec-help", "Closest help")}${J("sec-services", "Trash & services")}${J("sec-food", "Food")}${J("sec-transit", "Buses")}${J("sec-trends", "Changes")}${J("sec-numbers", "All numbers")}<button class="linkbtn" data-speak aria-pressed="false"><span>Read aloud</span></button></nav>
+      body.innerHTML = `<nav class="jumpbar" aria-label="On this page"><span>On this page</span>${J("sec-summary", "Summary")}${J("sec-services", "Trash & services")}${J("sec-help", "Closest help")}${J("sec-compare", "How it compares")}${J("sec-food", "Food")}${J("sec-transit", "Buses")}${J("sec-trends", "Changes")}${J("sec-numbers", "All numbers")}<button class="linkbtn" data-speak aria-pressed="false"><span>Read aloud</span></button></nav>
         <div class="area-hero" id="sec-summary">
         <div class="card"><span class="muted" style="font-size:.92rem">Your neighborhood</span><div class="area-title">${U.esc(p.csa)}</div>
           <p class="summary">${U.esc(sum.join(" and "))}.</p>${floodBox}</div>
-        <div class="card"><h3 style="margin-bottom:2px">Compared with the rest of Baltimore</h3><p class="note" style="margin-top:0">Fewer bars is easier, more bars is harder.</p><div class="meters">${Object.entries(THEMES).map(([k, t]) => { const l = lv(k);
-          return `<div class="meterrow"><div class="t">${tile(t.icon, l < 0 ? "var(--ink-3)" : LEVEL_C[l], 20).replace('class="tile"', 'class="tile sm"')}<div><b>${t.title}</b><span>${l < 0 ? "No data" : t.words[l]}</span></div></div><div class="scale on" style="--c:${LEVEL_C[Math.max(0, l)]}">${[0, 1, 2, 3, 4].map(n => `<i class="${n <= l ? "f" : ""}"></i>`).join("")}</div></div>`; }).join("")}</div>
-          ${unsure ? `<p class="note">Some of these come from survey estimates that can be off for small areas.</p>` : ""}</div></div>
-        <div class="section-h"><h2>What you can do</h2></div>
-        <ul class="todo stagger">${top3.map(k => { const [ic, t, d, href] = ACTIONS[k]; return `<li>${tile(ic, "var(--link)")}<div><b>${href ? `<a href="${href}"${href.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>${t}</a>` : t}</b><span>${d}</span></div></li>`; }).join("")}</ul>
+        </div>
+        <div class="section-h" id="sec-services"><div><h2>City services here</h2><p class="sub">Trash and recycling day, bulk pickup, sweeping, snow routes, your council member and useful places.</p></div></div>
+        <div id="pServices"><div class="skeleton" style="height:90px"></div></div>
         <div class="section-h" id="sec-help"><h2>Closest help</h2><a href="#help">All places and phone numbers</a></div>
         <div class="place-list stagger">${cards}${MORE.leadCard(p, null)}</div>
         <div id="pReport"></div>
-        <div class="section-h" id="sec-services"><div><h2>City services here</h2><p class="sub">Trash and recycling day, bulk pickup, sweeping, snow routes, your council member and useful places.</p></div></div>
-        <div id="pServices"><div class="skeleton" style="height:90px"></div></div>
+        <div class="section-h" id="sec-compare"><div><h2>How this area compares</h2><p class="sub">Heat, shade, health, money, housing and getting around, compared with the rest of Baltimore.</p></div></div>
+        <div class="card"><p class="note" style="margin-top:0">Fewer bars is easier, more bars is harder.</p><div class="meters">${Object.entries(THEMES).map(([k, t]) => { const l = lv(k);
+          return `<div class="meterrow"><div class="t">${tile(t.icon, l < 0 ? "var(--ink-3)" : LEVEL_C[l], 20).replace('class="tile"', 'class="tile sm"')}<div><b>${t.title}</b><span>${l < 0 ? "No data" : t.words[l]}</span></div></div><div class="scale on" style="--c:${LEVEL_C[Math.max(0, l)]}">${[0, 1, 2, 3, 4].map(n => `<i class="${n <= l ? "f" : ""}"></i>`).join("")}</div></div>`; }).join("")}</div>
+          ${unsure ? `<p class="note">Some of these come from survey estimates that can be off for small areas.</p>` : ""}</div>
+        <div class="section-h" id="sec-todo"><h2>What you can do</h2></div>
+        <ul class="todo stagger">${top3.map(k => { const [ic, t, d, href] = ACTIONS[k]; return `<li>${tile(ic, "var(--link)")}<div><b>${href ? `<a href="${href}"${href.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>${t}</a>` : t}</b><span>${d}</span></div></li>`; }).join("")}</ul>
         <div class="section-h" id="sec-food"><div><h2>Food help nearby</h2><p class="sub">Free food sites and stores that take SNAP (EBT).</p></div><a href="#help/sec-food">More food help</a></div>
         <div class="place-list" id="pFood"><div class="skeleton" style="height:70px"></div></div>
         <div class="section-h" id="sec-transit"><div><h2>Buses and trains nearby</h2><p class="sub">The next scheduled times at the closest stops.</p></div></div>
@@ -225,9 +220,10 @@ const RES = (() => {
         <details class="more" id="sec-numbers"><summary>${tile("chart", "var(--ink)", 20).replace('class="tile"', 'class="tile sm"')}<span>See the numbers<br><small style="font-weight:500">Every measure behind these comparisons, with margins of error and source years</small></span>${I("chev", 20).replace('class="ic"', 'class="ic chev"')}</summary><div class="inner"><div class="card" style="overflow-x:auto">${numbersTable(p)}</div></div></details>
         <div class="report-actions"><button class="btn small" data-print>Print or save as PDF</button><button class="btn small alt" data-share>Copy link to this report</button></div>
         <p class="note print-only">Charm City Pulse report for ${U.esc(p.csa)} (census tract ${U.esc(p.name.replace("Tract ", ""))}), data build ${new Date(D().meta.built).toLocaleDateString(LOC(), { dateStyle: "long" })}. ${location.origin}${location.pathname}#place/${id}</p>`;
+      EASE.fold(body, ["sec-help", "sec-services"]);
       CITY.section(U.$("#pServices"), here[0], here[1], !!pt); MORE.foodSection(U.$("#pFood"), here[0], here[1]); MORE.transitSection(U.$("#pTransit"), here[0], here[1]); MORE.trendsSection(U.$("#pTrends"), p.csa);
       MORE.file("trends.json").then(T => { const lc = MORE.leadCard(p, T.csa[p.csa]); const old = body.querySelector(".place.lead"); if (old) old.outerHTML = lc; else if (lc) body.querySelector(".place-list").insertAdjacentHTML("beforeend", lc); }).catch(() => {});
-      body.querySelector("[data-print]").onclick = () => { body.querySelectorAll("details.more").forEach(d => d.open = true); window.print(); };
+      body.querySelector("[data-print]").onclick = () => { body.querySelectorAll("details.more, details.fold").forEach(d => d.open = true); window.print(); };
       body.querySelector("[data-share]").onclick = () => SHARE.link(`${location.origin}${location.pathname}#place/${id}`, `${p.csa}: heat, flood risk and help nearby`);
     }
     pLayer.setStyle(g => g.properties.id === id ? { color: "#0c1c2c", weight: 3, fillOpacity: .25, fillColor: "#e8a800" } : g.properties.nonres ? APP.NONRES_STYLE : { color: "#8a9aa6", weight: .6, fillOpacity: .04, fillColor: "#999" });
@@ -385,6 +381,7 @@ const RES = (() => {
     U.$("#glossary").innerHTML = MORE.glossary();
     U.$("#helpRights").innerHTML = rights();
     U.$("#helpHome").innerHTML = homeHelp();
+    EASE.fold(U.$("#v-help"), ["sec-call", "sec-places"]);
     const mo = new Date().getMonth() + 1; if (mo >= 10 || mo <= 4) U.$("#helpRights").insertAdjacentHTML("beforeend", MORE.report("heat"));
     MORE.foodSection(U.$("#helpFood"), here[1], here[0]); MORE.harborSection(U.$("#helpHarbor"));
     const P = [["tree", "var(--s0)", "TreeBaltimore", "A free street tree, planted and watered for you.", "https://www.treebaltimore.org"],

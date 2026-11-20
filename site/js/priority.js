@@ -96,13 +96,15 @@ const PRIO = (() => {
     const top = items.slice(0, 5), urgent = top.filter(x => x.s >= 45).length;
     U.$("#hPrioSub").textContent = urgent ? `${urgent} thing${urgent > 1 ? "s" : ""} to act on, most important first.` : "Nothing urgent right now. Here's what's useful to know.";
     const key = top.map(x => x.title).join("|"); const fresh = box.dataset.k !== key; box.dataset.k = key;
+    const SHOW = 2;
     box.innerHTML = top.map((x, i) => { const l = lv(x.s), href = x.act?.[1];
-      return `<article class="prio ${l.key}${i === 0 ? " first" : ""}" style="--c:${l.c}">
+      return `<article class="prio ${l.key}${i === 0 ? " first" : ""}"${i >= SHOW ? " hidden data-extra" : ""} style="--c:${l.c}">
         <span class="tile">${I(x.icon, i === 0 ? 26 : 22)}</span>
         <div class="body"><span class="badge">${l.label}</span><h3>${U.esc(x.title)}</h3><p>${U.esc(x.text)}</p>
           ${x.more ? `<details><summary>What to do</summary><p>${U.esc(x.more)}</p></details>` : ""}${x.link ? `<p class="src"><a href="${U.esc(x.link)}" target="_blank" rel="noopener">${x.linkText || "Read the city's announcement"}</a></p>` : ""}${x.act2 ? `<p class="src"><a class="btn small alt" href="${x.act2[1]}">${I("heart", 16)}<span>${x.act2[0]}</span></a></p>` : ""}</div>
         ${x.act ? `<a class="btn ${i === 0 && l.key !== "fyi" ? "" : "alt"} small go" href="${href}">${href.startsWith("tel:") ? I("phone", 16) : ""}<span>${x.act[0]}</span>${href.startsWith("tel:") ? "" : I("chev", 16)}</a>` : ""}
-      </article>`; }).join("");
+      </article>`; }).join("") + (top.length > SHOW ? `<button class="btn alt small showmore" data-showmore>Show ${top.length - SHOW} more</button>` : "");
+    box.querySelector("[data-showmore]")?.addEventListener("click", e => { box.querySelectorAll("[data-extra]").forEach(n => n.hidden = false); e.currentTarget.remove(); });
     if (fresh) { box.classList.remove("stagger"); void box.offsetWidth; box.classList.add("stagger"); }
   }
   return { build, render };

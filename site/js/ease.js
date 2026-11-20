@@ -96,6 +96,26 @@ const EASE = (() => {
     addEventListener("hashchange", () => window.goatcounter?.count?.({ path: location.pathname + location.hash.split("/")[0] }));
   }
 
+  // ---------------- Fold long pages into tap-to-open sections ----------------
+  // Every ".section-h" with an id starting "sec-" becomes the summary of a <details>; the content up to the next
+  // such heading goes inside. `open` lists sections that start open. Safe to call again after a re-render.
+  function fold(root, open = []) {
+    if (!root) return;
+    const heads = [...root.children].filter(n => n.matches?.('.section-h[id^="sec-"]'));
+    heads.forEach((h, i) => {
+      const d = document.createElement("details"); d.className = "fold"; d.dataset.sec = h.id;
+      if (open.includes(h.id)) d.open = true;
+      const s = document.createElement("summary"); const body = document.createElement("div"); body.className = "fold-body";
+      h.parentNode.insertBefore(d, h);
+      let n = d.nextSibling; const stop = heads[i + 1];
+      s.appendChild(h); s.insertAdjacentHTML("beforeend", `<span class="fold-chev" aria-hidden="true">${I("chev", 20)}</span>`);
+      n = d.nextSibling;
+      while (n && n !== stop && !(n.matches?.(".report-actions, .print-only, footer"))) { const next = n.nextSibling; body.appendChild(n); n = next; }
+      d.append(s, body);
+      d.addEventListener("toggle", () => { if (d.open) setTimeout(() => window.dispatchEvent(new Event("resize")), 60); });
+    });
+  }
+
   function init() {
     document.addEventListener("click", e => {
       if (e.target.closest("[data-speak]")) { e.preventDefault(); speak(); }
@@ -105,5 +125,5 @@ const EASE = (() => {
     document.querySelectorAll("[data-langs]").forEach(el => el.innerHTML = langMenu());
     count();
   }
-  return { init, savedBar, speak, langMenu, views: { now: { show: nowShow } } };
+  return { init, savedBar, speak, langMenu, fold, views: { now: { show: nowShow } } };
 })();
