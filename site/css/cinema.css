@@ -511,3 +511,13 @@ details.fold>.fold-body{padding:0 14px 16px}
 }
 .area-hero{grid-template-columns:1fr!important}
 .openb .ic{display:inline-block!important;width:14px;height:14px}
+
+/* Phones: finger-sized header controls, readable tab labels and footer links */
+@media (max-width:640px){
+  .langbtn{height:44px}
+  .hdr-actions .seg button{min-height:40px;padding-left:10px;padding-right:10px}
+  .appbar a span{font-size:.72rem}
+  footer .wrap a,footer .wrap .linkbtn{display:inline-block;padding:11px 0;font-size:.8rem}
+  .langmenu summary{min-height:44px;align-items:center}
+  .langmenu div a{padding-top:11px;padding-bottom:11px;font-size:.8rem}
+}
