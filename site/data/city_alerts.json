@@ -13,12 +13,20 @@
    "active": false
   }
  },
- "water": [],
+ "water": [
+  {
+   "kind": "main",
+   "title": "Service Alert (11/25/2026) Sisson Street Residential Recycling Center Temporarily Closed",
+   "summary": "The Sisson Street Residential Recycling Center remains temporarily closed as crews complete work related to a recent water main break. The facility is expected to reopen on Friday, November 27.",
+   "url": "https://www.baltimorecity.gov/publicworks/news/service-alert-11/25/2026-sisson-street-residential-recycling-center-temporarily-closed",
+   "posted": "2026-11-25"
+  }
+ ],
  "water_source": "https://www.baltimorecity.gov/publicworks/news-and-media",
  "snow": {
   "active": false,
   "latest": null
  },
  "snow_source": "https://www.baltimorecity.gov/transportation/news-media",
- "changed": "2026-11-09T14:06+00:00"
+ "changed": "2026-11-25T19:19+00:00"
 }
