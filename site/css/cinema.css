@@ -8,7 +8,7 @@
   --link:#dfe8f3; --accent:#e8b23a; --accent-ink:#000; --accent-soft:#2a2210; --red:#e0414c;
   --s0:#3fb57a; --s1:#9cc24a; --s2:#e6b53a; --s3:#f08a3c; --s4:#ec4a55; --s5:#b0446a;
   --display:'Barlow','Helvetica Neue',Arial,sans-serif; --font:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --r-xl:4px; --r-lg:4px; --r:4px; --r-sm:3px; --maxw:1240px; --header-h:72px; --gutter:24px;
+  --r-xl:24px; --r-lg:18px; --r:14px; --r-sm:12px; --maxw:1240px; --header-h:72px; --gutter:24px;
   --shadow-1:none; --shadow-2:none; --shadow-3:0 30px 80px -30px rgba(0,0,0,.9); --on-navy:#000;
   color-scheme:dark;
 }
@@ -26,7 +26,7 @@ main.wrap{padding-top:0;padding-bottom:96px}
 .section-h{margin:64px 0 20px;padding-bottom:14px;border-bottom:1px solid var(--line)}
 .section-h h2{font-size:clamp(1.2rem,2vw,1.5rem);letter-spacing:.06em}
 .card,.myarea,.fact,.action,.prio,.place,.callrow,details.more>summary,.tablewrap,.alertbar,.best,.avoid{border-radius:var(--r-lg)}
-.tile{border-radius:4px}
+.tile{border-radius:12px}
 
 /* ---------- header ---------- */
 header.top{position:fixed;left:0;right:0;top:0;background:transparent;border-bottom:1px solid transparent;backdrop-filter:none;-webkit-backdrop-filter:none;transition:background .4s,border-color .4s,backdrop-filter .4s;z-index:1100}
@@ -143,7 +143,7 @@ body.menu-open{overflow:hidden}
 .prio h3{font-family:var(--display);font-weight:600;letter-spacing:.005em}
 .prio.first h3{font-size:clamp(1.4rem,2.8vw,1.9rem);text-transform:uppercase;font-weight:700}
 .prio .badge{letter-spacing:.2em;font-family:var(--display)}
-.prio .tile{border-radius:4px}
+.prio .tile{border-radius:12px}
 .myarea{background:var(--surface);margin-top:12px}
 
 /* ---------- full-screen feature sections ---------- */
@@ -601,3 +601,27 @@ html.has-banner .hero-in{padding-top:calc(var(--header-h) + var(--banner-h,0px) 
 .ck-f select{max-width:100%}
 .fold-links{margin:0 0 10px;display:flex;flex-wrap:wrap;gap:6px 16px;font-weight:600;font-size:.93rem}
 [data-theme="dark"] .openb.on{color:#7fdba6}
+
+/* ===== Rounded everywhere: soft corners on every box, button, field and tile ===== */
+.card,.myarea,.fact,.action,.prio,.place,.callrow,details.more>summary,.tablewrap,.alertbar,.best,.avoid,details.fold,.nowbtn,.ck-sum,.door,.kpi,.kpis,.codebar,.flood,.helpnow,.welcome,.em-banner .em-in,.mapwrap,.leaflet-container,.chartbox,.legend,.guide-item,.guide,.trend,.trends,.glossary,.sr311,.kpis,.mapbox,p.note,.place-list,.todo,.suggest,.toast,.menu-panel,.sheet{border-radius:var(--r-lg)}
+.tile,.prio .tile,.nowbtn .tile{border-radius:12px}
+.btn,.btn.small,.chipbtn,.subnav a,.livetag,.em-act,.hdr-actions .seg,.hdr-actions .seg button,.hdr-actions .seg .thumb,.seg,.seg button,.seg .thumb{border-radius:999px}
+.iconbtn,.round,.em-x{border-radius:50%}
+select,input,textarea,input[type=search],.search .field input,.findbox,.ck-money,.buddy-add input{border-radius:14px!important}
+.plan-act{border-radius:var(--r)}
+img.ok,.hero img,.photo,.shot{border-radius:inherit}
+table{border-collapse:separate;border-spacing:0}
+.leaflet-popup-content-wrapper,.leaflet-bar,.leaflet-bar a:first-child,.leaflet-control-layers{border-radius:14px}
+.leaflet-bar{overflow:hidden}
+/* lists and grids drawn as one box with lines between rows: round the outer box, clip the rows */
+.place-list,.actions,.facts,.todo{border-radius:var(--r-lg)}
+.place-list>.place{border-radius:0}
+.actions:has(>.action[style*="border"]),.facts{overflow:hidden}
+.langbtn,.stat,.sky .stat,.rt,.deps .rt,.openb,.prio .btn,.prio a.btn{border-radius:999px!important}
+.place-list>.place,.todo>li{border-radius:0}
+.place-list>.place:first-child,.todo>li:first-child{border-top-left-radius:var(--r-lg);border-top-right-radius:var(--r-lg)}
+.place-list>.place:last-child,.todo>li:last-child{border-bottom-left-radius:var(--r-lg);border-bottom-right-radius:var(--r-lg)}
+.place-list,.todo{overflow:hidden}
+details.fold>summary,details.more>summary{border-radius:var(--r-lg)}
+.mapbox,.leaflet-container{overflow:hidden}
+.prio .btn,.prio a.btn{max-width:100%;white-space:normal;text-align:center;line-height:1.3;height:auto;padding-top:12px;padding-bottom:12px}
