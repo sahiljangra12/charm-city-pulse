@@ -507,6 +507,21 @@ const ES_DICT = {
   "How this area compares": "Cómo se compara esta zona",
   "Heat, shade, health, money, housing and getting around, compared with the rest of Baltimore.": "Calor, sombra, salud, dinero, vivienda y transporte, comparados con el resto de Baltimore.",
   "How it compares": "Cómo se compara",
+  // ---------- emergency banner ----------
+  "Code Blue: extreme cold": "Code Blue: frío extremo",
+  "Emergency shelters are open. Need a bed? Call the Shelter Hotline.": "Los refugios de emergencia están abiertos. ¿Necesita una cama? Llame a la línea de refugios.",
+  "Call #-#-#": "Llamar al #-#-#",
+  "Code Red: extreme heat": "Code Red: calor extremo",
+  "Cooling centers are open. Drink water and check on older neighbors.": "Los centros para refrescarse están abiertos. Tome agua y vea cómo están sus vecinos mayores.",
+  "Find a cool place": "Buscar un lugar fresco",
+  "Find a warm place": "Buscar un lugar cálido",
+  "Read the notice": "Leer el aviso",
+  "Snow emergency declared": "Se declaró una emergencia de nieve",
+  "Move cars off snow emergency routes: $# ticket and towing.": "Saque los autos de las rutas de emergencia de nieve: multa de $# y grúa.",
+  "See snow routes": "Ver rutas de nieve",
+  "Check my block": "Revisar mi cuadra",
+  "What to do": "Qué hacer",
+  "Dismiss this alert": "Cerrar esta alerta",
 };
 
 /* Sentences built from parts. Each entry: [regex, (match, t) => Spanish]. t() translates a part. */
@@ -607,6 +622,8 @@ const ES_PATTERNS = [
   [/^Remove "(.+)"$/, (m, t) => `Quitar "${t(m[1])}"`],
   [/^(.+?) · (.+)$/, (m, t) => { const a = t(m[1]); return a === m[1] ? null : `${a} · ${m[2]}`; }],
   [/^Show (\d+) more$/, m => `Ver ${m[1]} más`],
+  [/^In effect for Baltimore until (.+)\.$/, m => `Vigente para Baltimore hasta ${m[1]}.`],
+  [/^\+(\d+) more alerts?$/, m => `+${m[1]} alerta${m[1] > 1 ? 's' : ''} más`],
 ];
 
 /* Reasons on the Plan hour bars: "cold (6°)", "unhealthy air (AQI 120)", "very strong sun (UV 9)", "windy (30 mph)", "80% rain chance", "dark" */

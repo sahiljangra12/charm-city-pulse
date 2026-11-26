@@ -521,3 +521,27 @@ details.fold>.fold-body{padding:0 14px 16px}
   .langmenu summary{min-height:44px;align-items:center}
   .langmenu div a{padding-top:11px;padding-bottom:11px;font-size:.8rem}
 }
+
+/* Emergency banner (Today page only) */
+#emBanner{position:fixed;left:0;right:0;top:var(--header-h);z-index:45;transform:translateY(-110%);opacity:0;transition:transform .45s var(--spring,cubic-bezier(.2,.8,.2,1)),opacity .3s}
+#emBanner.in{transform:none;opacity:1}
+.em-banner .em-in{max-width:1240px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:12px var(--gutter,18px)}
+.em-banner{color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.em-banner.red{background:#c62828}.em-banner.blue{background:#1d4f91}.em-banner.amber{background:#b26a00}
+.em-ic{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.18);animation:empulse 2s ease-in-out infinite}
+.em-ic .ic{width:22px;height:22px}
+@keyframes empulse{50%{box-shadow:0 0 0 7px rgba(255,255,255,.12)}}
+.em-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.em-txt b{font-size:1.05rem;letter-spacing:.01em}.em-txt span{font-size:.92rem;opacity:.95;line-height:1.35}
+.em-txt a{color:#fff;font-weight:600}
+.em-act{flex:none;background:#fff;color:#111;font-weight:700;font-size:.9rem;padding:10px 14px;border-radius:12px;text-decoration:none;white-space:nowrap}
+.em-x{flex:none;background:none;border:0;color:#fff;opacity:.85;padding:6px;cursor:pointer;border-radius:8px}
+.em-x:hover{opacity:1;background:rgba(255,255,255,.15)}
+html.has-banner .hero-in{padding-top:calc(var(--header-h) + var(--banner-h,0px) + 18px)!important}
+@media (max-width:700px){
+  .em-banner .em-in{flex-wrap:wrap;gap:10px;padding:12px 16px}
+  .em-txt{flex-basis:calc(100% - 100px)}
+  .em-act{order:3;flex:1;text-align:center;padding:12px}
+}
+@media (prefers-reduced-motion:reduce){#emBanner{transition:none}.em-ic{animation:none}}
+@media print{#emBanner{display:none}}
