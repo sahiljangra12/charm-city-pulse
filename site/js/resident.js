@@ -95,13 +95,15 @@ const RES = (() => {
     const place = s === "winter" ? ["flame", "var(--s3)", "Find a warm place", "Warming centers and shelters near you"] : s === "summer" ? ["snow", "var(--link)", "Find a cool place", "Cooling centers near you on hot days"] : ["home", "var(--s3)", "Warm or cool places", "Warming centers open from November 15"];
     const A = [
       ["#help/sec-places", place[0], place[1], place[2], place[3]],
-      ["#place", "pin", "var(--accent)", "My block", "Trash day, snow routes, flood risk"],
+      ["#place", "pin", "var(--accent)", "My block", "Trash day, 311 nearby, parking"],
+      ["#money", "wallet", "#2f8f5b", "Money help", "What you qualify for, bills, taxes"],
       ["#help/sec-food", "basket", "#b8382b", "Food", "Free food and stores that take SNAP"],
-      ["#help/sec-home", "home", "#6b4c9a", "Rent and bills", "Eviction help, rent, BGE, heat"],
-      ["#place/sec-transit", "bus", "#1d6fb8", "Next bus", "Buses and trains near you"],
-      ["tel:311", "phone", "var(--s0)", "Call 311", "No heat, flooding, trash, rats"],
+      ["#health", "hospital", "var(--s4)", "Health", "Clinics, pharmacies, free shots"],
+      ["#family", "users", "#1d6fb8", "Family and kids", "Child care, schools, free meals"],
+      ["#seniors", "heart", "#6b4c9a", "Seniors", "Meals at home, rides, repairs"],
+      ["#services", "grid", "var(--ink-2)", "All services", "Jobs, community, rent, 311 and more"],
     ];
-    const el = U.$("#hActions"); el.classList.add("stagger", "six"); el.classList.remove("eight");
+    const el = U.$("#hActions"); el.classList.add("stagger", "six", "n8"); el.classList.remove("eight");
     el.innerHTML = A.map(([h, ic, col, t, d, cls]) => `<a class="action ${cls || ""}" href="${h}"${h.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>${cls ? `<span class="tile">${I(ic)}</span>` : tile(ic, col)}<b>${t}</b><span>${d}</span></a>`).join("");
   }
   document.addEventListener("click", e => { const a = e.target.closest('a[href="#alerts"]'); if (a) { e.preventDefault(); ALERTS.open(); } });
@@ -195,13 +197,15 @@ const RES = (() => {
       let top3 = worst.filter(k => lv(k) >= 3).slice(0, 3); top3 = [...top3, ...["heat", "trees", "health"].filter(k => !top3.includes(k))].slice(0, 3);
       const unsure = Object.keys(THEMES).some(k => p["u_" + k]);
       const J = (k, t) => `<a href="#place/${id}/${k}">${t}</a>`;
-      body.innerHTML = `<nav class="jumpbar" aria-label="On this page"><span>On this page</span>${J("sec-summary", "Summary")}${J("sec-services", "Trash & services")}${J("sec-help", "Closest help")}${J("sec-compare", "How it compares")}${J("sec-food", "Food")}${J("sec-transit", "Buses")}${J("sec-trends", "Changes")}${J("sec-numbers", "All numbers")}<button class="linkbtn" data-speak aria-pressed="false"><span>Read aloud</span></button></nav>
+      body.innerHTML = `<nav class="jumpbar" aria-label="On this page"><span>On this page</span>${J("sec-summary", "Summary")}${J("sec-services", "Trash & services")}${J("sec-street", "Your street")}${J("sec-help", "Closest help")}${J("sec-compare", "How it compares")}${J("sec-food", "Food")}${J("sec-transit", "Buses")}${J("sec-trends", "Changes")}${J("sec-numbers", "All numbers")}<button class="linkbtn" data-speak aria-pressed="false"><span>Read aloud</span></button></nav>
         <div class="area-hero" id="sec-summary">
         <div class="card"><span class="muted" style="font-size:.92rem">Your neighborhood</span><div class="area-title">${U.esc(p.csa)}</div>
           <p class="summary">${U.esc(sum.join(" and "))}.</p>${floodBox}</div>
         </div>
         <div class="section-h" id="sec-services"><div><h2>City services here</h2><p class="sub">Trash and recycling day, bulk pickup, sweeping, snow routes, your council member and useful places.</p></div></div>
         <div id="pServices"><div class="skeleton" style="height:90px"></div></div>
+        <div class="section-h" id="sec-street"><div><h2>Your street</h2><p class="sub">311 requests nearby, streetlights out, vacant buildings and permit parking. Live from the city.</p></div></div>
+        <div id="pStreet"></div>
         <div class="section-h" id="sec-help"><h2>Closest help</h2><a href="#help">All places and phone numbers</a></div>
         <div class="place-list stagger">${cards}${MORE.leadCard(p, null)}</div>
         <div id="pReport"></div>
@@ -221,7 +225,7 @@ const RES = (() => {
         <div class="report-actions"><button class="btn small" data-print>Print or save as PDF</button><button class="btn small alt" data-share>Copy link to this report</button></div>
         <p class="note print-only">Charm City Pulse report for ${U.esc(p.csa)} (census tract ${U.esc(p.name.replace("Tract ", ""))}), data build ${new Date(D().meta.built).toLocaleDateString(LOC(), { dateStyle: "long" })}. ${location.origin}${location.pathname}#place/${id}</p>`;
       EASE.fold(body, ["sec-help", "sec-services"]);
-      CITY.section(U.$("#pServices"), here[0], here[1], !!pt); MORE.foodSection(U.$("#pFood"), here[0], here[1]); MORE.transitSection(U.$("#pTransit"), here[0], here[1]); MORE.trendsSection(U.$("#pTrends"), p.csa);
+      CITY.section(U.$("#pServices"), here[0], here[1], !!pt); LIFE.street(U.$("#pStreet"), here[0], here[1]); MORE.foodSection(U.$("#pFood"), here[0], here[1]); MORE.transitSection(U.$("#pTransit"), here[0], here[1]); MORE.trendsSection(U.$("#pTrends"), p.csa);
       MORE.file("trends.json").then(T => { const lc = MORE.leadCard(p, T.csa[p.csa]); const old = body.querySelector(".place.lead"); if (old) old.outerHTML = lc; else if (lc) body.querySelector(".place-list").insertAdjacentHTML("beforeend", lc); }).catch(() => {});
       body.querySelector("[data-print]").onclick = () => { body.querySelectorAll("details.more, details.fold").forEach(d => d.open = true); window.print(); };
       body.querySelector("[data-share]").onclick = () => SHARE.link(`${location.origin}${location.pathname}#place/${id}`, `${p.csa}: heat, flood risk and help nearby`);
@@ -364,7 +368,7 @@ const RES = (() => {
       ["bed", "var(--s3)", "Shelter Hotline", "Shelter beds and warming centers", "4439849540", "443-984-9540"], ["moon", "#6b4c9a", "Winter Shelter Hotline", "9 pm to midnight in winter", "4436957378", "443-695-7378"], ["bolt", "var(--accent)", "Heating bill help", "Community Action Partnership", "4103965555", "410-396-5555"]];
     U.$("#helpStatus").innerHTML = MORE.waterBars() + codeStatus();
     if (!helpShow.wired) { helpShow.wired = true; F("city").on(() => { if (APP.view === "help") U.$("#helpStatus").innerHTML = MORE.waterBars() + codeStatus(); }); }
-    U.$("#helpNeighbor").innerHTML = MORE.neighborCard(LIVE.cityAlert("blue") || s === "winter" ? "cold" : LIVE.cityAlert("red") || s === "summer" ? "heat" : "help");
+    LIFE.buddyBox(U.$("#helpNeighbor"));
     U.$("#helpCalls").innerHTML = calls.map(([ic, col, t, d, tel, show, urgent]) => `<div class="callrow${urgent ? " urgent" : ""}">${tile(ic, col)}<div><b>${t}</b><small>${d}</small><span class="numtxt tnum">${show}</span></div><a class="round call${urgent ? " urgent" : ""}" href="tel:${tel}" aria-label="Call ${t} at ${show}" title="Call ${show}">${I("phone", 22)}</a></div>`).join("");
     U.$("#helpCalls").classList.add("stagger");
     const here = userLoc ? [userLoc.lon, userLoc.lat] : [LIVE.CENTER[1], LIVE.CENTER[0]];

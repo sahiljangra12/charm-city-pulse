@@ -2,7 +2,7 @@
 const APP = (() => {
   const TABS = [["today", "Today", "sun"], ["plan", "Plan", "calendar"], ["place", "My block", "pin"], ["map", "Map", "map"], ["help", "Help", "phone"]];
   const DATA = [["brief", "City brief"], ["explore", "Explore"], ["compare", "Compare"], ["correlate", "Correlate"], ["live", "Live feeds"], ["status", "Data health"], ["methods", "Methods"], ["download", "Download"], ["refs", "Sources"], ["about", "About"]];
-  const ALL = [...TABS.map(t => t[0]), ...DATA.map(t => t[0]), "guide", "now", "nb"];
+  const ALL = [...TABS.map(t => t[0]), ...DATA.map(t => t[0]), "guide", "now", "nb", "money", "health", "family", "seniors", "jobs", "community", "services"];
   const VIEWS = {}; const inited = {};
   const A = { data: null, maps: [], view: null };
 
@@ -130,9 +130,7 @@ const APP = (() => {
     const link = ([k, t, ic]) => `<a href="#${k}" data-tab="${k}">${I(ic, 20)}<span>${t}</span></a>`;
     U.$("#mainnav").innerHTML = TABS.map(link).join("") + link(["explore", "Data", "chart"]).replace('data-tab="explore"', 'data-tab="data"');
     // phone tab bar: the four things people use most, plus More (opens the full menu)
-    U.$("#appbar").innerHTML = [["today", "Today", "sun"], ["place", "My block", "pin"], ["help", "Get help", "phone"], ["map", "Map", "map"]].map(link).join("") +
-      `<a href="#more" data-more>${I("grid", 20)}<span>More</span></a>`;
-    U.$("#appbar [data-more]").addEventListener("click", e => { e.preventDefault(); U.$("#menuBtn")?.click(); });
+    U.$("#appbar").innerHTML = [["today", "Today", "sun"], ["place", "My block", "pin"], ["help", "Get help", "phone"], ["map", "Map", "map"], ["services", "Services", "grid"]].map(link).join("");
     const sub = DATA.map(([k, t]) => `<a href="#${k}" data-s="${k}">${t}</a>`).join("");
     U.$$("[data-sub]").forEach(n => n.innerHTML = sub);
     U.$("#alertBtn").innerHTML = I("bell", 20); U.$("#dataBtn").innerHTML = I("chart", 20); U.$("#sheetClose").innerHTML = I("x", 20);
@@ -199,7 +197,7 @@ const APP = (() => {
       }
     }
     stamp();
-    Object.assign(VIEWS, RES.views, PLAN.views, RSC.views, REFS.views, BRIEF.views, HEALTH.views, EASE.views, OFF.views);
+    Object.assign(VIEWS, RES.views, PLAN.views, RSC.views, REFS.views, BRIEF.views, HEALTH.views, EASE.views, OFF.views, LIFE.views);
     ALERTS.init(); segThumbs(); parallax();
     route.first = true;
     addEventListener("hashchange", () => {

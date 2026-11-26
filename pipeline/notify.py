@@ -11,7 +11,7 @@ OWNER = REPO.split("/")[0]
 SITE = os.environ.get("SITE_URL", f"https://{OWNER}.github.io/{REPO.split('/')[1]}/")
 RUN = f"{os.environ.get('GITHUB_SERVER_URL', 'https://github.com')}/{REPO}/actions/runs/{os.environ.get('GITHUB_RUN_ID', '')}"
 NAMES = {"refresh": "Neighborhood data (Census, CDC, city map layers)", "extras": "Food help, harbor water, trends, bus schedules",
-         "alerts": "Code Blue / Code Red and water notices", "photos": "Photos", "city": "City services (trash, snow routes, Wi-Fi, libraries)",
+         "alerts": "Code Blue / Code Red and water notices", "photos": "Photos", "city": "City services (trash, snow routes, Wi-Fi, libraries)", "life": "Everyday services (clinics, schools, meals, council meetings, 311 times)",
          "tests": "Automatic page tests", "publish": "Publishing the website", "commit": "Saving the new data"}
 
 

@@ -46,6 +46,11 @@ jobs:
         continue-on-error: true
         timeout-minutes: 8
         run: python pipeline/services.py
+      - name: Everyday services (health centers, pharmacies, schools, meal sites, council meetings, 311 fix times)
+        id: life
+        continue-on-error: true
+        timeout-minutes: 10
+        run: python pipeline/life.py
       - name: Code Blue / Code Red, water notices and air sensors
         id: alerts
         continue-on-error: true
@@ -65,7 +70,7 @@ jobs:
         run: |
           python - <<'PY'
           import json, datetime
-          steps = {"refresh": "${{ steps.refresh.outcome }}", "extras": "${{ steps.extras.outcome }}", "alerts": "${{ steps.alerts.outcome }}", "photos": "${{ steps.photos.outcome }}", "city": "${{ steps.city.outcome }}"}
+          steps = {"refresh": "${{ steps.refresh.outcome }}", "extras": "${{ steps.extras.outcome }}", "alerts": "${{ steps.alerts.outcome }}", "photos": "${{ steps.photos.outcome }}", "city": "${{ steps.city.outcome }}", "life": "${{ steps.life.outcome }}"}
           json.dump({"built": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="minutes"),
                      "run": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}", "steps": steps},
                     open("site/data/health.json", "w"), indent=1)
@@ -117,6 +122,7 @@ jobs:
           OUTCOME_ALERTS: ${{ steps.alerts.outcome }}
           OUTCOME_PHOTOS: ${{ steps.photos.outcome }}
           OUTCOME_CITY: ${{ steps.city.outcome }}
+          OUTCOME_LIFE: ${{ steps.life.outcome }}
           OUTCOME_TESTS: ${{ steps.tests.outcome }}
           OUTCOME_COMMIT: ${{ steps.commit.outcome }}
           OUTCOME_PUBLISH: ${{ steps.publish.outcome }}

@@ -23,11 +23,32 @@ const REFS = (() => {
     ["Esri. <i>World Light Gray and Dark Gray Canvas</i> basemaps (Esri, HERE, Garmin, OpenStreetMap contributors).", "https://www.arcgis.com/home/item.html?id=291da5eab3a0412593b66d384379f89f"],
     ["GitHub. <i>GitHub Actions and GitHub Pages</i> (daily data build and hosting).", "https://docs.github.com/actions"],
   ];
+  // everyday-life pages (js/life.js, pipeline/life.py): data and the program rules they quote
+  const LIFE_SRC = [
+    ["Health Resources and Services Administration. <i>Health Center Service Delivery Sites</i> (Baltimore). Rebuilt daily.", "https://data.hrsa.gov/"],
+    ["Baltimore City Department of Housing & Community Development. <i>Open Baltimore datasets: vacant building notices, Vacants to Value open bid list, Adopt-A-Lots, summer meal sites</i>. Vacant notices queried live.", "https://baltegis.baltimorecity.gov/mapping/rest/services/Housing/DHCD_Open_Baltimore_Datasets/FeatureServer"],
+    ["City of Baltimore. <i>311 Customer Service Requests</i> (current year). Queried live near an address; typical fix times from the last 30 days of closed requests, rebuilt daily.", "https://services1.arcgis.com/UWYHeuuJISiGmgXx/arcgis/rest/services/311_Customer_Service_Requests_current/FeatureServer/0"],
+    ["Parking Authority of Baltimore City. <i>Residential Permit Parking areas</i>. Queried live.", "https://parking.baltimorecity.gov/residential-parking"],
+    ["Baltimore City Public Schools. <i>BCPSS Schools 2025</i>.", "https://services1.arcgis.com/UWYHeuuJISiGmgXx/arcgis/rest/services/BCPSS_Schools_2025/FeatureServer/0"],
+    ["Baltimore City Council. <i>Meeting calendar</i> (Legistar web API). Rebuilt daily.", "https://baltimore.legistar.com/Calendar.aspx"],
+    ["U.S. Department of Health and Human Services. <i>2026 Poverty Guidelines</i>.", "https://aspe.hhs.gov/topics/poverty-economic-mobility/poverty-guidelines"],
+    ["Maryland Department of Human Services. <i>SNAP income limits (October 1, 2026) and Office of Home Energy Programs (FY 2027)</i>.", "https://dhs.maryland.gov/office-of-home-energy-programs/"],
+    ["Maryland Department of Health. <i>WIC income guidelines, July 2026 to June 2027</i>; <i>Medicaid coverage groups</i>.", "https://health.maryland.gov/phpa/wic/pages/wic-apply.aspx"],
+    ["Baltimore City Department of Public Works. <i>Water4All</i>.", "https://cityservices.baltimorecity.gov/water4all/Initial-Eligibility-Check"],
+    ["Maryland State Department of Assessments and Taxation. <i>Renters' Tax Credit</i>.", "https://dat.maryland.gov/renters"],
+    ["Baltimore City DHCD. <i>Housing rehabilitation and repairs (LIGHT)</i>.", "https://www.baltimorecity.gov/dhcd/housing-rehabilitation-and-repairs"],
+    ["Mayor's Office of Employment Development. <i>Visit a job center</i>.", "https://www.baltimorecity.gov/moed/about/visit-a-job-center"],
+    ["Enoch Pratt Free Library. <i>Mobile hotspots</i>.", "https://www.prattlibrary.org/books-and-more/computer-internet-devices/mobile-hotspots"],
+    ["Meals on Wheels of Central Maryland. <i>Application for service</i>.", "https://mealsonwheelsmd.org/client-application/"],
+    ["Baltimore City Health Department. <i>Immunization program</i>; <i>TaxiCard</i> (via 211 Maryland).", "https://www.baltimorecity.gov/health/our-work/maternal-and-child-health/immunization-program"],
+    ["Baltimore City Fire Department. <i>Request a smoke alarm</i>.", "https://www.baltimorecity.gov/fire/request-a-smoke-alarm"],
+    ["Maryland State Department of Education. <i>Child Care Scholarship</i>.", "https://money4childcare.com"],
+  ];
   const li = (html, url) => `<li>${html} <a href="${url}" target="_blank" rel="noopener">${U.esc(url.replace(/^https?:\/\//, "").slice(0, 70))}</a><button class="copy" data-copy>Copy</button></li>`;
   function show() {
     const m = APP.data.meta, built = new Date(m.built);
     const acc = `Retrieved ${built.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}`;
-    U.$("#refData").innerHTML = Object.values(m.sources).map(s => li(`${U.esc(s.by)}. <i>${U.esc(s.name)}</i> (${U.esc(s.vintage)}). <span class="status ${/live/.test(s.status) ? "live" : /cached|frozen/.test(s.status) ? "cached" : ""}">${U.esc(s.status)}</span> ${acc}.`, s.url)).join("");
+    U.$("#refData").innerHTML = Object.values(m.sources).map(s => li(`${U.esc(s.by)}. <i>${U.esc(s.name)}</i> (${U.esc(s.vintage)}). <span class="status ${/live/.test(s.status) ? "live" : /cached|frozen/.test(s.status) ? "cached" : ""}">${U.esc(s.status)}</span> ${acc}.`, s.url)).join("") + LIFE_SRC.map(([h, u]) => li(h + ` ${acc}.`, u)).join("");
     U.$("#refLive").innerHTML = LIVE.SOURCES.filter(s => s.id !== "meta").map(s => li(`${U.esc(s.by)}. <i>${U.esc(s.name)}</i>. Live API, ${s.every ? "refreshed every " + s.every + " minutes in your browser" : "queried on request"}.`, s.url)).join("");
     U.$("#refLit").innerHTML = LIT.map(([h, u]) => li(h, u)).join("");
     U.$("#refSoft").innerHTML = SOFT.map(([h, u]) => li(h, u)).join("");

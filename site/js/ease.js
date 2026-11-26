@@ -111,6 +111,9 @@ const EASE = (() => {
       s.appendChild(h); s.insertAdjacentHTML("beforeend", `<span class="fold-chev" aria-hidden="true">${I("chev", 20)}</span>`);
       n = d.nextSibling;
       while (n && n !== stop && !(n.matches?.(".report-actions, .print-only, footer"))) { const next = n.nextSibling; body.appendChild(n); n = next; }
+      // links in the heading ("Full calendar", "City Schools") can't sit inside the tap target: move them to the top of the section
+      const links = [...h.querySelectorAll(":scope > a")];
+      if (links.length) { const p = document.createElement("p"); p.className = "fold-links"; links.forEach(a => p.appendChild(a)); body.prepend(p); }
       d.append(s, body);
       d.addEventListener("toggle", () => { if (d.open) setTimeout(() => window.dispatchEvent(new Event("resize")), 60); });
     });
