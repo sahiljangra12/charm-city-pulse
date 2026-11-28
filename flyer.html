@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Charm City Pulse flyer</title>
+<link rel="icon" href="img/favicon-32.png" sizes="32x32" type="image/png">
+<style>
+  :root{--ink:#0c1c2c;--muted:#4a5966;--line:#d9dee3;--red:#c62828;--gold:#e8a800;--bg:#f4f1ea}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  .bar{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:14px 16px}
+  .bar button,.bar a{font:600 15px Inter,system-ui,sans-serif;padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;text-decoration:none}
+  .bar button.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .page{width:min(100% - 32px,8.5in);margin:0 auto 32px;background:#fff;border-radius:14px;padding:.55in .6in;box-shadow:0 6px 30px rgba(0,0,0,.08)}
+  header{display:flex;align-items:center;gap:16px;border-bottom:3px solid var(--gold);padding-bottom:14px}
+  header img{width:78px;height:auto;border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+  h1{font:800 34px/1.05 Barlow,Inter,system-ui,sans-serif;letter-spacing:.02em;margin:0}
+  h1 small{display:block;font:600 16px Inter,system-ui,sans-serif;letter-spacing:0;color:var(--muted);margin-top:6px}
+  .grid{display:grid;grid-template-columns:1fr 2.1in;gap:22px;margin-top:18px;align-items:start}
+  ul{margin:0;padding-left:18px}li{margin:4px 0}
+  .es{color:var(--muted);font-size:14px;display:block}
+  .qr{text-align:center}.qr #qr{display:inline-block;padding:8px;background:#fff;border:1px solid var(--line);border-radius:8px}
+  .qr p{margin:8px 0 0;font-weight:700;font-size:13px;word-break:break-all}
+  h2{font:700 19px Barlow,Inter,system-ui,sans-serif;margin:20px 0 8px;letter-spacing:.02em;text-transform:uppercase}
+  .nums{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .num{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .num b{display:block;font-size:22px;letter-spacing:.01em}.num.urgent{border-color:var(--red)}.num.urgent b{color:var(--red)}
+  .num span{font-size:13px;color:var(--muted)}
+  footer{margin-top:18px;font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+  @media (max-width:640px){.grid{grid-template-columns:1fr}.nums{grid-template-columns:1fr 1fr}.page{padding:22px}}
+  @media print{@page{size:letter;margin:.4in}body{background:#fff}.bar{display:none}.page{width:auto;margin:0;box-shadow:none;border-radius:0;padding:0}}
+</style>
+</head>
+<body>
+<div class="bar"><button class="primary" onclick="print()">Print this flyer</button><a href="./">Back to the site</a></div>
+<main class="page">
+  <header><img src="img/baltimore-flag.png" alt="Baltimore city flag"><h1>CHARM CITY PULSE<small>Free help for Baltimore, on your phone · Ayuda gratis para Baltimore, en su teléfono</small></h1></header>
+  <div class="grid">
+    <div>
+      <h2>What you can do · Lo que puede hacer</h2>
+      <ul>
+        <li><b>Find a warm or cool place</b> near you, and shelters on cold nights.<span class="es">Encontrar un lugar cálido o fresco, y refugios en noches frías.</span></li>
+        <li><b>Check your block:</b> trash and recycling day, flood risk, snow routes.<span class="es">Su cuadra: día de basura y reciclaje, riesgo de inundación, rutas de nieve.</span></li>
+        <li><b>Free food</b> sites and stores that take SNAP (EBT).<span class="es">Comida gratis y tiendas que aceptan SNAP (EBT).</span></li>
+        <li><b>Buses and trains:</b> the next times at the stops near you.<span class="es">Autobuses y trenes: los próximos horarios cerca de usted.</span></li>
+        <li><b>Your rights</b> as a renter, and help with rent and BGE bills.<span class="es">Sus derechos como inquilino, y ayuda con la renta y BGE.</span></li>
+        <li><b>Alerts</b> for Code Blue, Code Red, storms and bad air.<span class="es">Alertas de Code Blue, Code Red, tormentas y aire contaminado.</span></li>
+      </ul>
+      <p style="margin:12px 0 0">Free. No sign-up. Works in English and Spanish. <span class="es" style="display:inline">Gratis, sin registrarse, en inglés y español.</span></p>
+    </div>
+    <div class="qr"><div id="qr" aria-label="QR code to open the site"></div><p id="url"></p><span class="es" style="font-size:12px">Scan with your phone camera · Escanee con la cámara</span></div>
+  </div>
+  <h2>Numbers to keep · Números importantes</h2>
+  <div class="nums">
+    <div class="num urgent"><b>911</b><span>Emergency · Emergencia</span></div>
+    <div class="num"><b>443-984-9540</b><span>Shelter Hotline · Refugios</span></div>
+    <div class="num"><b>311</b><span>City services · Servicios de la ciudad</span></div>
+    <div class="num"><b>211</b><span>Food, rent, bills · Comida, renta, facturas</span></div>
+    <div class="num"><b>988</b><span>Crisis line, call or text · Línea de crisis</span></div>
+    <div class="num"><b>1-877-778-2222</b><span>BGE power outage · Apagón</span></div>
+  </div>
+  <footer>Charm City Pulse is an independent project by Sahil, Johns Hopkins University, built from public data (U.S. Census Bureau, CDC, National Weather Service, Baltimore City and others).</footer>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  const site = location.href.replace(/flyer\.html.*$/, "");
+  document.getElementById("url").textContent = site.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  try { new QRCode(document.getElementById("qr"), { text: site, width: 168, height: 168, correctLevel: QRCode.CorrectLevel.M }); }
+  catch (e) { document.getElementById("qr").textContent = site; }
+</script>
+</body>
+</html>
